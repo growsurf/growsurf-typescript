@@ -1,5 +1,5 @@
 {
-  "name": "growsurf-typescript",
+  "name": "@growsurfteam/growsurf-typescript",
   "version": "0.0.2",
   "description": "The official TypeScript library for the Growsurf API",
   "author": "Growsurf <>",

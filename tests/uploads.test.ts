@@ -1,6 +1,6 @@
 import fs from 'fs';
-import type { ResponseLike } from 'growsurf-typescript/internal/to-file';
-import { toFile } from 'growsurf-typescript/core/uploads';
+import type { ResponseLike } from '@growsurfteam/growsurf-typescript/internal/to-file';
+import { toFile } from '@growsurfteam/growsurf-typescript/core/uploads';
 import { File } from 'node:buffer';
 
 class MyClass {
@@ -97,7 +97,7 @@ describe('missing File error message', () => {
   });
 
   test('is thrown', async () => {
-    const uploads = await import('growsurf-typescript/core/uploads');
+    const uploads = await import('@growsurfteam/growsurf-typescript/core/uploads');
     await expect(
       uploads.toFile(mockResponse({ url: 'https://example.com/my/audio.mp3' })),
     ).rejects.toMatchInlineSnapshot(

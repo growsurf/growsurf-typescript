@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import Growsurf from 'growsurf-typescript';
+import Growsurf from '@growsurfteam/growsurf-typescript';
 
 const client = new Growsurf({
   apiKey: 'My API Key',
