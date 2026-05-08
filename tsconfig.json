@@ -8,8 +8,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "paths": {
-      "@growsurfteam/growsurf-typescript/*": ["./src/*"],
-      "@growsurfteam/growsurf-typescript": ["./src/index.ts"]
+      "growsurf-typescript/*": ["./src/*"],
+      "growsurf-typescript": ["./src/index.ts"]
     },
     "noEmit": true,
 
