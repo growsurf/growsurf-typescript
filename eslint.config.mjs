@@ -22,7 +22,7 @@ export default tseslint.config(
         {
           patterns: [
             {
-              regex: '^growsurf-typescript(/.*)?',
+              regex: '^@growsurfteam/growsurf-typescript(/.*)?',
               message: 'Use a relative import, not a package import.',
             },
           ],
