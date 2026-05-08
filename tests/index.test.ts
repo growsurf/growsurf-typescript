@@ -1,10 +1,10 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import { APIPromise } from 'growsurf/core/api-promise';
+import { APIPromise } from 'growsurf-typescript/core/api-promise';
 
 import util from 'node:util';
-import Growsurf from 'growsurf';
-import { APIUserAbortError } from 'growsurf';
+import Growsurf from 'growsurf-typescript';
+import { APIUserAbortError } from 'growsurf-typescript';
 const defaultFetch = fetch;
 
 describe('instantiate client', () => {

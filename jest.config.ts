@@ -7,8 +7,8 @@ const config: JestConfigWithTsJest = {
     '^.+\\.(t|j)sx?$': ['@swc/jest', { sourceMaps: 'inline' }],
   },
   moduleNameMapper: {
-    '^growsurf$': '<rootDir>/src/index.ts',
-    '^growsurf/(.*)$': '<rootDir>/src/$1',
+    '^growsurf-typescript$': '<rootDir>/src/index.ts',
+    '^growsurf-typescript/(.*)$': '<rootDir>/src/$1',
   },
   modulePathIgnorePatterns: [
     '<rootDir>/ecosystem-tests/',
