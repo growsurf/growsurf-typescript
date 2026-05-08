@@ -1,5 +1,5 @@
-import { multipartFormRequestOptions, createForm } from 'growsurf/internal/uploads';
-import { toFile } from 'growsurf/core/uploads';
+import { multipartFormRequestOptions, createForm } from 'growsurf-typescript/internal/uploads';
+import { toFile } from 'growsurf-typescript/core/uploads';
 
 describe('form data validation', () => {
   test('valid values do not error', async () => {

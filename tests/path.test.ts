@@ -1,4 +1,4 @@
-import { createPathTagFunction, encodeURIPath } from 'growsurf/internal/utils/path';
+import { createPathTagFunction, encodeURIPath } from 'growsurf-typescript/internal/utils/path';
 import { inspect } from 'node:util';
 import { runInNewContext } from 'node:vm';
 
