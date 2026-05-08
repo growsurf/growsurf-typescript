@@ -55,12 +55,12 @@ $ cd growsurf-typescript
 # With yarn
 $ yarn link
 $ cd ../my-package
-$ yarn link @growsurfteam/growsurf-typescript
+$ yarn link growsurf-typescript
 
 # With pnpm
 $ pnpm link --global
 $ cd ../my-package
-$ pnpm link --global @growsurfteam/growsurf-typescript
+$ pnpm link --global growsurf-typescript
 ```
 
 ## Running tests
