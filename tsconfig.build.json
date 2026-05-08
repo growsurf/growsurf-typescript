@@ -5,8 +5,8 @@
   "compilerOptions": {
     "rootDir": "./dist/src",
     "paths": {
-      "@growsurfteam/growsurf-typescript/*": ["./dist/src/*"],
-      "@growsurfteam/growsurf-typescript": ["./dist/src/index.ts"]
+      "growsurf-typescript/*": ["./dist/src/*"],
+      "growsurf-typescript": ["./dist/src/index.ts"]
     },
     "noEmit": false,
     "declaration": true,
