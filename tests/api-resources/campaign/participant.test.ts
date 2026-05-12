@@ -96,6 +96,27 @@ describe('resource participant', () => {
   });
 
   // Mock server tests are disabled
+  test.skip('createMobileToken: only required params', async () => {
+    const responsePromise = client.campaign.participant.createMobileToken('participantIdOrEmail', {
+      id: 'id',
+    });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('createMobileToken: required and optional params', async () => {
+    const response = await client.campaign.participant.createMobileToken('participantIdOrEmail', {
+      id: 'id',
+    });
+  });
+
+  // Mock server tests are disabled
   test.skip('listCommissions: only required params', async () => {
     const responsePromise = client.campaign.participant.listCommissions('participantIdOrEmail', { id: 'id' });
     const rawResponse = await responsePromise.asResponse();

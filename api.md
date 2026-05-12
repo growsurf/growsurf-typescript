@@ -32,6 +32,7 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">ReferralSource</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ReferralStatus</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantDeleteResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantCreateMobileTokenResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantListRewardsResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRecordTransactionResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantSendInvitesResponse</a></code>
@@ -43,6 +44,7 @@ Methods:
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">update</a>(participantIDOrEmail, { ...params }) -> Participant</code>
 - <code title="delete /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">delete</a>(participantIDOrEmail, { ...params }) -> ParticipantDeleteResponse</code>
 - <code title="post /campaign/{id}/participant">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">add</a>(id, { ...params }) -> Participant</code>
+- <code title="post /campaign/{id}/participant/{participantIdOrEmail}/mobile-token">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">createMobileToken</a>(participantIDOrEmail, { ...params }) -> ParticipantCreateMobileTokenResponse</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/commissions">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listCommissions</a>(participantIDOrEmail, { ...params }) -> ParticipantCommissionList</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/payouts">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listPayouts</a>(participantIDOrEmail, { ...params }) -> ParticipantPayoutList</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/referrals">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listReferrals</a>(participantIDOrEmail, { ...params }) -> ReferralList</code>
