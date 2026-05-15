@@ -444,7 +444,11 @@ export interface CampaignRetrieveAnalyticsResponse {
 
 export namespace CampaignRetrieveAnalyticsResponse {
   export interface Analytics {
+    androidNativeShares?: number;
+
     blueskyShares?: number;
+
+    copyRefLinkShares?: number;
 
     emailShares?: number;
 
@@ -453,6 +457,8 @@ export namespace CampaignRetrieveAnalyticsResponse {
     impressions?: number;
 
     invites?: number;
+
+    iosNativeShares?: number;
 
     linkedInShares?: number;
 
