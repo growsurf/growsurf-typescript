@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 (2026-05-15)
+
+Full Changelog: [v0.1.1...v0.2.0](https://github.com/growsurf/growsurf-typescript/compare/v0.1.1...v0.2.0)
+
+### Features
+
+* **api:** manual updates ([f40ded9](https://github.com/growsurf/growsurf-typescript/commit/f40ded9ea2207029fc187f20e172fe62d76a00f5))
+
 ## 0.1.1 (2026-05-13)
 
 Full Changelog: [v0.1.0...v0.1.1](https://github.com/growsurf/growsurf-typescript/compare/v0.1.0...v0.1.1)
