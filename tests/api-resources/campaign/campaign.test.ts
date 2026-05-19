@@ -33,6 +33,34 @@ describe('resource campaign', () => {
   });
 
   // Mock server tests are disabled
+  test.skip('createMobileParticipantToken: only required params', async () => {
+    const responsePromise = client.campaign.createMobileParticipantToken('id', {
+      email: 'dev@stainless.com',
+    });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('createMobileParticipantToken: required and optional params', async () => {
+    const response = await client.campaign.createMobileParticipantToken('id', {
+      email: 'dev@stainless.com',
+      fingerprint: 'fingerprint',
+      firstName: 'firstName',
+      ipAddress: 'ipAddress',
+      lastName: 'lastName',
+      metadata: { foo: 'bar' },
+      referralStatus: 'CREDIT_PENDING',
+      referredBy: 'referredBy',
+    });
+  });
+
+  // Mock server tests are disabled
   test.skip('listCommissions', async () => {
     const responsePromise = client.campaign.listCommissions('id');
     const rawResponse = await responsePromise.asResponse();

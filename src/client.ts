@@ -19,6 +19,8 @@ import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
 import {
   Campaign,
+  CampaignCreateMobileParticipantTokenParams,
+  CampaignCreateMobileParticipantTokenResponse,
   CampaignListCommissionsParams,
   CampaignListLeaderboardParams,
   CampaignListParticipantsParams,
@@ -763,7 +765,9 @@ export declare namespace Growsurf {
     type ParticipantPayoutList as ParticipantPayoutList,
     type ReferralList as ReferralList,
     type CampaignListResponse as CampaignListResponse,
+    type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
+    type CampaignCreateMobileParticipantTokenParams as CampaignCreateMobileParticipantTokenParams,
     type CampaignListCommissionsParams as CampaignListCommissionsParams,
     type CampaignListLeaderboardParams as CampaignListLeaderboardParams,
     type CampaignListParticipantsParams as CampaignListParticipantsParams,

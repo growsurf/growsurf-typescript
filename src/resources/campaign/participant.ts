@@ -103,28 +103,6 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Creates a participant-scoped token for GrowSurf mobile SDK participant
-   * endpoints. The program must have mobile SDK access enabled.
-   *
-   * @example
-   * ```ts
-   * const response =
-   *   await client.campaign.participant.createMobileToken(
-   *     'participantIdOrEmail',
-   *     { id: 'id' },
-   *   );
-   * ```
-   */
-  createMobileToken(
-    participantIDOrEmail: string,
-    params: ParticipantCreateMobileTokenParams,
-    options?: RequestOptions,
-  ): APIPromise<ParticipantCreateMobileTokenResponse> {
-    const { id } = params;
-    return this._client.post(path`/campaign/${id}/participant/${participantIDOrEmail}/mobile-token`, options);
-  }
-
-  /**
    * Retrieves a paged list of commissions earned by a participant.
    *
    * @example
@@ -306,6 +284,30 @@ export class ParticipantResource extends APIResource {
   }
 }
 
+export interface Create {
+  email: string;
+
+  fingerprint?: string;
+
+  firstName?: string;
+
+  ipAddress?: string;
+
+  lastName?: string;
+
+  /**
+   * Shallow custom metadata object.
+   */
+  metadata?: { [key: string]: unknown };
+
+  referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
+
+  /**
+   * Referrer participant ID or email address.
+   */
+  referredBy?: string;
+}
+
 export type FraudRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
 export interface Participant {
@@ -484,18 +486,6 @@ export interface ParticipantDeleteResponse {
   success: boolean;
 }
 
-export interface ParticipantCreateMobileTokenResponse {
-  /**
-   * Token lifetime in seconds.
-   */
-  expiresIn: number;
-
-  /**
-   * Participant-scoped bearer token for GrowSurf mobile SDK participant endpoints.
-   */
-  participantToken: string;
-}
-
 export interface ParticipantListRewardsResponse {
   limit: number;
 
@@ -631,13 +621,6 @@ export interface ParticipantAddParams {
    * Referrer participant ID or email address.
    */
   referredBy?: string;
-}
-
-export interface ParticipantCreateMobileTokenParams {
-  /**
-   * GrowSurf program ID.
-   */
-  id: string;
 }
 
 export interface ParticipantListCommissionsParams {
@@ -913,13 +896,13 @@ export interface ParticipantTriggerReferralParams {
 
 export declare namespace ParticipantResource {
   export {
+    type Create as Create,
     type FraudRiskLevel as FraudRiskLevel,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
-    type ParticipantCreateMobileTokenResponse as ParticipantCreateMobileTokenResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,
     type ParticipantRecordTransactionResponse as ParticipantRecordTransactionResponse,
     type ParticipantSendInvitesResponse as ParticipantSendInvitesResponse,
@@ -928,7 +911,6 @@ export declare namespace ParticipantResource {
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
     type ParticipantAddParams as ParticipantAddParams,
-    type ParticipantCreateMobileTokenParams as ParticipantCreateMobileTokenParams,
     type ParticipantListCommissionsParams as ParticipantListCommissionsParams,
     type ParticipantListPayoutsParams as ParticipantListPayoutsParams,
     type ParticipantListReferralsParams as ParticipantListReferralsParams,
