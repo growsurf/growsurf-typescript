@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.3.0 (2026-05-19)
+
+Full Changelog: [v0.2.0...v0.3.0](https://github.com/growsurf/growsurf-typescript/compare/v0.2.0...v0.3.0)
+
+### Features
+
+* **api:** manual updates ([5bf6894](https://github.com/growsurf/growsurf-typescript/commit/5bf6894b722a8b8063241f7f45ed23d981cdea52))
+
+
+### Bug Fixes
+
+* **typescript:** upgrade tsc-multi so that it works with Node 26 ([1baf6af](https://github.com/growsurf/growsurf-typescript/commit/1baf6af9e2d051176b389442015c6acafc6c18e2))
+
+
+### Chores
+
+* **tests:** remove redundant File import ([dd3791b](https://github.com/growsurf/growsurf-typescript/commit/dd3791bea2366dcc248776fa549bfb8b35b491e0))
+
 ## 0.2.0 (2026-05-15)
 
 Full Changelog: [v0.1.1...v0.2.0](https://github.com/growsurf/growsurf-typescript/compare/v0.1.1...v0.2.0)
