@@ -12,11 +12,10 @@ import {
 } from './commission';
 import * as ParticipantAPI from './participant';
 import {
+  Create,
   FraudRiskLevel,
   Participant,
   ParticipantAddParams,
-  ParticipantCreateMobileTokenParams,
-  ParticipantCreateMobileTokenResponse,
   ParticipantDeleteParams,
   ParticipantDeleteResponse,
   ParticipantListCommissionsParams,
@@ -78,6 +77,36 @@ export class CampaignResource extends APIResource {
    */
   list(options?: RequestOptions): APIPromise<CampaignListResponse> {
     return this._client.get('/campaigns', options);
+  }
+
+  /**
+   * Creates or returns a participant using the same input behavior as Add
+   * Participant, then returns a participant-scoped token for GrowSurf mobile SDK
+   * participant endpoints. Use this endpoint from your backend after your mobile app
+   * authenticates a signed-in user. The program must have mobile SDK access enabled.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.createMobileParticipantToken('id', {
+   *     email: 'gavin@hooli.com',
+   *     firstName: 'Gavin',
+   *     ipAddress: '203.0.113.10',
+   *     lastName: 'Belson',
+   *     metadata: {
+   *       companyName: 'Hooli',
+   *       industry: 'Software',
+   *     },
+   *     referredBy: 'richard-h8kp6l',
+   *   });
+   * ```
+   */
+  createMobileParticipantToken(
+    id: string,
+    body: CampaignCreateMobileParticipantTokenParams,
+    options?: RequestOptions,
+  ): APIPromise<CampaignCreateMobileParticipantTokenResponse> {
+    return this._client.post(path`/campaign/${id}/mobile-participant-token`, { body, ...options });
   }
 
   /**
@@ -434,6 +463,26 @@ export interface CampaignListResponse {
   campaigns: Array<Campaign>;
 }
 
+export interface CampaignCreateMobileParticipantTokenResponse {
+  /**
+   * Token lifetime in seconds.
+   */
+  expiresIn: number;
+
+  /**
+   * Whether this request created a new participant. Returns false when the
+   * participant already existed.
+   */
+  isNew: boolean;
+
+  participant: ParticipantAPI.Participant;
+
+  /**
+   * Participant-scoped bearer token for GrowSurf mobile SDK participant endpoints.
+   */
+  participantToken: string;
+}
+
 export interface CampaignRetrieveAnalyticsResponse {
   analytics: CampaignRetrieveAnalyticsResponse.Analytics;
 
@@ -510,6 +559,30 @@ export namespace CampaignRetrieveAnalyticsResponse {
 
     whatsAppShares?: number;
   }
+}
+
+export interface CampaignCreateMobileParticipantTokenParams {
+  email: string;
+
+  fingerprint?: string;
+
+  firstName?: string;
+
+  ipAddress?: string;
+
+  lastName?: string;
+
+  /**
+   * Shallow custom metadata object.
+   */
+  metadata?: { [key: string]: unknown };
+
+  referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
+
+  /**
+   * Referrer participant ID or email address.
+   */
+  referredBy?: string;
 }
 
 export interface CampaignListCommissionsParams {
@@ -672,7 +745,9 @@ export declare namespace CampaignResource {
     type ParticipantPayoutList as ParticipantPayoutList,
     type ReferralList as ReferralList,
     type CampaignListResponse as CampaignListResponse,
+    type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
+    type CampaignCreateMobileParticipantTokenParams as CampaignCreateMobileParticipantTokenParams,
     type CampaignListCommissionsParams as CampaignListCommissionsParams,
     type CampaignListLeaderboardParams as CampaignListLeaderboardParams,
     type CampaignListParticipantsParams as CampaignListParticipantsParams,
@@ -683,13 +758,13 @@ export declare namespace CampaignResource {
 
   export {
     ParticipantResource as ParticipantResource,
+    type Create as Create,
     type FraudRiskLevel as FraudRiskLevel,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
-    type ParticipantCreateMobileTokenResponse as ParticipantCreateMobileTokenResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,
     type ParticipantRecordTransactionResponse as ParticipantRecordTransactionResponse,
     type ParticipantSendInvitesResponse as ParticipantSendInvitesResponse,
@@ -698,7 +773,6 @@ export declare namespace CampaignResource {
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
     type ParticipantAddParams as ParticipantAddParams,
-    type ParticipantCreateMobileTokenParams as ParticipantCreateMobileTokenParams,
     type ParticipantListCommissionsParams as ParticipantListCommissionsParams,
     type ParticipantListPayoutsParams as ParticipantListPayoutsParams,
     type ParticipantListReferralsParams as ParticipantListReferralsParams,
