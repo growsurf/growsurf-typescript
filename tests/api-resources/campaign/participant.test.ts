@@ -71,7 +71,7 @@ describe('resource participant', () => {
 
   // Mock server tests are disabled
   test.skip('add: only required params', async () => {
-    const responsePromise = client.campaign.participant.add('id', { email: 'gavin@hooli.com' });
+    const responsePromise = client.campaign.participant.add('id', { email: 'dev@stainless.com' });
     const rawResponse = await responsePromise.asResponse();
     expect(rawResponse).toBeInstanceOf(Response);
     const response = await responsePromise;
@@ -84,35 +84,14 @@ describe('resource participant', () => {
   // Mock server tests are disabled
   test.skip('add: required and optional params', async () => {
     const response = await client.campaign.participant.add('id', {
-      email: 'gavin@hooli.com',
+      email: 'dev@stainless.com',
       fingerprint: 'fingerprint',
-      firstName: 'Gavin',
-      ipAddress: '203.0.113.10',
-      lastName: 'Belson',
-      metadata: { companyName: 'bar', industry: 'bar' },
+      firstName: 'firstName',
+      ipAddress: 'ipAddress',
+      lastName: 'lastName',
+      metadata: { foo: 'bar' },
       referralStatus: 'CREDIT_PENDING',
-      referredBy: 'richard-h8kp6l',
-    });
-  });
-
-  // Mock server tests are disabled
-  test.skip('createMobileToken: only required params', async () => {
-    const responsePromise = client.campaign.participant.createMobileToken('participantIdOrEmail', {
-      id: 'id',
-    });
-    const rawResponse = await responsePromise.asResponse();
-    expect(rawResponse).toBeInstanceOf(Response);
-    const response = await responsePromise;
-    expect(response).not.toBeInstanceOf(Response);
-    const dataAndResponse = await responsePromise.withResponse();
-    expect(dataAndResponse.data).toBe(response);
-    expect(dataAndResponse.response).toBe(rawResponse);
-  });
-
-  // Mock server tests are disabled
-  test.skip('createMobileToken: required and optional params', async () => {
-    const response = await client.campaign.participant.createMobileToken('participantIdOrEmail', {
-      id: 'id',
+      referredBy: 'referredBy',
     });
   });
 
