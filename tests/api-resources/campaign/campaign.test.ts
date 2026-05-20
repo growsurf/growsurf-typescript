@@ -55,6 +55,7 @@ describe('resource campaign', () => {
       ipAddress: 'ipAddress',
       lastName: 'lastName',
       metadata: { foo: 'bar' },
+      mobileInstanceId: 'mobileInstanceId',
       referralStatus: 'CREDIT_PENDING',
       referredBy: 'referredBy',
     });
