@@ -93,6 +93,8 @@ export class ParticipantResource extends APIResource {
    *       companyName: 'Hooli',
    *       industry: 'Software',
    *     },
+   *     mobileInstanceId:
+   *       '5f7d0f4c-3e7c-4aa9-8c41-d81d998f0bb1',
    *     referredBy: 'richard-h8kp6l',
    *   },
    * );
@@ -300,6 +302,12 @@ export interface Create {
    */
   metadata?: { [key: string]: unknown };
 
+  /**
+   * Optional app-install scoped identifier for native mobile anti-fraud. Recommended
+   * for mobile participant creation and mobile participant token flows.
+   */
+  mobileInstanceId?: string;
+
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
 
   /**
@@ -355,6 +363,12 @@ export interface Participant {
    * Shallow custom metadata object.
    */
   metadata?: { [key: string]: unknown };
+
+  /**
+   * App-install scoped mobile identifier used for anti-fraud matching when provided
+   * by native mobile apps. Not stored when strict GDPR/CCPA mode is enabled.
+   */
+  mobileInstanceId?: string | null;
 
   monthlyReferrals?: Array<string>;
 
@@ -614,6 +628,12 @@ export interface ParticipantAddParams {
    * Shallow custom metadata object.
    */
   metadata?: { [key: string]: unknown };
+
+  /**
+   * Optional app-install scoped identifier for native mobile anti-fraud. Recommended
+   * for mobile participant creation and mobile participant token flows.
+   */
+  mobileInstanceId?: string;
 
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
 

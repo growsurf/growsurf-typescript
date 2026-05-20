@@ -90,6 +90,7 @@ describe('resource participant', () => {
       ipAddress: 'ipAddress',
       lastName: 'lastName',
       metadata: { foo: 'bar' },
+      mobileInstanceId: 'mobileInstanceId',
       referralStatus: 'CREDIT_PENDING',
       referredBy: 'referredBy',
     });
