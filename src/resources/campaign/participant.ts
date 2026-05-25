@@ -304,7 +304,8 @@ export interface Create {
 
   /**
    * Optional app-install scoped identifier for native mobile anti-fraud. Recommended
-   * for mobile participant creation and mobile participant token flows.
+   * for mobile participant creation and mobile participant token flows. The official
+   * mobile SDKs generate this as a lowercase UUID.
    */
   mobileInstanceId?: string;
 
@@ -366,7 +367,8 @@ export interface Participant {
 
   /**
    * App-install scoped mobile identifier used for anti-fraud matching when provided
-   * by native mobile apps. Not stored when strict GDPR/CCPA mode is enabled.
+   * by native mobile apps. The official mobile SDKs generate this as a lowercase
+   * UUID. Not stored when strict GDPR/CCPA mode is enabled.
    */
   mobileInstanceId?: string | null;
 
@@ -631,7 +633,8 @@ export interface ParticipantAddParams {
 
   /**
    * Optional app-install scoped identifier for native mobile anti-fraud. Recommended
-   * for mobile participant creation and mobile participant token flows.
+   * for mobile participant creation and mobile participant token flows. The official
+   * mobile SDKs generate this as a lowercase UUID.
    */
   mobileInstanceId?: string;
 
