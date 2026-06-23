@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.0 (2026-06-23)
+
+Full Changelog: [v0.5.0...v0.6.0](https://github.com/growsurf/growsurf-typescript/compare/v0.5.0...v0.6.0)
+
+### Features
+
+* **api:** add payoutSettings to Participant ([e3cb43e](https://github.com/growsurf/growsurf-typescript/commit/e3cb43eb68faf40d653fd95bc7cbba5aafb3de26))
+* **api:** manual updates ([ae5f19c](https://github.com/growsurf/growsurf-typescript/commit/ae5f19ce9fe4434db3edb90eadda387e6c6f1634))
+
+
+### Bug Fixes
+
+* **client:** send content-type header for requests with an omitted optional body ([4b06006](https://github.com/growsurf/growsurf-typescript/commit/4b06006b4f33bdfa6ea8621f7a8dd755cee2c83a))
+
 ## 0.5.0 (2026-05-25)
 
 Full Changelog: [v0.4.0...v0.5.0](https://github.com/growsurf/growsurf-typescript/compare/v0.4.0...v0.5.0)
