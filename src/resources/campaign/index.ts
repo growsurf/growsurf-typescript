@@ -32,7 +32,6 @@ export {
   type FraudRiskLevel,
   type Participant,
   type ParticipantReward,
-  type PayoutSettingsRequiredAction,
   type ReferralSource,
   type ReferralStatus,
   type ParticipantDeleteResponse,
