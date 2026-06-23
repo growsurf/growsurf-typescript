@@ -376,6 +376,13 @@ export interface Participant {
 
   notes?: string | null;
 
+  /**
+   * Payout-related actions the participant must complete before a payout can be
+   * released (e.g. confirming a PayPal email or submitting a W-9/W-8 tax form).
+   * Always present; the requiredActions array is empty when no action is required.
+   */
+  payoutSettings?: Participant.PayoutSettings;
+
   paypalEmailAddress?: string;
 
   prevMonthlyRank?: number;
@@ -406,6 +413,15 @@ export interface Participant {
 }
 
 export namespace Participant {
+  /**
+   * Payout-related actions the participant must complete before a payout can be
+   * released (e.g. confirming a PayPal email or submitting a W-9/W-8 tax form).
+   * Always present; the requiredActions array is empty when no action is required.
+   */
+  export interface PayoutSettings {
+    requiredActions?: Array<ParticipantAPI.PayoutSettingsRequiredAction>;
+  }
+
   export interface Referrer {
     id?: string;
 
@@ -493,6 +509,8 @@ export interface ParticipantReward {
 
   unread?: boolean;
 }
+
+export type PayoutSettingsRequiredAction = 'PAYPAL_EMAIL' | 'TAX_INFO';
 
 export type ReferralSource = 'DIRECT' | 'PARTICIPANT';
 
@@ -923,6 +941,7 @@ export declare namespace ParticipantResource {
     type FraudRiskLevel as FraudRiskLevel,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
+    type PayoutSettingsRequiredAction as PayoutSettingsRequiredAction,
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
