@@ -339,7 +339,7 @@ export namespace ParticipantCommissionList {
   export interface Commission {
     id: string;
 
-    amount: number;
+    amount: number | null;
 
     createdAt: number;
 
@@ -349,7 +349,7 @@ export namespace ParticipantCommissionList {
 
     referrerId: string;
 
-    saleAmount: number;
+    saleAmount: number | null;
 
     status: 'PENDING' | 'APPROVED' | 'PAID' | 'REVERSED' | 'DELETED';
 
@@ -375,7 +375,7 @@ export namespace ParticipantCommissionList {
 
     reversedAt?: number;
 
-    saleAmountAmountInCampaignCurrency?: number | null;
+    saleAmountInCampaignCurrency?: number | null;
   }
 }
 
@@ -426,6 +426,8 @@ export namespace ParticipantPayoutList {
     issuedAt?: number;
 
     provider?: string | null;
+
+    queuedAt?: number | null;
   }
 }
 
