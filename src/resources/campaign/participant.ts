@@ -234,6 +234,41 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
+   * Records an amendment (refund, partial refund, refund cancellation, or
+   * chargeback) against a previously recorded transaction and reverses or adjusts
+   * the referrer's commission. The inverse of recording an affiliate transaction.
+   * Identify the original transaction with the same identifier(s) you sent when
+   * recording it. Commissions already paid out to the affiliate are not clawed back;
+   * the amendment is recorded for tax reporting only.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.refundTransaction(
+   *     'participantIdOrEmail',
+   *     {
+   *       id: 'id',
+   *       amendmentType: 'REFUND',
+   *       amountRefunded: 9900,
+   *       description: 'Customer refunded the Pro subscription',
+   *       invoiceId: 'invoice_54',
+   *     },
+   *   );
+   * ```
+   */
+  refundTransaction(
+    participantIDOrEmail: string,
+    params: ParticipantRefundTransactionParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantRefundTransactionResponse> {
+    const { id, ...body } = params;
+    return this._client.post(path`/campaign/${id}/participant/${participantIDOrEmail}/transaction/refund`, {
+      body,
+      ...options,
+    });
+  }
+
+  /**
    * Sends email invites on behalf of a participant to a list of email addresses.
    *
    * @example
@@ -265,7 +300,10 @@ export class ParticipantResource extends APIResource {
 
   /**
    * Triggers referral credit for an existing referred participant by GrowSurf
-   * participant ID or email address.
+   * participant ID or email address. Optionally pass `delayInDays` to hold the
+   * credit for a number of days before it is awarded (for example, to cover your own
+   * refund window). A delayed trigger can be cancelled before it is awarded with the
+   * Cancel delayed referral trigger request (DELETE on this same path).
    *
    * @example
    * ```ts
@@ -281,8 +319,36 @@ export class ParticipantResource extends APIResource {
     params: ParticipantTriggerReferralParams,
     options?: RequestOptions,
   ): APIPromise<ParticipantTriggerReferralResponse> {
+    const { id, ...body } = params;
+    return this._client.post(path`/campaign/${id}/participant/${participantIDOrEmail}/ref`, {
+      body,
+      ...options,
+    });
+  }
+
+  /**
+   * Cancels a pending delayed referral trigger for a participant (the companion to a
+   * delayed Trigger referral request). Use this to undo a scheduled referral credit
+   * before it is awarded, for example when a refund occurs inside your refund
+   * window. If the participant has no pending delayed trigger, `success` is returned
+   * as `false`.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.cancelDelayedReferral(
+   *     'participantIdOrEmail',
+   *     { id: 'id' },
+   *   );
+   * ```
+   */
+  cancelDelayedReferral(
+    participantIDOrEmail: string,
+    params: ParticipantCancelDelayedReferralParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantCancelDelayedReferralResponse> {
     const { id } = params;
-    return this._client.post(path`/campaign/${id}/participant/${participantIDOrEmail}/ref`, options);
+    return this._client.delete(path`/campaign/${id}/participant/${participantIDOrEmail}/ref`, options);
   }
 }
 
@@ -556,6 +622,42 @@ export namespace ParticipantRecordTransactionResponse {
   }
 }
 
+export interface ParticipantRefundTransactionResponse {
+  /**
+   * Number of commissions partially adjusted.
+   */
+  adjusted: number;
+
+  amendmentType: 'REFUND' | 'CHARGEBACK';
+
+  deleted: number;
+
+  /**
+   * Number of commissions found for the provided identifiers.
+   */
+  matched: number;
+
+  matchingCommissionIds: Array<string>;
+
+  message: string;
+
+  /**
+   * Number of commissions reversed (set to zero amount).
+   */
+  reversed: number;
+
+  /**
+   * true when the amendment was processed (including the tax-only case for
+   * already-paid commissions); false when no matching transaction was found.
+   */
+  success: boolean;
+
+  /**
+   * Present and true when no commission matched the provided identifiers.
+   */
+  notFound?: boolean;
+}
+
 export interface ParticipantSendInvitesResponse {
   invitesSent: number;
 
@@ -565,6 +667,12 @@ export interface ParticipantSendInvitesResponse {
 }
 
 export interface ParticipantTriggerReferralResponse {
+  success: boolean;
+
+  message?: string;
+}
+
+export interface ParticipantCancelDelayedReferralResponse {
   success: boolean;
 
   message?: string;
@@ -904,6 +1012,96 @@ export interface ParticipantRecordTransactionParams {
   transactionId?: string;
 }
 
+export interface ParticipantRefundTransactionParams {
+  /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Body param: REFUND covers full refunds, partial refunds, and refund
+   * cancellations; CHARGEBACK is always a full reversal.
+   */
+  amendmentType?: 'REFUND' | 'CHARGEBACK';
+
+  /**
+   * Body param: Original sale gross (minor units). Optional — the value stored when
+   * the transaction was recorded is used when available; only needed for partial
+   * refunds of older records.
+   */
+  amount?: number;
+
+  /**
+   * Body param: Cumulative amount refunded so far, in the currency's minor unit. Omit
+   * for a full refund. For a partial refund send the running total, not the
+   * per-refund delta.
+   */
+  amountRefunded?: number;
+
+  /**
+   * Body param
+   */
+  chargeId?: string;
+
+  /**
+   * Body param: 3-letter ISO currency. Optional — resolved from the original
+   * commission when available.
+   */
+  currency?: string;
+
+  /**
+   * Body param
+   */
+  description?: string;
+
+  /**
+   * Body param
+   */
+  externalId?: string;
+
+  /**
+   * Body param
+   */
+  invoiceId?: string;
+
+  /**
+   * Body param
+   */
+  orderId?: string;
+
+  /**
+   * Body param
+   */
+  paymentId?: string;
+
+  /**
+   * Body param
+   */
+  paymentIntentId?: string;
+
+  /**
+   * Body param: The per-refund delta (minor units). Optional bookkeeping field.
+   */
+  refundAmount?: number;
+
+  /**
+   * Body param: Stable per-refund identifier. Recommended for partial refunds so
+   * repeated calls stay idempotent.
+   */
+  refundId?: string;
+
+  /**
+   * Body param: Refund status. Send "canceled" with a lowered amountRefunded to
+   * restore a previously reduced commission.
+   */
+  refundStatus?: string;
+
+  /**
+   * Body param
+   */
+  transactionId?: string;
+}
+
 export interface ParticipantSendInvitesParams {
   /**
    * Path param: GrowSurf program ID.
@@ -928,6 +1126,22 @@ export interface ParticipantSendInvitesParams {
 
 export interface ParticipantTriggerReferralParams {
   /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Body param: Number of whole days to hold referral credit before it is awarded.
+   * Useful for honoring a refund window before crediting a referrer. Omit this field
+   * to award credit immediately. The credit is awarded automatically once the delay
+   * elapses, and can be cancelled before then with the Cancel delayed referral
+   * trigger request.
+   */
+  delayInDays?: number;
+}
+
+export interface ParticipantCancelDelayedReferralParams {
+  /**
    * GrowSurf program ID.
    */
   id: string;
@@ -944,8 +1158,10 @@ export declare namespace ParticipantResource {
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,
     type ParticipantRecordTransactionResponse as ParticipantRecordTransactionResponse,
+    type ParticipantRefundTransactionResponse as ParticipantRefundTransactionResponse,
     type ParticipantSendInvitesResponse as ParticipantSendInvitesResponse,
     type ParticipantTriggerReferralResponse as ParticipantTriggerReferralResponse,
+    type ParticipantCancelDelayedReferralResponse as ParticipantCancelDelayedReferralResponse,
     type ParticipantRetrieveParams as ParticipantRetrieveParams,
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
@@ -955,7 +1171,9 @@ export declare namespace ParticipantResource {
     type ParticipantListReferralsParams as ParticipantListReferralsParams,
     type ParticipantListRewardsParams as ParticipantListRewardsParams,
     type ParticipantRecordTransactionParams as ParticipantRecordTransactionParams,
+    type ParticipantRefundTransactionParams as ParticipantRefundTransactionParams,
     type ParticipantSendInvitesParams as ParticipantSendInvitesParams,
     type ParticipantTriggerReferralParams as ParticipantTriggerReferralParams,
+    type ParticipantCancelDelayedReferralParams as ParticipantCancelDelayedReferralParams,
   };
 }

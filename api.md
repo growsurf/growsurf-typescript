@@ -37,8 +37,10 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantDeleteResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantListRewardsResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRecordTransactionResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantRefundTransactionResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantSendInvitesResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantTriggerReferralResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantCancelDelayedReferralResponse</a></code>
 
 Methods:
 
@@ -51,8 +53,10 @@ Methods:
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/referrals">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listReferrals</a>(participantIDOrEmail, { ...params }) -> ReferralList</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/rewards">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listRewards</a>(participantIDOrEmail, { ...params }) -> ParticipantListRewardsResponse</code>
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}/transaction">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">recordTransaction</a>(participantIDOrEmail, { ...params }) -> ParticipantRecordTransactionResponse</code>
+- <code title="post /campaign/{id}/participant/{participantIdOrEmail}/transaction/refund">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">refundTransaction</a>(participantIDOrEmail, { ...params }) -> ParticipantRefundTransactionResponse</code>
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}/invites">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">sendInvites</a>(participantIDOrEmail, { ...params }) -> ParticipantSendInvitesResponse</code>
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}/ref">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">triggerReferral</a>(participantIDOrEmail, { ...params }) -> ParticipantTriggerReferralResponse</code>
+- <code title="delete /campaign/{id}/participant/{participantIdOrEmail}/ref">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">cancelDelayedReferral</a>(participantIDOrEmail, { ...params }) -> ParticipantCancelDelayedReferralResponse</code>
 
 ## Reward
 

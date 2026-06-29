@@ -37,8 +37,10 @@ export {
   type ParticipantDeleteResponse,
   type ParticipantListRewardsResponse,
   type ParticipantRecordTransactionResponse,
+  type ParticipantRefundTransactionResponse,
   type ParticipantSendInvitesResponse,
   type ParticipantTriggerReferralResponse,
+  type ParticipantCancelDelayedReferralResponse,
   type ParticipantRetrieveParams,
   type ParticipantUpdateParams,
   type ParticipantDeleteParams,
@@ -48,8 +50,10 @@ export {
   type ParticipantListReferralsParams,
   type ParticipantListRewardsParams,
   type ParticipantRecordTransactionParams,
+  type ParticipantRefundTransactionParams,
   type ParticipantSendInvitesParams,
   type ParticipantTriggerReferralParams,
+  type ParticipantCancelDelayedReferralParams,
 } from './participant';
 export {
   Reward,

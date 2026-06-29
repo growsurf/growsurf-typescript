@@ -236,6 +236,42 @@ describe('resource participant', () => {
   });
 
   // Mock server tests are disabled
+  test.skip('refundTransaction: only required params', async () => {
+    const responsePromise = client.campaign.participant.refundTransaction('participantIdOrEmail', {
+      id: 'id',
+    });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('refundTransaction: required and optional params', async () => {
+    const response = await client.campaign.participant.refundTransaction('participantIdOrEmail', {
+      id: 'id',
+      amendmentType: 'REFUND',
+      amount: 1,
+      amountRefunded: 9900,
+      chargeId: 'chargeId',
+      currency: 'xxx',
+      description: 'Customer refunded the Pro subscription',
+      externalId: 'externalId',
+      invoiceId: 'invoice_54',
+      orderId: 'orderId',
+      paymentId: 'paymentId',
+      paymentIntentId: 'paymentIntentId',
+      refundAmount: 0,
+      refundId: 'refundId',
+      refundStatus: 'refundStatus',
+      transactionId: 'transactionId',
+    });
+  });
+
+  // Mock server tests are disabled
   test.skip('sendInvites: only required params', async () => {
     const responsePromise = client.campaign.participant.sendInvites('participantIdOrEmail', {
       id: 'id',
@@ -276,6 +312,30 @@ describe('resource participant', () => {
 
   // Mock server tests are disabled
   test.skip('triggerReferral: required and optional params', async () => {
-    const response = await client.campaign.participant.triggerReferral('participantIdOrEmail', { id: 'id' });
+    const response = await client.campaign.participant.triggerReferral('participantIdOrEmail', {
+      id: 'id',
+      delayInDays: 14,
+    });
+  });
+
+  // Mock server tests are disabled
+  test.skip('cancelDelayedReferral: only required params', async () => {
+    const responsePromise = client.campaign.participant.cancelDelayedReferral('participantIdOrEmail', {
+      id: 'id',
+    });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('cancelDelayedReferral: required and optional params', async () => {
+    const response = await client.campaign.participant.cancelDelayedReferral('participantIdOrEmail', {
+      id: 'id',
+    });
   });
 });
