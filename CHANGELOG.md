@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0 (2026-06-29)
+
+Full Changelog: [v0.6.1...v0.7.0](https://github.com/growsurf/growsurf-typescript/compare/v0.6.1...v0.7.0)
+
+### Features
+
+* **api:** support delayed referral rewards and affiliate refunds ([f784085](https://github.com/growsurf/growsurf-typescript/commit/f784085f3bd03ed81fb4feaa6a9b1f1ec72727c3))
+
 ## 0.6.1 (2026-06-26)
 
 Full Changelog: [v0.6.0...v0.6.1](https://github.com/growsurf/growsurf-typescript/compare/v0.6.0...v0.6.1)
