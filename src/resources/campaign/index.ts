@@ -11,6 +11,8 @@ export {
   type CampaignListResponse,
   type CampaignCreateMobileParticipantTokenResponse,
   type CampaignRetrieveAnalyticsResponse,
+  type CampaignCreateParams,
+  type CampaignUpdateParams,
   type CampaignCreateMobileParticipantTokenParams,
   type CampaignListCommissionsParams,
   type CampaignListLeaderboardParams,
@@ -64,3 +66,10 @@ export {
   type RewardApproveParams,
   type RewardFulfillParams,
 } from './reward';
+export {
+  Rewards,
+  type CampaignRewardListResponse,
+  type DeleteRewardResponse,
+  type RewardCreateParams,
+  type RewardUpdateParams,
+} from './rewards';

@@ -33,6 +33,73 @@ describe('resource campaign', () => {
   });
 
   // Mock server tests are disabled
+  test.skip('create: only required params', async () => {
+    const responsePromise = client.campaign.create({ type: 'REFERRAL' });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('create: required and optional params', async () => {
+    const response = await client.campaign.create({
+      type: 'REFERRAL',
+      companyLogoImageUrl: 'companyLogoImageUrl',
+      companyName: 'companyName',
+      currencyISO: 'currencyISO',
+      goal: 'goal',
+      name: 'name',
+      options: { foo: 'bar' },
+      rewards: [{ type: 'SINGLE_SIDED' }],
+    });
+  });
+
+  // Mock server tests are disabled
+  test.skip('update: only required params', async () => {
+    const responsePromise = client.campaign.update('id', {});
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('update: required and optional params', async () => {
+    const response = await client.campaign.update('id', {
+      companyLogoImageUrl: 'companyLogoImageUrl',
+      companyName: 'companyName',
+      currencyISO: 'currencyISO',
+      design: { foo: 'bar' },
+      emails: { foo: 'bar' },
+      goal: 'goal',
+      installation: { foo: 'bar' },
+      name: 'name',
+      notifications: { foo: 'bar' },
+      options: { foo: 'bar' },
+      status: 'DRAFT',
+    });
+  });
+
+  // Mock server tests are disabled
+  test.skip('clone', async () => {
+    const responsePromise = client.campaign.clone('id');
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
   test.skip('createMobileParticipantToken: only required params', async () => {
     const responsePromise = client.campaign.createMobileParticipantToken('id', {
       email: 'dev@stainless.com',

@@ -50,6 +50,14 @@ import {
   RewardFulfillParams,
   RewardFulfillResponse,
 } from './reward';
+import * as RewardsAPI from './rewards';
+import {
+  CampaignRewardListResponse,
+  DeleteRewardResponse,
+  RewardCreateParams,
+  RewardUpdateParams,
+  Rewards as RewardsAPIRewards,
+} from './rewards';
 import { APIPromise } from '../../core/api-promise';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
@@ -58,6 +66,7 @@ export class CampaignResource extends APIResource {
   participant: ParticipantAPI.ParticipantResource = new ParticipantAPI.ParticipantResource(this._client);
   reward: RewardAPI.Reward = new RewardAPI.Reward(this._client);
   commission: CommissionAPI.Commission = new CommissionAPI.Commission(this._client);
+  rewards: RewardsAPI.Rewards = new RewardsAPI.Rewards(this._client);
 
   /**
    * Retrieves a program for the given program ID.
@@ -81,6 +90,51 @@ export class CampaignResource extends APIResource {
    */
   list(options?: RequestOptions): APIPromise<CampaignListResponse> {
     return this._client.get('/campaigns', options);
+  }
+
+  /**
+   * Creates a new program pre-populated with type-appropriate defaults, plus any
+   * optional inline rewards. The new program is created in `DRAFT` status and owned
+   * by the API key's account. Requires a verified account email and a paid plan
+   * (referral) or a payment source on file (affiliate); subject to your plan's
+   * program limit.
+   *
+   * @example
+   * ```ts
+   * const campaign = await client.campaign.create({
+   *   type: 'REFERRAL',
+   * });
+   * ```
+   */
+  create(body: CampaignCreateParams, options?: RequestOptions): APIPromise<Campaign> {
+    return this._client.post('/campaigns', { body, ...options });
+  }
+
+  /**
+   * Updates a program's configuration and/or status. Only the fields you send are
+   * changed. `type` and `urlId` are immutable. Status changes are validated against
+   * the allowed transitions; the program cannot be deleted via this endpoint.
+   *
+   * @example
+   * ```ts
+   * const campaign = await client.campaign.update('id', {});
+   * ```
+   */
+  update(id: string, body: CampaignUpdateParams, options?: RequestOptions): APIPromise<Campaign> {
+    return this._client.patch(path`/campaign/${id}`, { body, ...options });
+  }
+
+  /**
+   * Clones an existing program into a new `DRAFT` program. Integrations and
+   * credentials are not copied; active rewards are cloned.
+   *
+   * @example
+   * ```ts
+   * const campaign = await client.campaign.clone('id');
+   * ```
+   */
+  clone(id: string, options?: RequestOptions): APIPromise<Campaign> {
+    return this._client.post(path`/campaign/${id}/clone`, options);
   }
 
   /**
@@ -569,6 +623,66 @@ export namespace CampaignRetrieveAnalyticsResponse {
   }
 }
 
+export interface CampaignCreateParams {
+  /**
+   * The program type. Immutable after creation.
+   */
+  type: 'REFERRAL' | 'AFFILIATE';
+
+  companyLogoImageUrl?: string;
+
+  companyName?: string;
+
+  /**
+   * ISO 4217 currency code. Defaults to USD.
+   */
+  currencyISO?: string;
+
+  goal?: string;
+
+  /**
+   * The program name. Defaults to "Untitled Program".
+   */
+  name?: string;
+
+  /**
+   * A curated subset of program options to shallow-merge onto the defaults.
+   */
+  options?: { [key: string]: unknown };
+
+  /**
+   * Optional inline rewards to create with the program.
+   */
+  rewards?: Array<RewardsAPI.RewardCreateParams>;
+}
+
+export interface CampaignUpdateParams {
+  companyLogoImageUrl?: string;
+
+  companyName?: string;
+
+  currencyISO?: string;
+
+  design?: { [key: string]: unknown };
+
+  emails?: { [key: string]: unknown };
+
+  goal?: string;
+
+  installation?: { [key: string]: unknown };
+
+  name?: string;
+
+  notifications?: { [key: string]: unknown };
+
+  options?: { [key: string]: unknown };
+
+  /**
+   * The program status. Transitions are validated; DELETED is not allowed.
+   */
+  status?: 'DRAFT' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETE' | 'CANCELLED';
+}
+
 export interface CampaignCreateMobileParticipantTokenParams {
   email: string;
 
@@ -750,6 +864,7 @@ export interface CampaignRetrieveAnalyticsParams {
 CampaignResource.ParticipantResource = ParticipantResource;
 CampaignResource.Reward = RewardAPIReward;
 CampaignResource.Commission = CommissionAPICommission;
+CampaignResource.Rewards = RewardsAPIRewards;
 
 export declare namespace CampaignResource {
   export {
@@ -762,6 +877,8 @@ export declare namespace CampaignResource {
     type CampaignListResponse as CampaignListResponse,
     type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
+    type CampaignCreateParams as CampaignCreateParams,
+    type CampaignUpdateParams as CampaignUpdateParams,
     type CampaignCreateMobileParticipantTokenParams as CampaignCreateMobileParticipantTokenParams,
     type CampaignListCommissionsParams as CampaignListCommissionsParams,
     type CampaignListLeaderboardParams as CampaignListLeaderboardParams,
@@ -817,5 +934,13 @@ export declare namespace CampaignResource {
     type CommissionApproveResponse as CommissionApproveResponse,
     type CommissionDeleteParams as CommissionDeleteParams,
     type CommissionApproveParams as CommissionApproveParams,
+  };
+
+  export {
+    RewardsAPIRewards as Rewards,
+    type CampaignRewardListResponse as CampaignRewardListResponse,
+    type DeleteRewardResponse as DeleteRewardResponse,
+    type RewardCreateParams as RewardCreateParams,
+    type RewardUpdateParams as RewardUpdateParams,
   };
 }

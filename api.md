@@ -16,6 +16,9 @@ Methods:
 
 - <code title="get /campaign/{id}">client.campaign.<a href="./src/resources/campaign/campaign.ts">retrieve</a>(id) -> Campaign</code>
 - <code title="get /campaigns">client.campaign.<a href="./src/resources/campaign/campaign.ts">list</a>() -> CampaignListResponse</code>
+- <code title="post /campaigns">client.campaign.<a href="./src/resources/campaign/campaign.ts">create</a>({ ...params }) -> Campaign</code>
+- <code title="patch /campaign/{id}">client.campaign.<a href="./src/resources/campaign/campaign.ts">update</a>(id, { ...params }) -> Campaign</code>
+- <code title="post /campaign/{id}/clone">client.campaign.<a href="./src/resources/campaign/campaign.ts">clone</a>(id) -> Campaign</code>
 - <code title="post /campaign/{id}/mobile-participant-token">client.campaign.<a href="./src/resources/campaign/campaign.ts">createMobileParticipantToken</a>(id, { ...params }) -> CampaignCreateMobileParticipantTokenResponse</code>
 - <code title="get /campaign/{id}/commissions">client.campaign.<a href="./src/resources/campaign/campaign.ts">listCommissions</a>(id, { ...params }) -> ParticipantCommissionList</code>
 - <code title="get /campaign/{id}/leaderboard">client.campaign.<a href="./src/resources/campaign/campaign.ts">listLeaderboard</a>(id, { ...params }) -> ParticipantList</code>
@@ -83,3 +86,18 @@ Methods:
 
 - <code title="delete /campaign/{id}/commission/{commissionId}">client.campaign.commission.<a href="./src/resources/campaign/commission.ts">delete</a>(commissionID, { ...params }) -> CommissionDeleteResponse</code>
 - <code title="post /campaign/{id}/commission/{commissionId}/approve">client.campaign.commission.<a href="./src/resources/campaign/commission.ts">approve</a>(commissionID, { ...params }) -> CommissionApproveResponse</code>
+
+## Rewards
+
+Types:
+
+- <code><a href="./src/resources/campaign/rewards.ts">Reward</a></code>
+- <code><a href="./src/resources/campaign/rewards.ts">CampaignRewardListResponse</a></code>
+- <code><a href="./src/resources/campaign/rewards.ts">DeleteRewardResponse</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/rewards">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">list</a>(id) -> CampaignRewardListResponse</code>
+- <code title="post /campaign/{id}/rewards">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">create</a>(id, { ...params }) -> Reward</code>
+- <code title="patch /campaign/{id}/rewards/{rewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">update</a>(rewardID, { ...params }) -> Reward</code>
+- <code title="delete /campaign/{id}/rewards/{rewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">delete</a>(rewardID, { ...params }) -> DeleteRewardResponse</code>
