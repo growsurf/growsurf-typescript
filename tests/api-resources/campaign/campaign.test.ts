@@ -51,9 +51,7 @@ describe('resource campaign', () => {
       companyLogoImageUrl: 'companyLogoImageUrl',
       companyName: 'companyName',
       currencyISO: 'currencyISO',
-      goal: 'goal',
       name: 'name',
-      options: { foo: 'bar' },
       rewards: [{ type: 'SINGLE_SIDED' }],
     });
   });
@@ -75,14 +73,7 @@ describe('resource campaign', () => {
     const response = await client.campaign.update('id', {
       companyLogoImageUrl: 'companyLogoImageUrl',
       companyName: 'companyName',
-      currencyISO: 'currencyISO',
-      design: { foo: 'bar' },
-      emails: { foo: 'bar' },
-      goal: 'goal',
-      installation: { foo: 'bar' },
       name: 'name',
-      notifications: { foo: 'bar' },
-      options: { foo: 'bar' },
       status: 'DRAFT',
     });
   });

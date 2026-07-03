@@ -74,13 +74,15 @@ describe('resource rewards', () => {
       referralCouponCode: 'referralCouponCode',
       referralDescription: 'referralDescription',
       referredRewardUpfront: true,
+      referredValue: { fairMarketValueUSD: 0, isTaxReportable: true },
       title: 'title',
+      value: { fairMarketValueUSD: 0, isTaxReportable: true },
     });
   });
 
   // Mock server tests are disabled
   test.skip('update: only required params', async () => {
-    const responsePromise = client.campaign.rewards.update('rewardId', { id: 'id' });
+    const responsePromise = client.campaign.rewards.update('campaignRewardId', { id: 'id' });
     const rawResponse = await responsePromise.asResponse();
     expect(rawResponse).toBeInstanceOf(Response);
     const response = await responsePromise;
@@ -92,7 +94,7 @@ describe('resource rewards', () => {
 
   // Mock server tests are disabled
   test.skip('update: required and optional params', async () => {
-    const response = await client.campaign.rewards.update('rewardId', {
+    const response = await client.campaign.rewards.update('campaignRewardId', {
       id: 'id',
       commissionStructure: {
         amount: 0,
@@ -132,13 +134,15 @@ describe('resource rewards', () => {
       referralCouponCode: 'referralCouponCode',
       referralDescription: 'referralDescription',
       referredRewardUpfront: true,
+      referredValue: { fairMarketValueUSD: 0, isTaxReportable: true },
       title: 'title',
+      value: { fairMarketValueUSD: 0, isTaxReportable: true },
     });
   });
 
   // Mock server tests are disabled
   test.skip('delete: only required params', async () => {
-    const responsePromise = client.campaign.rewards.delete('rewardId', { id: 'id' });
+    const responsePromise = client.campaign.rewards.delete('campaignRewardId', { id: 'id' });
     const rawResponse = await responsePromise.asResponse();
     expect(rawResponse).toBeInstanceOf(Response);
     const response = await responsePromise;
@@ -150,6 +154,6 @@ describe('resource rewards', () => {
 
   // Mock server tests are disabled
   test.skip('delete: required and optional params', async () => {
-    const response = await client.campaign.rewards.delete('rewardId', { id: 'id' });
+    const response = await client.campaign.rewards.delete('campaignRewardId', { id: 'id' });
   });
 });

@@ -68,8 +68,13 @@ export {
 } from './reward';
 export {
   Rewards,
+  type RewardTaxValuation,
   type CampaignRewardListResponse,
   type DeleteRewardResponse,
   type RewardCreateParams,
   type RewardUpdateParams,
 } from './rewards';
+export { Design, type CampaignDesign, type DesignUpdateParams } from './design';
+export { Emails, type CampaignEmails, type EmailUpdateParams } from './emails';
+export { Options, type CampaignOptions, type OptionUpdateParams } from './options';
+export { Installation, type CampaignInstallation, type InstallationUpdateParams } from './installation';

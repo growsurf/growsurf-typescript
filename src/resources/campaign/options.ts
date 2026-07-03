@@ -1,0 +1,61 @@
+// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
+
+import { APIResource } from '../../core/resource';
+import { APIPromise } from '../../core/api-promise';
+import { RequestOptions } from '../../internal/request-options';
+import { path } from '../../internal/utils/path';
+
+/**
+ * Campaign options (`CampaignOptions`) configuration operations — the dashboard
+ * Program Editor's **Options** tab.
+ */
+export class Options extends APIResource {
+  /**
+   * Retrieves a program's options — the same surface as the dashboard Program
+   * Editor's **Options** tab. Includes reward/fraud approval, anti-fraud lists +
+   * toggles, referral cookie/credit windows, reCAPTCHA, payout threshold + tax
+   * settings (affiliate only), and notification-email settings.
+   * `fraud.recaptcha.secretKey` is never returned.
+   *
+   * @example
+   * ```ts
+   * const option = await client.campaign.options.retrieve('id');
+   * ```
+   */
+  retrieve(id: string, options?: RequestOptions): APIPromise<CampaignOptions> {
+    return this._client.get(path`/campaign/${id}/options`, options);
+  }
+
+  /**
+   * Updates a program's options. Only the fields you send are changed. Some fields
+   * are program-type specific (`requireManualRewardApproval`/`autoFulfillRewards` are
+   * referral-only; `payoutThreshold`/`taxDocumentation` are affiliate-only).
+   * `fraud.recaptcha.secretKey` is write-only.
+   *
+   * @example
+   * ```ts
+   * const option = await client.campaign.options.update('id', {});
+   * ```
+   */
+  update(id: string, body: OptionUpdateParams, options?: RequestOptions): APIPromise<CampaignOptions> {
+    return this._client.patch(path`/campaign/${id}/options`, { body, ...options });
+  }
+}
+
+/**
+ * A program's options (dashboard Program Editor **Options** tab): approval, anti-
+ * fraud, referral windows, reCAPTCHA, payout/tax, and notification-email settings.
+ * The set of keys is intentionally left open; see the API reference for the full
+ * field list.
+ */
+export type CampaignOptions = { [key: string]: unknown };
+
+/**
+ * A partial `CampaignOptions` — only the fields you send are changed. The set of
+ * keys is intentionally left open; see the API reference for the full field list.
+ */
+export type OptionUpdateParams = { [key: string]: unknown };
+
+export declare namespace Options {
+  export { type CampaignOptions as CampaignOptions, type OptionUpdateParams as OptionUpdateParams };
+}

@@ -92,12 +92,57 @@ Methods:
 Types:
 
 - <code><a href="./src/resources/campaign/rewards.ts">Reward</a></code>
+- <code><a href="./src/resources/campaign/rewards.ts">RewardTaxValuation</a></code>
 - <code><a href="./src/resources/campaign/rewards.ts">CampaignRewardListResponse</a></code>
 - <code><a href="./src/resources/campaign/rewards.ts">DeleteRewardResponse</a></code>
 
 Methods:
 
-- <code title="get /campaign/{id}/rewards">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">list</a>(id) -> CampaignRewardListResponse</code>
-- <code title="post /campaign/{id}/rewards">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">create</a>(id, { ...params }) -> Reward</code>
-- <code title="patch /campaign/{id}/rewards/{rewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">update</a>(rewardID, { ...params }) -> Reward</code>
-- <code title="delete /campaign/{id}/rewards/{rewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">delete</a>(rewardID, { ...params }) -> DeleteRewardResponse</code>
+- <code title="get /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">list</a>(id) -> CampaignRewardListResponse</code>
+- <code title="post /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">create</a>(id, { ...params }) -> Reward</code>
+- <code title="patch /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">update</a>(campaignRewardID, { ...params }) -> Reward</code>
+- <code title="delete /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">delete</a>(campaignRewardID, { ...params }) -> DeleteRewardResponse</code>
+
+## Design
+
+Types:
+
+- <code><a href="./src/resources/campaign/design.ts">CampaignDesign</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/design">client.campaign.design.<a href="./src/resources/campaign/design.ts">retrieve</a>(id) -> CampaignDesign</code>
+- <code title="patch /campaign/{id}/design">client.campaign.design.<a href="./src/resources/campaign/design.ts">update</a>(id, { ...params }) -> CampaignDesign</code>
+
+## Emails
+
+Types:
+
+- <code><a href="./src/resources/campaign/emails.ts">CampaignEmails</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/emails">client.campaign.emails.<a href="./src/resources/campaign/emails.ts">retrieve</a>(id) -> CampaignEmails</code>
+- <code title="patch /campaign/{id}/emails">client.campaign.emails.<a href="./src/resources/campaign/emails.ts">update</a>(id, { ...params }) -> CampaignEmails</code>
+
+## Options
+
+Types:
+
+- <code><a href="./src/resources/campaign/options.ts">CampaignOptions</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/options">client.campaign.options.<a href="./src/resources/campaign/options.ts">retrieve</a>(id) -> CampaignOptions</code>
+- <code title="patch /campaign/{id}/options">client.campaign.options.<a href="./src/resources/campaign/options.ts">update</a>(id, { ...params }) -> CampaignOptions</code>
+
+## Installation
+
+Types:
+
+- <code><a href="./src/resources/campaign/installation.ts">CampaignInstallation</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/installation">client.campaign.installation.<a href="./src/resources/campaign/installation.ts">retrieve</a>(id) -> CampaignInstallation</code>
+- <code title="patch /campaign/{id}/installation">client.campaign.installation.<a href="./src/resources/campaign/installation.ts">update</a>(id, { ...params }) -> CampaignInstallation</code>

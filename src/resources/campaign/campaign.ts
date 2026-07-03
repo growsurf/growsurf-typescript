@@ -3,6 +3,18 @@
 import { APIResource } from '../../core/resource';
 import * as CampaignAPI from './campaign';
 import * as CommissionAPI from './commission';
+import * as DesignAPI from './design';
+import { CampaignDesign, Design as DesignAPIDesign, DesignUpdateParams } from './design';
+import * as EmailsAPI from './emails';
+import { CampaignEmails, EmailUpdateParams, Emails as EmailsAPIEmails } from './emails';
+import * as InstallationAPI from './installation';
+import {
+  CampaignInstallation,
+  InstallationUpdateParams,
+  Installation as InstallationAPIInstallation,
+} from './installation';
+import * as OptionsAPI from './options';
+import { CampaignOptions, OptionUpdateParams, Options as OptionsAPIOptions } from './options';
 import {
   Commission as CommissionAPICommission,
   CommissionApproveParams,
@@ -55,6 +67,7 @@ import {
   CampaignRewardListResponse,
   DeleteRewardResponse,
   RewardCreateParams,
+  RewardTaxValuation,
   RewardUpdateParams,
   Rewards as RewardsAPIRewards,
 } from './rewards';
@@ -67,6 +80,10 @@ export class CampaignResource extends APIResource {
   reward: RewardAPI.Reward = new RewardAPI.Reward(this._client);
   commission: CommissionAPI.Commission = new CommissionAPI.Commission(this._client);
   rewards: RewardsAPI.Rewards = new RewardsAPI.Rewards(this._client);
+  design: DesignAPI.Design = new DesignAPI.Design(this._client);
+  emails: EmailsAPI.Emails = new EmailsAPI.Emails(this._client);
+  options: OptionsAPI.Options = new OptionsAPI.Options(this._client);
+  installation: InstallationAPI.Installation = new InstallationAPI.Installation(this._client);
 
   /**
    * Retrieves a program for the given program ID.
@@ -112,7 +129,7 @@ export class CampaignResource extends APIResource {
 
   /**
    * Updates a program's configuration and/or status. Only the fields you send are
-   * changed. `type` and `urlId` are immutable. Status changes are validated against
+   * changed. `type`, `urlId`, and `currencyISO` are immutable. Status changes are validated against
    * the allowed transitions; the program cannot be deleted via this endpoint.
    *
    * @example
@@ -337,9 +354,26 @@ export namespace Campaign {
 
     order?: number | null;
 
+    /**
+     * The coupon code delivered to the referred friend (double-sided rewards).
+     */
+    referralCouponCode?: string | null;
+
     referralDescription?: string | null;
 
     referredRewardUpfront?: boolean;
+
+    /**
+     * Tax valuation for the referred friend's side of a double-sided reward. Defaults
+     * to not tax-reportable (a purchase rebate).
+     */
+    referredValue?: RewardsAPI.RewardTaxValuation | null;
+
+    /**
+     * Tax valuation for the reward (the referrer's side of a double-sided reward).
+     * Used by tax documentation / 1099 reporting.
+     */
+    value?: RewardsAPI.RewardTaxValuation | null;
   }
 }
 
@@ -634,21 +668,15 @@ export interface CampaignCreateParams {
   companyName?: string;
 
   /**
-   * ISO 4217 currency code. Defaults to USD.
+   * ISO 4217 currency code. Defaults to USD. Chosen when the program is created and
+   * immutable afterward — it cannot be changed on update.
    */
   currencyISO?: string;
-
-  goal?: string;
 
   /**
    * The program name. Defaults to "Untitled Program".
    */
   name?: string;
-
-  /**
-   * A curated subset of program options to shallow-merge onto the defaults.
-   */
-  options?: { [key: string]: unknown };
 
   /**
    * Optional inline rewards to create with the program.
@@ -661,21 +689,7 @@ export interface CampaignUpdateParams {
 
   companyName?: string;
 
-  currencyISO?: string;
-
-  design?: { [key: string]: unknown };
-
-  emails?: { [key: string]: unknown };
-
-  goal?: string;
-
-  installation?: { [key: string]: unknown };
-
   name?: string;
-
-  notifications?: { [key: string]: unknown };
-
-  options?: { [key: string]: unknown };
 
   /**
    * The program status. Transitions are validated; DELETED is not allowed.
@@ -865,6 +879,10 @@ CampaignResource.ParticipantResource = ParticipantResource;
 CampaignResource.Reward = RewardAPIReward;
 CampaignResource.Commission = CommissionAPICommission;
 CampaignResource.Rewards = RewardsAPIRewards;
+CampaignResource.Design = DesignAPIDesign;
+CampaignResource.Emails = EmailsAPIEmails;
+CampaignResource.Options = OptionsAPIOptions;
+CampaignResource.Installation = InstallationAPIInstallation;
 
 export declare namespace CampaignResource {
   export {
@@ -938,9 +956,34 @@ export declare namespace CampaignResource {
 
   export {
     RewardsAPIRewards as Rewards,
+    type RewardTaxValuation as RewardTaxValuation,
     type CampaignRewardListResponse as CampaignRewardListResponse,
     type DeleteRewardResponse as DeleteRewardResponse,
     type RewardCreateParams as RewardCreateParams,
     type RewardUpdateParams as RewardUpdateParams,
+  };
+
+  export {
+    DesignAPIDesign as Design,
+    type CampaignDesign as CampaignDesign,
+    type DesignUpdateParams as DesignUpdateParams,
+  };
+
+  export {
+    EmailsAPIEmails as Emails,
+    type CampaignEmails as CampaignEmails,
+    type EmailUpdateParams as EmailUpdateParams,
+  };
+
+  export {
+    OptionsAPIOptions as Options,
+    type CampaignOptions as CampaignOptions,
+    type OptionUpdateParams as OptionUpdateParams,
+  };
+
+  export {
+    InstallationAPIInstallation as Installation,
+    type CampaignInstallation as CampaignInstallation,
+    type InstallationUpdateParams as InstallationUpdateParams,
   };
 }

@@ -7,7 +7,7 @@ import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
 
 /**
- * Program reward (`CampaignReward`) configuration operations.
+ * Campaign reward (`CampaignReward`) configuration operations.
  */
 export class Rewards extends APIResource {
   /**
@@ -21,11 +21,11 @@ export class Rewards extends APIResource {
    * ```
    */
   list(id: string, options?: RequestOptions): APIPromise<CampaignRewardListResponse> {
-    return this._client.get(path`/campaign/${id}/rewards`, options);
+    return this._client.get(path`/campaign/${id}/reward-configs`, options);
   }
 
   /**
-   * Creates a new program reward (`CampaignReward`) with a server-generated ID. The
+   * Creates a new campaign reward (`CampaignReward`) with a server-generated ID. The
    * reward type must be compatible with the program type (affiliate programs support
    * only `AFFILIATE` rewards; referral programs support all other types). Enabling an
    * active reward of a type automatically enables that reward type on the program.
@@ -38,49 +38,49 @@ export class Rewards extends APIResource {
    * ```
    */
   create(id: string, body: RewardCreateParams, options?: RequestOptions): APIPromise<Reward> {
-    return this._client.post(path`/campaign/${id}/rewards`, { body, ...options });
+    return this._client.post(path`/campaign/${id}/reward-configs`, { body, ...options });
   }
 
   /**
-   * Updates an existing program reward (`CampaignReward`). The reward `type` is
+   * Updates an existing campaign reward (`CampaignReward`). The reward `type` is
    * immutable and cannot be changed.
    *
    * @example
    * ```ts
-   * const reward = await client.campaign.rewards.update('rewardId', {
+   * const reward = await client.campaign.rewards.update('campaignRewardId', {
    *   id: 'id',
    * });
    * ```
    */
-  update(rewardID: string, params: RewardUpdateParams, options?: RequestOptions): APIPromise<Reward> {
+  update(campaignRewardID: string, params: RewardUpdateParams, options?: RequestOptions): APIPromise<Reward> {
     const { id, ...body } = params;
-    return this._client.patch(path`/campaign/${id}/rewards/${rewardID}`, { body, ...options });
+    return this._client.patch(path`/campaign/${id}/reward-configs/${campaignRewardID}`, { body, ...options });
   }
 
   /**
-   * Deletes a program reward (`CampaignReward`). The reward is deactivated, removed
+   * Deletes a campaign reward (`CampaignReward`). The reward is deactivated, removed
    * from the program's reward set, and any connected upfront-discount coupons are
    * cleaned up.
    *
    * @example
    * ```ts
-   * const reward = await client.campaign.rewards.delete('rewardId', {
+   * const reward = await client.campaign.rewards.delete('campaignRewardId', {
    *   id: 'id',
    * });
    * ```
    */
   delete(
-    rewardID: string,
+    campaignRewardID: string,
     params: RewardDeleteParams,
     options?: RequestOptions,
   ): APIPromise<DeleteRewardResponse> {
     const { id } = params;
-    return this._client.delete(path`/campaign/${id}/rewards/${rewardID}`, options);
+    return this._client.delete(path`/campaign/${id}/reward-configs/${campaignRewardID}`, options);
   }
 }
 
 /**
- * A single program reward (also known as a `CampaignReward`). This is different from
+ * A single campaign reward (also known as a `CampaignReward`). This is different from
  * a `ParticipantReward`, which is a reward earned by a participant.
  */
 export interface Reward {
@@ -120,9 +120,44 @@ export interface Reward {
 
   order?: number | null;
 
+  /**
+   * The coupon code delivered to the referred friend (double-sided rewards).
+   */
+  referralCouponCode?: string | null;
+
   referralDescription?: string | null;
 
   referredRewardUpfront?: boolean;
+
+  /**
+   * Tax valuation for the referred friend's side of a double-sided reward. Defaults
+   * to not tax-reportable (a purchase rebate).
+   */
+  referredValue?: RewardTaxValuation | null;
+
+  /**
+   * Tax valuation for the reward (the referrer's side of a double-sided reward).
+   * Used by tax documentation / 1099 reporting.
+   */
+  value?: RewardTaxValuation | null;
+}
+
+/**
+ * Tax valuation settings for a reward. Only relevant when the program collects tax
+ * documentation.
+ */
+export interface RewardTaxValuation {
+  /**
+   * Manual fair-market value in USD (major units) used as the fallback when the
+   * reward value cannot be resolved automatically. `null` = no manual value.
+   */
+  fairMarketValueUSD?: number | null;
+
+  /**
+   * Whether the reward's value counts toward 1099 thresholds/totals. `null` = use
+   * the smart default for the reward's source.
+   */
+  isTaxReportable?: boolean | null;
 }
 
 export interface CampaignRewardListResponse {
@@ -228,9 +263,21 @@ export interface RewardCreateParams {
   referredRewardUpfront?: boolean;
 
   /**
+   * Tax valuation for the referred friend's side of a double-sided reward. Defaults
+   * to not tax-reportable (a purchase rebate).
+   */
+  referredValue?: RewardTaxValuation | null;
+
+  /**
    * The reward title (internal label).
    */
   title?: string;
+
+  /**
+   * Tax valuation for the reward (the referrer's side of a double-sided reward).
+   * Used by tax documentation / 1099 reporting.
+   */
+  value?: RewardTaxValuation | null;
 }
 
 export interface RewardUpdateParams {
@@ -334,9 +381,21 @@ export interface RewardUpdateParams {
   referredRewardUpfront?: boolean;
 
   /**
+   * Body param: Tax valuation for the referred friend's side of a double-sided
+   * reward. Defaults to not tax-reportable (a purchase rebate).
+   */
+  referredValue?: RewardTaxValuation | null;
+
+  /**
    * Body param: The reward title (internal label).
    */
   title?: string;
+
+  /**
+   * Body param: Tax valuation for the reward (the referrer's side of a double-sided
+   * reward). Used by tax documentation / 1099 reporting.
+   */
+  value?: RewardTaxValuation | null;
 }
 
 export interface RewardDeleteParams {
@@ -349,6 +408,7 @@ export interface RewardDeleteParams {
 export declare namespace Rewards {
   export {
     type Reward as Reward,
+    type RewardTaxValuation as RewardTaxValuation,
     type CampaignRewardListResponse as CampaignRewardListResponse,
     type DeleteRewardResponse as DeleteRewardResponse,
     type RewardCreateParams as RewardCreateParams,
