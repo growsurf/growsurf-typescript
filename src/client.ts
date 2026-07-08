@@ -18,6 +18,15 @@ import * as Uploads from './core/uploads';
 import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
 import {
+  Account,
+  AccountCreateParams,
+  AccountCreateResponse,
+  AccountResendVerificationEmailResponse,
+  AccountResource,
+  AccountRotateApiKeyResponse,
+  AccountUpdateParams,
+} from './resources/account';
+import {
   Campaign,
   CampaignCreateMobileParticipantTokenParams,
   CampaignCreateMobileParticipantTokenResponse,
@@ -758,13 +767,25 @@ export class Growsurf {
 
   static toFile = Uploads.toFile;
 
+  account: API.AccountResource = new API.AccountResource(this);
   campaign: API.CampaignResource = new API.CampaignResource(this);
 }
 
+Growsurf.AccountResource = AccountResource;
 Growsurf.CampaignResource = CampaignResource;
 
 export declare namespace Growsurf {
   export type RequestOptions = Opts.RequestOptions;
+
+  export {
+    AccountResource as AccountResource,
+    type Account as Account,
+    type AccountCreateResponse as AccountCreateResponse,
+    type AccountRotateApiKeyResponse as AccountRotateApiKeyResponse,
+    type AccountResendVerificationEmailResponse as AccountResendVerificationEmailResponse,
+    type AccountCreateParams as AccountCreateParams,
+    type AccountUpdateParams as AccountUpdateParams,
+  };
 
   export {
     CampaignResource as CampaignResource,

@@ -27,9 +27,9 @@ export class Emails extends APIResource {
   }
 
   /**
-   * Updates a program's email configuration. Only the fields you send are changed (a
-   * surgical merge); omitted fields are left untouched. You may only write the email
-   * templates the dashboard exposes for the program type. Some fields are read-only
+   * Updates a program's email configuration. Only the fields you send are changed;
+   * anything you leave out is untouched. You may only write the email templates the
+   * dashboard exposes for the program type. Some fields are read-only
    * (`settings.sender.fromEmail`).
    *
    * @example
@@ -45,13 +45,16 @@ export class Emails extends APIResource {
 /**
  * A program's email configuration (dashboard Program Editor **Emails** tab): the
  * editable email templates plus the `settings` block. The set of keys is
- * intentionally left open; see the API reference for the full field list.
+ * intentionally left open; to see the full object with every field and its current
+ * value, `GET` this resource, then `PATCH` back only the fields you want to change.
  */
 export type CampaignEmails = { [key: string]: unknown };
 
 /**
  * A partial `CampaignEmails` — only the fields you send are changed. The set of keys
- * is intentionally left open; see the API reference for the full field list.
+ * is intentionally left open; to see the full object with every field and its
+ * current value, `GET` this resource, then `PATCH` back only the fields you want to
+ * change.
  */
 export type EmailUpdateParams = { [key: string]: unknown };
 

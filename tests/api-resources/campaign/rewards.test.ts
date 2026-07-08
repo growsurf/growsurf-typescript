@@ -38,6 +38,7 @@ describe('resource rewards', () => {
       type: 'SINGLE_SIDED',
       commissionStructure: {
         amount: 0,
+        amountISO: 'amountISO',
         approvalRequired: true,
         duration: 'duration',
         durationInMonths: 0,
@@ -61,7 +62,6 @@ describe('resource rewards', () => {
       couponCode: 'couponCode',
       description: 'description',
       imageUrl: 'imageUrl',
-      isActive: true,
       isUnlimited: true,
       isVisible: true,
       limit: 0,
@@ -98,6 +98,7 @@ describe('resource rewards', () => {
       id: 'id',
       commissionStructure: {
         amount: 0,
+        amountISO: 'amountISO',
         approvalRequired: true,
         duration: 'duration',
         durationInMonths: 0,
@@ -121,7 +122,6 @@ describe('resource rewards', () => {
       couponCode: 'couponCode',
       description: 'description',
       imageUrl: 'imageUrl',
-      isActive: true,
       isUnlimited: true,
       isVisible: true,
       limit: 0,

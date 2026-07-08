@@ -27,10 +27,10 @@ export class Design extends APIResource {
   }
 
   /**
-   * Updates a program's design configuration. Only the fields you send are changed (a
-   * surgical merge; arrays such as `signup.fields` replace wholesale). Unknown
-   * fields, fields not available for the program type, and invalid values return a
-   * `400`.
+   * Updates a program's design configuration. Only the fields you send are changed;
+   * anything you leave out is untouched (arrays such as `signup.fields` replace
+   * wholesale). Unknown fields, fields not available for the program type, and
+   * invalid values return a `400`.
    *
    * @example
    * ```ts
@@ -45,14 +45,17 @@ export class Design extends APIResource {
 /**
  * A program's design configuration (dashboard Program Editor **Design** tab). This
  * is a large, deeply-nested object whose available fields depend on the program
- * type. The set of keys is intentionally left open; see the API reference for the
- * full field list.
+ * type. The set of keys is intentionally left open; to see the full object with
+ * every field and its current value, `GET` this resource, then `PATCH` back only the
+ * fields you want to change.
  */
 export type CampaignDesign = { [key: string]: unknown };
 
 /**
  * A partial `CampaignDesign` — only the fields you send are changed. The set of keys
- * is intentionally left open; see the API reference for the full field list.
+ * is intentionally left open; to see the full object with every field and its
+ * current value, `GET` this resource, then `PATCH` back only the fields you want to
+ * change.
  */
 export type DesignUpdateParams = { [key: string]: unknown };
 

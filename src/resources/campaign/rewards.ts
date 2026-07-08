@@ -11,9 +11,8 @@ import { path } from '../../internal/utils/path';
  */
 export class Rewards extends APIResource {
   /**
-   * Retrieves the list of a program's configured rewards (`CampaignReward`s). Returns
-   * the active, visible, and enabled rewards — the same set embedded in the `rewards`
-   * array of the campaign response.
+   * Retrieves the list of a program's configured rewards (`CampaignReward`s), the same
+   * set embedded in the `rewards` array of the campaign response.
    *
    * @example
    * ```ts
@@ -121,7 +120,10 @@ export interface Reward {
   order?: number | null;
 
   /**
-   * The coupon code delivered to the referred friend (double-sided rewards).
+   * Legacy static coupon code shown to the referred friend in the reward-won email
+   * and webhook (double-sided rewards). Display text only (GrowSurf does not create or
+   * validate it); superseded by a connected billing integration's issued coupon when
+   * one exists.
    */
   referralCouponCode?: string | null;
 
@@ -162,7 +164,7 @@ export interface RewardTaxValuation {
 
 export interface CampaignRewardListResponse {
   /**
-   * The program's active, visible, and enabled rewards.
+   * The program's configured rewards.
    */
   rewards: Array<Reward>;
 }
@@ -192,6 +194,11 @@ export interface RewardCreateParams {
    */
   conversionsRequired?: number;
 
+  /**
+   * Legacy static coupon code shown to the referrer in the reward-won email and
+   * webhook. Display text only (GrowSurf does not create or validate it); superseded
+   * by a connected billing integration's issued coupon when one exists.
+   */
   couponCode?: string | null;
 
   /**
@@ -205,17 +212,15 @@ export interface RewardCreateParams {
   imageUrl?: string | null;
 
   /**
-   * Whether the reward is active (awardable).
-   */
-  isActive?: boolean;
-
-  /**
-   * Whether the reward can be earned an unlimited number of times.
+   * Whether the reward can be earned an unlimited number of times. Defaults to `true`,
+   * except `MILESTONE` rewards, which can only be earned once.
    */
   isUnlimited?: boolean;
 
   /**
-   * Whether the reward is visible.
+   * Whether the reward is enabled (visible and awardable). When `false`, the reward is
+   * disabled: hidden from participants and no longer awarded, including participants
+   * who already earned it.
    */
   isVisible?: boolean;
 
@@ -235,12 +240,22 @@ export interface RewardCreateParams {
    */
   metadata?: { [key: string]: unknown };
 
+  /**
+   * Text shown before a participant's referral count in milestone progress copy
+   * (`MILESTONE` rewards).
+   */
   nextMilestonePrefix?: string | null;
 
+  /**
+   * Text shown after a participant's referral count in milestone progress copy
+   * (`MILESTONE` rewards).
+   */
   nextMilestoneSuffix?: string | null;
 
   /**
-   * The maximum number of winners (LEADERBOARD rewards).
+   * The number of winners. Only applies to `LEADERBOARD` rewards. With `limitDuration`
+   * `PER_MONTH` this many win each month, otherwise this many win in total; defaults to
+   * `3` when omitted.
    */
   numberOfWinners?: number;
 
@@ -249,6 +264,12 @@ export interface RewardCreateParams {
    */
   order?: number;
 
+  /**
+   * Legacy static coupon code shown to the referred friend in the reward-won email
+   * and webhook (double-sided rewards). Display text only (GrowSurf does not create or
+   * validate it); superseded by a connected billing integration's issued coupon when
+   * one exists.
+   */
   referralCouponCode?: string | null;
 
   /**
@@ -297,7 +318,9 @@ export interface RewardUpdateParams {
   conversionsRequired?: number;
 
   /**
-   * Body param
+   * Body param: Legacy static coupon code shown to the referrer in the reward-won
+   * email and webhook. Display text only (GrowSurf does not create or validate it);
+   * superseded by a connected billing integration's issued coupon when one exists.
    */
   couponCode?: string | null;
 
@@ -312,17 +335,15 @@ export interface RewardUpdateParams {
   imageUrl?: string | null;
 
   /**
-   * Body param: Whether the reward is active (awardable).
-   */
-  isActive?: boolean;
-
-  /**
-   * Body param: Whether the reward can be earned an unlimited number of times.
+   * Body param: Whether the reward can be earned an unlimited number of times. Defaults
+   * to `true`, except `MILESTONE` rewards, which can only be earned once.
    */
   isUnlimited?: boolean;
 
   /**
-   * Body param: Whether the reward is visible.
+   * Body param: Whether the reward is enabled (visible and awardable). When `false`,
+   * the reward is disabled: hidden from participants and no longer awarded, including
+   * participants who already earned it.
    */
   isVisible?: boolean;
 
@@ -344,17 +365,21 @@ export interface RewardUpdateParams {
   metadata?: { [key: string]: unknown };
 
   /**
-   * Body param
+   * Body param: Text shown before a participant's referral count in milestone progress
+   * copy (`MILESTONE` rewards).
    */
   nextMilestonePrefix?: string | null;
 
   /**
-   * Body param
+   * Body param: Text shown after a participant's referral count in milestone progress
+   * copy (`MILESTONE` rewards).
    */
   nextMilestoneSuffix?: string | null;
 
   /**
-   * Body param: The maximum number of winners (LEADERBOARD rewards).
+   * Body param: The number of winners. Only applies to `LEADERBOARD` rewards. With
+   * `limitDuration` `PER_MONTH` this many win each month, otherwise this many win in
+   * total; defaults to `3` when omitted.
    */
   numberOfWinners?: number;
 
@@ -364,7 +389,10 @@ export interface RewardUpdateParams {
   order?: number;
 
   /**
-   * Body param
+   * Body param: Legacy static coupon code shown to the referred friend in the
+   * reward-won email and webhook (double-sided rewards). Display text only (GrowSurf
+   * does not create or validate it); superseded by a connected billing integration's
+   * issued coupon when one exists.
    */
   referralCouponCode?: string | null;
 

@@ -71,6 +71,19 @@ import {
   RewardUpdateParams,
   Rewards as RewardsAPIRewards,
 } from './rewards';
+import * as WebhooksAPI from './webhooks';
+import {
+  DeleteWebhookResponse,
+  Webhook,
+  WebhookCreateParams,
+  WebhookDeleteParams,
+  WebhookEvent,
+  WebhookListResponse,
+  WebhookTestParams,
+  WebhookTestResponse,
+  WebhookUpdateParams,
+  Webhooks as WebhooksAPIWebhooks,
+} from './webhooks';
 import { APIPromise } from '../../core/api-promise';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
@@ -80,6 +93,7 @@ export class CampaignResource extends APIResource {
   reward: RewardAPI.Reward = new RewardAPI.Reward(this._client);
   commission: CommissionAPI.Commission = new CommissionAPI.Commission(this._client);
   rewards: RewardsAPI.Rewards = new RewardsAPI.Rewards(this._client);
+  webhooks: WebhooksAPI.Webhooks = new WebhooksAPI.Webhooks(this._client);
   design: DesignAPI.Design = new DesignAPI.Design(this._client);
   emails: EmailsAPI.Emails = new EmailsAPI.Emails(this._client);
   options: OptionsAPI.Options = new OptionsAPI.Options(this._client);
@@ -112,9 +126,7 @@ export class CampaignResource extends APIResource {
   /**
    * Creates a new program pre-populated with type-appropriate defaults, plus any
    * optional inline rewards. The new program is created in `DRAFT` status and owned
-   * by the API key's account. Requires a verified account email and a paid plan
-   * (referral) or a payment source on file (affiliate); subject to your plan's
-   * program limit.
+   * by the API key's account. Requires a verified account email.
    *
    * @example
    * ```ts
@@ -128,9 +140,11 @@ export class CampaignResource extends APIResource {
   }
 
   /**
-   * Updates a program's configuration and/or status. Only the fields you send are
-   * changed. `type`, `urlId`, and `currencyISO` are immutable. Status changes are validated against
-   * the allowed transitions; the program cannot be deleted via this endpoint.
+   * Updates a program's identity and lifecycle. Only the fields you send are
+   * changed. `type`, `urlId`, and `currencyISO` are immutable. Editor-tab
+   * configuration (design, emails, options, installation) is edited via the
+   * dedicated config sub-resources, not here. The program cannot be deleted via
+   * this endpoint.
    *
    * @example
    * ```ts
@@ -152,6 +166,23 @@ export class CampaignResource extends APIResource {
    */
   clone(id: string, options?: RequestOptions): APIPromise<Campaign> {
     return this._client.post(path`/campaign/${id}/clone`, options);
+  }
+
+  /**
+   * Captures two preview screenshots for the program: the authenticated referrer
+   * view and the referred-friend view.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.getReferralFlowScreenshots('id');
+   * ```
+   */
+  getReferralFlowScreenshots(
+    id: string,
+    options?: RequestOptions,
+  ): APIPromise<ReferralFlowScreenshotsResponse> {
+    return this._client.get(path`/campaign/${id}/referral-flow-screenshots`, options);
   }
 
   /**
@@ -355,7 +386,9 @@ export namespace Campaign {
     order?: number | null;
 
     /**
-     * The coupon code delivered to the referred friend (double-sided rewards).
+     * Legacy static coupon code shown to the referred friend in the reward-won email
+     * and webhook (double-sided rewards). Display text only; superseded by a connected
+     * billing integration's issued coupon when one exists.
      */
     referralCouponCode?: string | null;
 
@@ -379,6 +412,8 @@ export namespace Campaign {
 
 export interface CommissionStructure {
   amount?: number | null;
+
+  amountISO?: string | null;
 
   approvalRequired?: boolean | null;
 
@@ -414,7 +449,7 @@ export interface CommissionStructure {
 
   percent?: number | null;
 
-  type?: 'PERCENT' | 'AMOUNT' | null;
+  type?: 'PERCENT' | 'FIXED' | null;
 
   [k: string]: unknown;
 }
@@ -559,6 +594,45 @@ export interface CampaignListResponse {
   campaigns: Array<Campaign>;
 }
 
+export interface ReferralFlowScreenshot {
+  /**
+   * The referral-flow view captured in this screenshot.
+   */
+  view: 'referrer' | 'referredFriend';
+
+  /**
+   * Image URL for the generated screenshot.
+   */
+  url: string;
+
+  /**
+   * Screenshot viewport width in CSS pixels.
+   */
+  width: number;
+
+  /**
+   * Screenshot viewport height in CSS pixels.
+   */
+  height: number;
+}
+
+export interface ReferralFlowScreenshotsResponse {
+  /**
+   * Screenshot of the referral flow as a signed-in referrer sees it.
+   */
+  referrer: ReferralFlowScreenshot;
+
+  /**
+   * Screenshot of the referral flow as the referred friend sees it.
+   */
+  referredFriend: ReferralFlowScreenshot;
+
+  /**
+   * When the screenshots were generated, as a Unix timestamp in milliseconds.
+   */
+  generatedAt: number;
+}
+
 export interface CampaignCreateMobileParticipantTokenResponse {
   /**
    * Token lifetime in seconds.
@@ -585,6 +659,27 @@ export interface CampaignRetrieveAnalyticsResponse {
   endDate: number;
 
   startDate: number;
+
+  /**
+   * Present only when `include` contains `previousPeriod`.
+   */
+  previousPeriod?: CampaignRetrieveAnalyticsResponse.PreviousPeriod;
+
+  /**
+   * Present only when `include` contains `rates`.
+   */
+  rates?: CampaignRetrieveAnalyticsResponse.Rates;
+
+  /**
+   * Present only when `interval` is `day`, `week`, or `month`. Per-period totals,
+   * ascending.
+   */
+  series?: Array<CampaignRetrieveAnalyticsResponse.Series>;
+
+  /**
+   * Present only when `include` contains `statusCounts`.
+   */
+  statusCounts?: CampaignRetrieveAnalyticsResponse.StatusCounts;
 }
 
 export namespace CampaignRetrieveAnalyticsResponse {
@@ -655,6 +750,197 @@ export namespace CampaignRetrieveAnalyticsResponse {
 
     whatsAppShares?: number;
   }
+
+  export interface Series {
+    androidNativeShares?: number;
+
+    blueskyShares?: number;
+
+    copyRefLinkShares?: number;
+
+    emailShares?: number;
+
+    facebookShares?: number;
+
+    impressions?: number;
+
+    invites?: number;
+
+    iosNativeShares?: number;
+
+    linkedInShares?: number;
+
+    messengerShares?: number;
+
+    participants?: number;
+
+    /**
+     * Start of the period, as a Unix timestamp in milliseconds (UTC).
+     */
+    periodStart?: number;
+
+    pinterestShares?: number;
+
+    qrcodeShares?: number;
+
+    redditShares?: number;
+
+    referralCreditExpireds?: number;
+
+    referralCreditPendings?: number;
+
+    referrals?: number;
+
+    smsShares?: number;
+
+    telegramShares?: number;
+
+    threadsShares?: number;
+
+    /**
+     * Affiliate programs only. Number of commission records.
+     */
+    totalCommissionCount?: number;
+
+    /**
+     * Affiliate programs only. Commissions in the smallest unit of the program
+     * currency.
+     */
+    totalCommissions?: number;
+
+    /**
+     * Affiliate programs only. Revenue in the smallest unit of the program currency.
+     */
+    totalRevenue?: number;
+
+    tumblrShares?: number;
+
+    twitterShares?: number;
+
+    uniqueImpressions?: number;
+
+    wechatShares?: number;
+
+    whatsAppShares?: number;
+  }
+
+  /**
+   * Totals for the equal-length window immediately preceding the requested one.
+   */
+  export interface PreviousPeriod {
+    analytics?: CampaignRetrieveAnalyticsResponse.Analytics;
+
+    endDate?: number;
+
+    startDate?: number;
+  }
+
+  /**
+   * Derived referral rates, each a ratio in the range 0–1 (0 when its denominator is
+   * 0).
+   */
+  export interface Rates {
+    /**
+     * `participants` divided by `uniqueImpressions`.
+     */
+    participationRate?: number;
+
+    /**
+     * `referrals` divided by `uniqueImpressions`.
+     */
+    referralConversionRate?: number;
+
+    /**
+     * Total shares across all channels divided by `participants`.
+     */
+    sharesPerParticipant?: number;
+  }
+
+  /**
+   * Status-count breakdowns. `rewardStatus` is present for every program;
+   * `affiliateStatus`, `commissionStatus`, and `payoutStatus` are present only for
+   * affiliate programs. Money amounts are in minor units of `currencyISO`.
+   */
+  export interface StatusCounts {
+    /**
+     * Affiliate only. Participant counts keyed by affiliate status.
+     */
+    affiliateStatus?: { [key: string]: number };
+
+    /**
+     * Affiliate only. Commission counts and amounts by status.
+     */
+    commissionStatus?: StatusCounts.CommissionStatus;
+
+    currencyISO?: string;
+
+    /**
+     * Affiliate only. Payout counts and amounts by status.
+     */
+    payoutStatus?: StatusCounts.PayoutStatus;
+
+    rewardStatus?: StatusCounts.RewardStatus;
+  }
+
+  export namespace StatusCounts {
+    /**
+     * Affiliate only. Commission counts and amounts by status.
+     */
+    export interface CommissionStatus {
+      approved?: StatusCounts.CommissionStatusMetric;
+
+      paid?: StatusCounts.CommissionStatusMetric;
+
+      pending?: StatusCounts.CommissionStatusMetric;
+
+      reversed?: StatusCounts.CommissionStatusMetric;
+    }
+
+    export interface CommissionStatusMetric {
+      count?: number;
+
+      /**
+       * Total commission amount in minor currency units.
+       */
+      totalAmount?: number;
+
+      /**
+       * Total attributed revenue in minor currency units.
+       */
+      totalRevenue?: number;
+    }
+
+    /**
+     * Affiliate only. Payout counts and amounts by status.
+     */
+    export interface PayoutStatus {
+      failed?: StatusCounts.PayoutStatusMetric;
+
+      issued?: StatusCounts.PayoutStatusMetric;
+
+      queued?: StatusCounts.PayoutStatusMetric;
+
+      upcoming?: StatusCounts.PayoutStatusMetric;
+    }
+
+    export interface PayoutStatusMetric {
+      count?: number;
+
+      /**
+       * Total payout amount in minor currency units.
+       */
+      totalAmount?: number;
+    }
+
+    export interface RewardStatus {
+      approved?: number;
+
+      /**
+       * Unapproved rewards awaiting fulfillment.
+       */
+      pending?: number;
+    }
+  }
 }
 
 export interface CampaignCreateParams {
@@ -692,9 +978,10 @@ export interface CampaignUpdateParams {
   name?: string;
 
   /**
-   * The program status. Transitions are validated; DELETED is not allowed.
+   * The requested program status. `IN_PROGRESS` publishes or resumes the program;
+   * `COMPLETE` ends it. Any other value returns a `400`.
    */
-  status?: 'DRAFT' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETE' | 'CANCELLED';
+  status?: 'IN_PROGRESS' | 'COMPLETE';
 }
 
 export interface CampaignCreateMobileParticipantTokenParams {
@@ -720,6 +1007,11 @@ export interface CampaignCreateMobileParticipantTokenParams {
    */
   mobileInstanceId?: string;
 
+  /**
+   * Referral credit status; only meaningful when `referredBy` resolves to a referrer.
+   * When omitted, it is derived from the program's referral trigger (`CREDIT_AWARDED`,
+   * `CREDIT_PENDING`, or `CREDIT_EXPIRED`), and left unset when no referrer resolves.
+   */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
 
   /**
@@ -869,6 +1161,21 @@ export interface CampaignRetrieveAnalyticsParams {
   endDate?: number;
 
   /**
+   * Comma-separated list of optional enrichments (opt-in to keep the default response
+   * lean). Any of `previousPeriod` (totals for the equal-length window immediately
+   * before the requested one), `statusCounts` (reward and, for affiliate programs,
+   * affiliate/commission/payout status breakdowns), and `rates` (derived referral
+   * rates).
+   */
+  include?: string;
+
+  /**
+   * When set to `day`, `week`, or `month`, the response also includes a `series` array
+   * with per-period totals. Defaults to `total` (no series).
+   */
+  interval?: 'day' | 'week' | 'month' | 'total';
+
+  /**
    * Start date of the analytics timeframe as a Unix timestamp in milliseconds.
    * Required if `days` is not set.
    */
@@ -879,6 +1186,7 @@ CampaignResource.ParticipantResource = ParticipantResource;
 CampaignResource.Reward = RewardAPIReward;
 CampaignResource.Commission = CommissionAPICommission;
 CampaignResource.Rewards = RewardsAPIRewards;
+CampaignResource.Webhooks = WebhooksAPIWebhooks;
 CampaignResource.Design = DesignAPIDesign;
 CampaignResource.Emails = EmailsAPIEmails;
 CampaignResource.Options = OptionsAPIOptions;
@@ -893,6 +1201,8 @@ export declare namespace CampaignResource {
     type ParticipantPayoutList as ParticipantPayoutList,
     type ReferralList as ReferralList,
     type CampaignListResponse as CampaignListResponse,
+    type ReferralFlowScreenshot as ReferralFlowScreenshot,
+    type ReferralFlowScreenshotsResponse as ReferralFlowScreenshotsResponse,
     type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
     type CampaignCreateParams as CampaignCreateParams,
@@ -961,6 +1271,19 @@ export declare namespace CampaignResource {
     type DeleteRewardResponse as DeleteRewardResponse,
     type RewardCreateParams as RewardCreateParams,
     type RewardUpdateParams as RewardUpdateParams,
+  };
+
+  export {
+    WebhooksAPIWebhooks as Webhooks,
+    type WebhookEvent as WebhookEvent,
+    type Webhook as Webhook,
+    type WebhookListResponse as WebhookListResponse,
+    type DeleteWebhookResponse as DeleteWebhookResponse,
+    type WebhookTestResponse as WebhookTestResponse,
+    type WebhookCreateParams as WebhookCreateParams,
+    type WebhookUpdateParams as WebhookUpdateParams,
+    type WebhookDeleteParams as WebhookDeleteParams,
+    type WebhookTestParams as WebhookTestParams,
   };
 
   export {

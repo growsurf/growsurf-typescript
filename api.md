@@ -1,3 +1,21 @@
+# Account
+
+Types:
+
+- <code><a href="./src/resources/account.ts">Account</a></code>
+- <code><a href="./src/resources/account.ts">AccountCreateResponse</a></code>
+- <code><a href="./src/resources/account.ts">AccountRotateApiKeyResponse</a></code>
+- <code><a href="./src/resources/account.ts">AccountResendVerificationEmailResponse</a></code>
+
+Methods:
+
+- <code title="post /accounts">client.account.<a href="./src/resources/account.ts">create</a>({ ...params }) -> AccountCreateResponse</code>
+- <code title="get /account">client.account.<a href="./src/resources/account.ts">retrieve</a>() -> Account</code>
+- <code title="patch /account">client.account.<a href="./src/resources/account.ts">update</a>({ ...params }) -> Account</code>
+- <code title="post /account/api-key">client.account.<a href="./src/resources/account.ts">rotateApiKey</a>() -> AccountRotateApiKeyResponse</code>
+- <code title="post /account/verification-request">client.account.<a href="./src/resources/account.ts">requestVerification</a>() -> Account</code>
+- <code title="post /account/verification-email">client.account.<a href="./src/resources/account.ts">resendVerificationEmail</a>() -> AccountResendVerificationEmailResponse</code>
+
 # Campaign
 
 Types:
@@ -9,6 +27,8 @@ Types:
 - <code><a href="./src/resources/campaign/campaign.ts">ParticipantPayoutList</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">ReferralList</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignListResponse</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">ReferralFlowScreenshot</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">ReferralFlowScreenshotsResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignCreateMobileParticipantTokenResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignRetrieveAnalyticsResponse</a></code>
 
@@ -19,6 +39,7 @@ Methods:
 - <code title="post /campaigns">client.campaign.<a href="./src/resources/campaign/campaign.ts">create</a>({ ...params }) -> Campaign</code>
 - <code title="patch /campaign/{id}">client.campaign.<a href="./src/resources/campaign/campaign.ts">update</a>(id, { ...params }) -> Campaign</code>
 - <code title="post /campaign/{id}/clone">client.campaign.<a href="./src/resources/campaign/campaign.ts">clone</a>(id) -> Campaign</code>
+- <code title="get /campaign/{id}/referral-flow-screenshots">client.campaign.<a href="./src/resources/campaign/campaign.ts">getReferralFlowScreenshots</a>(id) -> ReferralFlowScreenshotsResponse</code>
 - <code title="post /campaign/{id}/mobile-participant-token">client.campaign.<a href="./src/resources/campaign/campaign.ts">createMobileParticipantToken</a>(id, { ...params }) -> CampaignCreateMobileParticipantTokenResponse</code>
 - <code title="get /campaign/{id}/commissions">client.campaign.<a href="./src/resources/campaign/campaign.ts">listCommissions</a>(id, { ...params }) -> ParticipantCommissionList</code>
 - <code title="get /campaign/{id}/leaderboard">client.campaign.<a href="./src/resources/campaign/campaign.ts">listLeaderboard</a>(id, { ...params }) -> ParticipantList</code>
@@ -38,18 +59,23 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">ReferralSource</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ReferralStatus</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantDeleteResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantBulkDeleteResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantListRewardsResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRecordTransactionResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRefundTransactionResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantSendInvitesResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantTriggerReferralResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantCancelDelayedReferralResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantEmailResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantRetrieveAnalyticsResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantListActivityLogsResponse</a></code>
 
 Methods:
 
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">retrieve</a>(participantIDOrEmail, { ...params }) -> Participant</code>
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">update</a>(participantIDOrEmail, { ...params }) -> Participant</code>
 - <code title="delete /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">delete</a>(participantIDOrEmail, { ...params }) -> ParticipantDeleteResponse</code>
+- <code title="post /campaign/{id}/participants/bulk-delete">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">bulkDelete</a>(id, { ...params }) -> ParticipantBulkDeleteResponse</code>
 - <code title="post /campaign/{id}/participant">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">add</a>(id, { ...params }) -> Participant</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/commissions">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listCommissions</a>(participantIDOrEmail, { ...params }) -> ParticipantCommissionList</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/payouts">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listPayouts</a>(participantIDOrEmail, { ...params }) -> ParticipantPayoutList</code>
@@ -60,6 +86,9 @@ Methods:
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}/invites">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">sendInvites</a>(participantIDOrEmail, { ...params }) -> ParticipantSendInvitesResponse</code>
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}/ref">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">triggerReferral</a>(participantIDOrEmail, { ...params }) -> ParticipantTriggerReferralResponse</code>
 - <code title="delete /campaign/{id}/participant/{participantIdOrEmail}/ref">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">cancelDelayedReferral</a>(participantIDOrEmail, { ...params }) -> ParticipantCancelDelayedReferralResponse</code>
+- <code title="post /campaign/{id}/participant/{participantIdOrEmail}/email">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">email</a>(participantIDOrEmail, { ...params }) -> ParticipantEmailResponse</code>
+- <code title="get /campaign/{id}/participant/{participantIdOrEmail}/analytics">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">retrieveAnalytics</a>(participantIDOrEmail, { ...params }) -> ParticipantRetrieveAnalyticsResponse</code>
+- <code title="get /campaign/{id}/participant/{participantIdOrEmail}/activity-logs">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listActivityLogs</a>(participantIDOrEmail, { ...params }) -> ParticipantListActivityLogsResponse</code>
 
 ## Reward
 
@@ -102,6 +131,24 @@ Methods:
 - <code title="post /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">create</a>(id, { ...params }) -> Reward</code>
 - <code title="patch /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">update</a>(campaignRewardID, { ...params }) -> Reward</code>
 - <code title="delete /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">delete</a>(campaignRewardID, { ...params }) -> DeleteRewardResponse</code>
+
+## Webhooks
+
+Types:
+
+- <code><a href="./src/resources/campaign/webhooks.ts">WebhookEvent</a></code>
+- <code><a href="./src/resources/campaign/webhooks.ts">Webhook</a></code>
+- <code><a href="./src/resources/campaign/webhooks.ts">WebhookListResponse</a></code>
+- <code><a href="./src/resources/campaign/webhooks.ts">DeleteWebhookResponse</a></code>
+- <code><a href="./src/resources/campaign/webhooks.ts">WebhookTestResponse</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/webhooks">client.campaign.webhooks.<a href="./src/resources/campaign/webhooks.ts">list</a>(id) -> WebhookListResponse</code>
+- <code title="post /campaign/{id}/webhooks">client.campaign.webhooks.<a href="./src/resources/campaign/webhooks.ts">create</a>(id, { ...params }) -> Webhook</code>
+- <code title="patch /campaign/{id}/webhooks/{webhookId}">client.campaign.webhooks.<a href="./src/resources/campaign/webhooks.ts">update</a>(webhookID, { ...params }) -> Webhook</code>
+- <code title="delete /campaign/{id}/webhooks/{webhookId}">client.campaign.webhooks.<a href="./src/resources/campaign/webhooks.ts">delete</a>(webhookID, { ...params }) -> DeleteWebhookResponse</code>
+- <code title="post /campaign/{id}/webhooks/{webhookId}/test">client.campaign.webhooks.<a href="./src/resources/campaign/webhooks.ts">test</a>(webhookID, { ...params }) -> WebhookTestResponse</code>
 
 ## Design
 

@@ -77,6 +77,31 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
+   * Deletes a list of participants from a program in one request. Each entry in
+   * `participants` is a GrowSurf participant ID or an email address (mixed lists
+   * are allowed). Up to `200` entries per request — chunk larger lists across
+   * multiple calls. The response reports a per-row `status` for every submitted
+   * entry, so a `200` can include rows that were `NOT_FOUND` or failed. Deletion is
+   * permanent and removes the participants' referrals, rewards, commissions, and
+   * payout records.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.bulkDelete('id', {
+   *     participants: ['gavin@hooli.com', 'f8g9nl'],
+   *   });
+   * ```
+   */
+  bulkDelete(
+    id: string,
+    body: ParticipantBulkDeleteParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantBulkDeleteResponse> {
+    return this._client.post(path`/campaign/${id}/participants/bulk-delete`, { body, ...options });
+  }
+
+  /**
    * Adds a new participant to the program. If the email already exists, the existing
    * participant is returned.
    *
@@ -204,6 +229,13 @@ export class ParticipantResource extends APIResource {
    * Records a sale made by a referred customer and generates affiliate commissions
    * for their referrer when applicable.
    *
+   * At least one transaction identifier is required: one of `externalId`,
+   * `transactionId`, `orderId`, `paymentId`, `invoiceId`, `paymentIntentId`, or
+   * `chargeId`. `customerId` and `subscriptionId` do not count, since they identify the
+   * customer or subscription rather than the specific transaction. Without an
+   * identifier, resending the same sale creates a duplicate commission and double-pays
+   * the referrer; the server rejects such requests with HTTP 400.
+   *
    * @example
    * ```ts
    * const response =
@@ -270,6 +302,8 @@ export class ParticipantResource extends APIResource {
 
   /**
    * Sends email invites on behalf of a participant to a list of email addresses.
+   * Sending invites via the API requires a verified custom email domain on the
+   * program; the request fails until one is verified.
    *
    * @example
    * ```ts
@@ -350,6 +384,87 @@ export class ParticipantResource extends APIResource {
     const { id } = params;
     return this._client.delete(path`/campaign/${id}/participant/${participantIDOrEmail}/ref`, options);
   }
+
+  /**
+   * Sends an email to a participant. Provide EITHER `emailType` to trigger one of the
+   * program's configured email templates, OR `subject` + `body` for a free-form email.
+   * Free-form emails are sent with the same compliance handling (company name,
+   * postal address, and an unsubscribe link are added automatically, and unsubscribed
+   * participants are suppressed). Sending requires the account to be verified by the
+   * GrowSurf team. Requires a verified custom email domain on the program (set up in
+   * Campaign Editor > 3. Emails > Email Settings). Returns `400` until one is
+   * verified. The email is accepted for delivery.
+   *
+   * @example
+   * ```ts
+   * const response = await client.campaign.participant.email(
+   *   'participantIdOrEmail',
+   *   { id: 'id' },
+   * );
+   * ```
+   */
+  email(
+    participantIDOrEmail: string,
+    params: ParticipantEmailParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantEmailResponse> {
+    const { id, ...body } = params;
+    return this._client.post(path`/campaign/${id}/participant/${participantIDOrEmail}/email`, {
+      body,
+      ...options,
+    });
+  }
+
+  /**
+   * Retrieves analytics for a single participant — all-time engagement counters,
+   * leaderboard ranks, and per-channel share counts (plus affiliate money metrics for
+   * affiliate programs). Useful for segmenting and re-engaging participants.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.retrieveAnalytics(
+   *     'participantIdOrEmail',
+   *     { id: 'id' },
+   *   );
+   * ```
+   */
+  retrieveAnalytics(
+    participantIDOrEmail: string,
+    params: ParticipantRetrieveAnalyticsParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantRetrieveAnalyticsResponse> {
+    const { id, ...query } = params;
+    return this._client.get(path`/campaign/${id}/participant/${participantIDOrEmail}/analytics`, {
+      query,
+      ...options,
+    });
+  }
+
+  /**
+   * Returns a participant's activity logs, most recent first (offset/limit
+   * paginated).
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.listActivityLogs(
+   *     'participantIdOrEmail',
+   *     { id: 'id' },
+   *   );
+   * ```
+   */
+  listActivityLogs(
+    participantIDOrEmail: string,
+    params: ParticipantListActivityLogsParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantListActivityLogsResponse> {
+    const { id, ...query } = params;
+    return this._client.get(path`/campaign/${id}/participant/${participantIDOrEmail}/activity-logs`, {
+      query,
+      ...options,
+    });
+  }
 }
 
 export interface Create {
@@ -375,6 +490,11 @@ export interface Create {
    */
   mobileInstanceId?: string;
 
+  /**
+   * Referral credit status; only meaningful when `referredBy` resolves to a referrer.
+   * When omitted, it is derived from the program's referral trigger (`CREDIT_AWARDED`,
+   * `CREDIT_PENDING`, or `CREDIT_EXPIRED`), and left unset when no referrer resolves.
+   */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
 
   /**
@@ -584,6 +704,80 @@ export interface ParticipantDeleteResponse {
   success: boolean;
 }
 
+export interface ParticipantBulkDeleteResponse {
+  /**
+   * One entry per submitted identifier, in the same order as the request.
+   */
+  results: Array<ParticipantBulkDeleteResponse.Result>;
+
+  summary: ParticipantBulkDeleteResponse.Summary;
+}
+
+export namespace ParticipantBulkDeleteResponse {
+  export interface Result {
+    /**
+     * The submitted participant ID or email address, echoed back as received.
+     */
+    identifier: string;
+
+    /**
+     * Zero-based position of this entry in the submitted `participants` array.
+     */
+    index: number;
+
+    /**
+     * Per-row outcome. `DELETED` — the participant was resolved and removed.
+     * `NOT_FOUND` — no participant matches the ID or email. `DUPLICATE` — the entry
+     * resolves to the same participant as an earlier entry in the same request.
+     * `ERROR` — the lookup or deletion failed for this row.
+     */
+    status: 'DELETED' | 'NOT_FOUND' | 'DUPLICATE' | 'ERROR';
+
+    /**
+     * The resolved participant's email address. Present on `DELETED` rows.
+     */
+    email?: string;
+
+    /**
+     * Human-readable detail for `NOT_FOUND`, `DUPLICATE`, and `ERROR` rows.
+     */
+    message?: string;
+
+    /**
+     * The resolved GrowSurf participant ID. Present when the entry resolved to a
+     * participant.
+     */
+    participantId?: string;
+  }
+
+  export interface Summary {
+    /**
+     * Entries that resolved to a participant and were deleted.
+     */
+    deletedCount: number;
+
+    /**
+     * Entries that resolved to the same participant as an earlier entry.
+     */
+    duplicateCount: number;
+
+    /**
+     * Entries that failed to look up or delete.
+     */
+    errorCount: number;
+
+    /**
+     * Entries that did not match any participant.
+     */
+    notFoundCount: number;
+
+    /**
+     * Number of entries submitted in this request.
+     */
+    total: number;
+  }
+}
+
 export interface ParticipantListRewardsResponse {
   limit: number;
 
@@ -678,6 +872,199 @@ export interface ParticipantCancelDelayedReferralResponse {
   message?: string;
 }
 
+export interface ParticipantEmailResponse {
+  /**
+   * The email was accepted for delivery.
+   */
+  status: 'queued';
+
+  success: boolean;
+}
+
+export interface ParticipantRetrieveAnalyticsResponse {
+  analytics: ParticipantRetrieveAnalyticsResponse.Analytics;
+
+  ranks: ParticipantRetrieveAnalyticsResponse.Ranks;
+
+  /**
+   * Per-channel share counts (e.g. `email`, `facebook`, `twitter`, ...).
+   */
+  shareCount: { [key: string]: number };
+
+  /**
+   * Present only with `include=series`. Window end (Unix ms).
+   */
+  endDate?: number;
+
+  /**
+   * Present only when `include=series`. This participant's own referral-link activity
+   * per period (ascending), windowed by `days`/`startDate`/`endDate` and bucketed by
+   * `interval`.
+   */
+  series?: Array<ParticipantRetrieveAnalyticsResponse.Series>;
+
+  /**
+   * Present only with `include=series`. Window start (Unix ms).
+   */
+  startDate?: number;
+}
+
+export namespace ParticipantRetrieveAnalyticsResponse {
+  export interface Analytics {
+    currencyISO?: string;
+
+    expiredReferrals?: number;
+
+    impressions?: number;
+
+    invitesSent?: number;
+
+    leads?: number;
+
+    monthlyReferrals?: number;
+
+    pendingRewards?: number;
+
+    /**
+     * Affiliate only. Revenue attributed to this participant's referrals, in minor
+     * currency units.
+     */
+    referralRevenue?: number;
+
+    referrals?: number;
+
+    rewardsEarned?: number;
+
+    /**
+     * Affiliate only. Total commissions earned, in minor currency units.
+     */
+    totalCommissions?: number;
+
+    /**
+     * Affiliate only. Total paid out, in minor currency units.
+     */
+    totalPaidOut?: number;
+
+    uniqueImpressions?: number;
+
+    /**
+     * Affiliate only. Approved commissions ready to pay, in minor currency units.
+     */
+    upcomingPayout?: number;
+  }
+
+  export interface Ranks {
+    monthlyRank?: number | null;
+
+    prevMonthlyRank?: number | null;
+
+    /**
+     * All-time rank (1-indexed), or null when unranked.
+     */
+    rank?: number | null;
+  }
+
+  export interface Series {
+    androidNativeShares?: number;
+
+    blueskyShares?: number;
+
+    copyRefLinkShares?: number;
+
+    emailShares?: number;
+
+    facebookShares?: number;
+
+    impressions?: number;
+
+    invites?: number;
+
+    iosNativeShares?: number;
+
+    linkedInShares?: number;
+
+    messengerShares?: number;
+
+    participants?: number;
+
+    /**
+     * Start of the period, as a Unix timestamp in milliseconds (UTC).
+     */
+    periodStart?: number;
+
+    pinterestShares?: number;
+
+    qrcodeShares?: number;
+
+    redditShares?: number;
+
+    referralCreditExpireds?: number;
+
+    referralCreditPendings?: number;
+
+    referrals?: number;
+
+    smsShares?: number;
+
+    telegramShares?: number;
+
+    threadsShares?: number;
+
+    /**
+     * Affiliate programs only. Number of commission records.
+     */
+    totalCommissionCount?: number;
+
+    /**
+     * Affiliate programs only. Commissions in the smallest unit of the program
+     * currency.
+     */
+    totalCommissions?: number;
+
+    /**
+     * Affiliate programs only. Revenue in the smallest unit of the program currency.
+     */
+    totalRevenue?: number;
+
+    tumblrShares?: number;
+
+    twitterShares?: number;
+
+    uniqueImpressions?: number;
+
+    wechatShares?: number;
+
+    whatsAppShares?: number;
+  }
+}
+
+export interface ParticipantListActivityLogsResponse {
+  activityLogs: Array<ParticipantListActivityLogsResponse.ActivityLog>;
+
+  limit: number;
+
+  /**
+   * The offset for the next page, or null when there are no more logs.
+   */
+  offset?: number | null;
+}
+
+export namespace ParticipantListActivityLogsResponse {
+  export interface ActivityLog {
+    /**
+     * When the activity occurred, as a Unix timestamp in milliseconds.
+     */
+    createdAt: number;
+
+    text: string;
+
+    /**
+     * The activity family (e.g. `REFERRAL`, `SHARE`, `REWARD`, `EMAIL`, `COMMON`).
+     */
+    type: string;
+  }
+}
+
 export interface ParticipantRetrieveParams {
   /**
    * GrowSurf program ID.
@@ -712,6 +1099,17 @@ export interface ParticipantUpdateParams {
   metadata?: { [key: string]: unknown };
 
   /**
+   * Body param: Freeform internal notes about the participant (internal only, never
+   * exposed to participants).
+   */
+  notes?: string;
+
+  /**
+   * Body param: The participant's PayPal email address, used for affiliate payouts.
+   */
+  paypalEmail?: string;
+
+  /**
    * Body param
    */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED' | 'CREDIT_EXPIRED';
@@ -739,6 +1137,14 @@ export interface ParticipantDeleteParams {
   id: string;
 }
 
+export interface ParticipantBulkDeleteParams {
+  /**
+   * GrowSurf participant IDs and/or email addresses to delete. Mixed entries are
+   * allowed.
+   */
+  participants: Array<string>;
+}
+
 export interface ParticipantAddParams {
   email: string;
 
@@ -762,6 +1168,11 @@ export interface ParticipantAddParams {
    */
   mobileInstanceId?: string;
 
+  /**
+   * Referral credit status; only meaningful when `referredBy` resolves to a referrer.
+   * When omitted, it is derived from the program's referral trigger (`CREDIT_AWARDED`,
+   * `CREDIT_PENDING`, or `CREDIT_EXPIRED`), and left unset when no referrer resolves.
+   */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
 
   /**
@@ -1147,6 +1558,99 @@ export interface ParticipantCancelDelayedReferralParams {
   id: string;
 }
 
+export interface ParticipantEmailParams {
+  /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Body param: HTML body for a free-form email. You can personalize it with dynamic text,
+   * inserting `{{...}}` tokens like `{{firstName}}` or `{{shareUrl}}`. See
+   * [Guide to using dynamic text in GrowSurf emails](https://support.growsurf.com/article/213-guide-to-using-dynamic-text-in-growsurf-emails).
+   */
+  body?: string;
+
+  /**
+   * Body param: The program email template to send (template mode). Send the camelCase
+   * email-type key. The sendable types depend on the program type; the template's
+   * `isEnabled` setting only controls automatic sends. Referral programs: `welcomeNonReferred`,
+   * `referralLinkViewedFirstTime`, `referralLinkUsed`, `referredSignup`,
+   * `welcomeReferred`, `goalAchieved`, `campaignEndedWinners`, `campaignEndedNonWinners`,
+   * `progressUpdateMonthly`. Affiliate programs: `welcomeNonReferred`,
+   * `referralLinkViewedFirstTime`, `referredSignup`, `commissionGenerated`,
+   * `commissionAdjusted`, `payoutPending`, `payoutSentSuccess`, `progressUpdateMonthly`.
+   * System/transactional types (login link, PayPal confirmation, tax) and the invite
+   * email cannot be sent here.
+   */
+  emailType?: string;
+
+  /**
+   * Body param: Optional preheader text for a free-form email.
+   */
+  preheader?: string;
+
+  /**
+   * Body param: Subject line for a free-form email. Supports dynamic text (`{{...}}` tokens),
+   * the same as the body.
+   */
+  subject?: string;
+}
+
+export interface ParticipantRetrieveAnalyticsParams {
+  /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Query param: Last number of days to retrieve analytics for. Defaults to 365.
+   * Maximum 1825.
+   */
+  days?: number;
+
+  /**
+   * Query param: End date of the analytics timeframe as a Unix timestamp in
+   * milliseconds. Required if `days` is not set.
+   */
+  endDate?: number;
+
+  /**
+   * Query param: Set to `series` to also return this participant's own activity per
+   * period.
+   */
+  include?: 'series';
+
+  /**
+   * Query param: Bucket size for the `series` (only used with `include=series`).
+   * Defaults to `day`.
+   */
+  interval?: 'day' | 'week' | 'month';
+
+  /**
+   * Query param: Start date of the analytics timeframe as a Unix timestamp in
+   * milliseconds. Required if `days` is not set.
+   */
+  startDate?: number;
+}
+
+export interface ParticipantListActivityLogsParams {
+  /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Query param: Number of logs to return (1–100, default 20).
+   */
+  limit?: number;
+
+  /**
+   * Query param: Number of logs to skip.
+   */
+  offset?: number;
+}
+
 export declare namespace ParticipantResource {
   export {
     type Create as Create,
@@ -1156,15 +1660,20 @@ export declare namespace ParticipantResource {
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
+    type ParticipantBulkDeleteResponse as ParticipantBulkDeleteResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,
     type ParticipantRecordTransactionResponse as ParticipantRecordTransactionResponse,
     type ParticipantRefundTransactionResponse as ParticipantRefundTransactionResponse,
     type ParticipantSendInvitesResponse as ParticipantSendInvitesResponse,
     type ParticipantTriggerReferralResponse as ParticipantTriggerReferralResponse,
     type ParticipantCancelDelayedReferralResponse as ParticipantCancelDelayedReferralResponse,
+    type ParticipantEmailResponse as ParticipantEmailResponse,
+    type ParticipantRetrieveAnalyticsResponse as ParticipantRetrieveAnalyticsResponse,
+    type ParticipantListActivityLogsResponse as ParticipantListActivityLogsResponse,
     type ParticipantRetrieveParams as ParticipantRetrieveParams,
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
+    type ParticipantBulkDeleteParams as ParticipantBulkDeleteParams,
     type ParticipantAddParams as ParticipantAddParams,
     type ParticipantListCommissionsParams as ParticipantListCommissionsParams,
     type ParticipantListPayoutsParams as ParticipantListPayoutsParams,
@@ -1175,5 +1684,8 @@ export declare namespace ParticipantResource {
     type ParticipantSendInvitesParams as ParticipantSendInvitesParams,
     type ParticipantTriggerReferralParams as ParticipantTriggerReferralParams,
     type ParticipantCancelDelayedReferralParams as ParticipantCancelDelayedReferralParams,
+    type ParticipantEmailParams as ParticipantEmailParams,
+    type ParticipantRetrieveAnalyticsParams as ParticipantRetrieveAnalyticsParams,
+    type ParticipantListActivityLogsParams as ParticipantListActivityLogsParams,
   };
 }

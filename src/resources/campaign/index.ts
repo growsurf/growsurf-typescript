@@ -9,6 +9,8 @@ export {
   type ParticipantPayoutList,
   type ReferralList,
   type CampaignListResponse,
+  type ReferralFlowScreenshot,
+  type ReferralFlowScreenshotsResponse,
   type CampaignCreateMobileParticipantTokenResponse,
   type CampaignRetrieveAnalyticsResponse,
   type CampaignCreateParams,
@@ -37,15 +39,20 @@ export {
   type ReferralSource,
   type ReferralStatus,
   type ParticipantDeleteResponse,
+  type ParticipantBulkDeleteResponse,
   type ParticipantListRewardsResponse,
   type ParticipantRecordTransactionResponse,
   type ParticipantRefundTransactionResponse,
   type ParticipantSendInvitesResponse,
   type ParticipantTriggerReferralResponse,
   type ParticipantCancelDelayedReferralResponse,
+  type ParticipantEmailResponse,
+  type ParticipantRetrieveAnalyticsResponse,
+  type ParticipantListActivityLogsResponse,
   type ParticipantRetrieveParams,
   type ParticipantUpdateParams,
   type ParticipantDeleteParams,
+  type ParticipantBulkDeleteParams,
   type ParticipantAddParams,
   type ParticipantListCommissionsParams,
   type ParticipantListPayoutsParams,
@@ -56,6 +63,9 @@ export {
   type ParticipantSendInvitesParams,
   type ParticipantTriggerReferralParams,
   type ParticipantCancelDelayedReferralParams,
+  type ParticipantEmailParams,
+  type ParticipantRetrieveAnalyticsParams,
+  type ParticipantListActivityLogsParams,
 } from './participant';
 export {
   Reward,
@@ -74,6 +84,18 @@ export {
   type RewardCreateParams,
   type RewardUpdateParams,
 } from './rewards';
+export {
+  Webhooks,
+  type WebhookEvent,
+  type Webhook,
+  type WebhookListResponse,
+  type DeleteWebhookResponse,
+  type WebhookTestResponse,
+  type WebhookCreateParams,
+  type WebhookUpdateParams,
+  type WebhookDeleteParams,
+  type WebhookTestParams,
+} from './webhooks';
 export { Design, type CampaignDesign, type DesignUpdateParams } from './design';
 export { Emails, type CampaignEmails, type EmailUpdateParams } from './emails';
 export { Options, type CampaignOptions, type OptionUpdateParams } from './options';

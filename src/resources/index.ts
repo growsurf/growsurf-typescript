@@ -1,6 +1,15 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
 export {
+  AccountResource,
+  type Account,
+  type AccountCreateResponse,
+  type AccountRotateApiKeyResponse,
+  type AccountResendVerificationEmailResponse,
+  type AccountCreateParams,
+  type AccountUpdateParams,
+} from './account';
+export {
   CampaignResource,
   type Campaign,
   type CommissionStructure,

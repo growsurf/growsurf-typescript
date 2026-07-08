@@ -74,13 +74,25 @@ describe('resource campaign', () => {
       companyLogoImageUrl: 'companyLogoImageUrl',
       companyName: 'companyName',
       name: 'name',
-      status: 'DRAFT',
+      status: 'IN_PROGRESS',
     });
   });
 
   // Mock server tests are disabled
   test.skip('clone', async () => {
     const responsePromise = client.campaign.clone('id');
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('getReferralFlowScreenshots', async () => {
+    const responsePromise = client.campaign.getReferralFlowScreenshots('id');
     const rawResponse = await responsePromise.asResponse();
     expect(rawResponse).toBeInstanceOf(Response);
     const response = await responsePromise;

@@ -45,14 +45,17 @@ export class Options extends APIResource {
 /**
  * A program's options (dashboard Program Editor **Options** tab): approval, anti-
  * fraud, referral windows, reCAPTCHA, payout/tax, and notification-email settings.
- * The set of keys is intentionally left open; see the API reference for the full
- * field list.
+ * The set of keys is intentionally left open; to see the full object with every
+ * field and its current value, `GET` this resource, then `PATCH` back only the
+ * fields you want to change.
  */
 export type CampaignOptions = { [key: string]: unknown };
 
 /**
  * A partial `CampaignOptions` — only the fields you send are changed. The set of
- * keys is intentionally left open; see the API reference for the full field list.
+ * keys is intentionally left open; to see the full object with every field and its
+ * current value, `GET` this resource, then `PATCH` back only the fields you want to
+ * change.
  */
 export type OptionUpdateParams = { [key: string]: unknown };
 

@@ -28,9 +28,9 @@ export class Installation extends APIResource {
 
   /**
    * Updates a program's installation configuration. Only the fields you send are
-   * changed (a surgical merge). `referralTrigger` is only available for referral
-   * programs. `mobile.publicKey` is read-only (server-generated). URLs must include
-   * an explicit `http://` or `https://` scheme.
+   * changed; anything you leave out is untouched. `referralTrigger` is only available
+   * for referral programs. `mobile.publicKey` is read-only (server-generated). URLs
+   * must include an explicit `http://` or `https://` scheme.
    *
    * @example
    * ```ts
@@ -53,13 +53,16 @@ export class Installation extends APIResource {
  * A program's installation configuration (dashboard Program Editor **Installation**
  * tab, plus Mobile SDK settings): referral trigger, signup tracking, share URL +
  * whitelist, custom-form signup, and mobile SDK settings. The set of keys is
- * intentionally left open; see the API reference for the full field list.
+ * intentionally left open; to see the full object with every field and its current
+ * value, `GET` this resource, then `PATCH` back only the fields you want to change.
  */
 export type CampaignInstallation = { [key: string]: unknown };
 
 /**
  * A partial `CampaignInstallation` — only the fields you send are changed. The set
- * of keys is intentionally left open; see the API reference for the full field list.
+ * of keys is intentionally left open; to see the full object with every field and
+ * its current value, `GET` this resource, then `PATCH` back only the fields you want
+ * to change.
  */
 export type InstallationUpdateParams = { [key: string]: unknown };
 
