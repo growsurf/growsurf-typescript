@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/growsurf/growsurf-typescript/compare/v1.0.0...v1.1.0) (2026-07-08)
+
+
+### Features
+
+* add account webhook and participant APIs ([33d4a23](https://github.com/growsurf/growsurf-typescript/commit/33d4a23a49bc8b8b14390e4808a044bb39850a21))
+
 ## [1.0.0](https://github.com/growsurf/growsurf-typescript/compare/v0.8.0...v1.0.0) (2026-07-03)
 
 
