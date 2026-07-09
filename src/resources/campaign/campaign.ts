@@ -169,23 +169,6 @@ export class CampaignResource extends APIResource {
   }
 
   /**
-   * Captures two preview screenshots for the program: the authenticated referrer
-   * view and the referred-friend view.
-   *
-   * @example
-   * ```ts
-   * const response =
-   *   await client.campaign.getReferralFlowScreenshots('id');
-   * ```
-   */
-  getReferralFlowScreenshots(
-    id: string,
-    options?: RequestOptions,
-  ): APIPromise<ReferralFlowScreenshotsResponse> {
-    return this._client.get(path`/campaign/${id}/referral-flow-screenshots`, options);
-  }
-
-  /**
    * Creates or returns a participant using the same input behavior as Add
    * Participant, then returns a participant-scoped token for GrowSurf mobile SDK
    * participant endpoints. Use this endpoint from your backend after your mobile app
@@ -592,45 +575,6 @@ export namespace ReferralList {
 
 export interface CampaignListResponse {
   campaigns: Array<Campaign>;
-}
-
-export interface ReferralFlowScreenshot {
-  /**
-   * The referral-flow view captured in this screenshot.
-   */
-  view: 'referrer' | 'referredFriend';
-
-  /**
-   * Image URL for the generated screenshot.
-   */
-  url: string;
-
-  /**
-   * Screenshot viewport width in CSS pixels.
-   */
-  width: number;
-
-  /**
-   * Screenshot viewport height in CSS pixels.
-   */
-  height: number;
-}
-
-export interface ReferralFlowScreenshotsResponse {
-  /**
-   * Screenshot of the referral flow as a signed-in referrer sees it.
-   */
-  referrer: ReferralFlowScreenshot;
-
-  /**
-   * Screenshot of the referral flow as the referred friend sees it.
-   */
-  referredFriend: ReferralFlowScreenshot;
-
-  /**
-   * When the screenshots were generated, as a Unix timestamp in milliseconds.
-   */
-  generatedAt: number;
 }
 
 export interface CampaignCreateMobileParticipantTokenResponse {
@@ -1201,8 +1145,6 @@ export declare namespace CampaignResource {
     type ParticipantPayoutList as ParticipantPayoutList,
     type ReferralList as ReferralList,
     type CampaignListResponse as CampaignListResponse,
-    type ReferralFlowScreenshot as ReferralFlowScreenshot,
-    type ReferralFlowScreenshotsResponse as ReferralFlowScreenshotsResponse,
     type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
     type CampaignCreateParams as CampaignCreateParams,

@@ -9,8 +9,6 @@ export {
   type ParticipantPayoutList,
   type ReferralList,
   type CampaignListResponse,
-  type ReferralFlowScreenshot,
-  type ReferralFlowScreenshotsResponse,
   type CampaignCreateMobileParticipantTokenResponse,
   type CampaignRetrieveAnalyticsResponse,
   type CampaignCreateParams,
