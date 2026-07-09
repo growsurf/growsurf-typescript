@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/growsurf/growsurf-typescript/compare/v1.1.0...v1.1.1) (2026-07-09)
+
+
+### Bug Fixes
+
+* remove referral screenshot REST surface ([d70d6c2](https://github.com/growsurf/growsurf-typescript/commit/d70d6c26882bd8f968cc8bbdd6223ae5fecbc3ca))
+
 ## [1.1.0](https://github.com/growsurf/growsurf-typescript/compare/v1.0.0...v1.1.0) (2026-07-08)
 
 
