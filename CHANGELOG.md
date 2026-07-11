@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/growsurf/growsurf-typescript/compare/v1.1.1...v1.1.2) (2026-07-11)
+
+
+### Bug Fixes
+
+* support retry-safe API key rotation ([00e94c5](https://github.com/growsurf/growsurf-typescript/commit/00e94c53e78a894a1b883bd1885c4739829f6e7a))
+
 ## [1.1.1](https://github.com/growsurf/growsurf-typescript/compare/v1.1.0...v1.1.1) (2026-07-09)
 
 
