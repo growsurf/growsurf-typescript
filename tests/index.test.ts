@@ -31,6 +31,18 @@ describe('instantiate client', () => {
       expect(req.headers.get('x-my-default-header')).toEqual('2');
     });
 
+    test('mutating requests include a retry-stable idempotency key', async () => {
+      const options: { path: string; method: 'post'; idempotencyKey?: string } = {
+        path: '/account/api-key',
+        method: 'post',
+      };
+      const { req } = await client.buildRequest(options);
+      const idempotencyKey = req.headers.get('idempotency-key');
+
+      expect(idempotencyKey).toMatch(/^stainless-node-retry-[0-9a-f-]{36}$/);
+      expect(options.idempotencyKey).toBe(idempotencyKey);
+    });
+
     test('can ignore `undefined` and leave the default', async () => {
       const { req } = await client.buildRequest({
         path: '/foo',

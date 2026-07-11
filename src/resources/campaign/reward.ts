@@ -31,7 +31,8 @@ export class Reward extends APIResource {
   }
 
   /**
-   * Approves a manually approved reward earned by a participant.
+   * Approves a manually approved reward earned by a participant. Requires
+   * `reward:write`. Passing `fulfill: true` also requires `reward:fulfill`.
    *
    * @example
    * ```ts
@@ -51,7 +52,7 @@ export class Reward extends APIResource {
   }
 
   /**
-   * Marks an approved participant reward as fulfilled.
+   * Marks an approved participant reward as fulfilled. Requires `reward:fulfill`.
    *
    * @example
    * ```ts

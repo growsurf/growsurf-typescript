@@ -7,9 +7,9 @@ import { RequestOptions } from '../internal/request-options';
 export class AccountResource extends APIResource {
   /**
    * Creates a new GrowSurf account. This is the only endpoint that does not require an
-   * API key. The response includes an API key for the new account, but the key is
-   * locked until the account's email address is verified: authenticated endpoints
-   * outside the Accounts group return a `403` with error code
+   * API key. The response includes an API key for the new account, shown once in
+   * the response. The key is locked until the account's email address is verified:
+   * authenticated endpoints outside the Accounts group return a `403` with error code
    * `EMAIL_NOT_VERIFIED_ERROR` until then (resend the email via the
    * resend-verification-email endpoint, then retry). A welcome email is sent to the
    * address with the verification link and a set-password link for dashboard access.
@@ -63,10 +63,12 @@ export class AccountResource extends APIResource {
   }
 
   /**
-   * Generates a new API key and immediately revokes the old one. The key used to make
-   * this request stops working as soon as the response is returned — update every
-   * integration that used the old key with the new one. The account owner is notified
-   * by email whenever the key is rotated.
+   * Generates a new API key and invalidates the key used for the request. The SDK sends
+   * a retry-safe `Idempotency-Key`, so automatic retries return the same replacement.
+   * Store the returned key, then update every integration that used the old key. The
+   * account owner is notified by email whenever the key is rotated. Requires an API key
+   * with `api_key:rotate`. This operation is available only through the REST API or a
+   * GrowSurf API SDK, not through MCP.
    *
    * @example
    * ```ts
@@ -161,7 +163,7 @@ export interface AccountCreateResponse {
 
 export interface AccountRotateApiKeyResponse {
   /**
-   * The new API key. The previous key is revoked immediately.
+   * The new API key. Store it now; the key used for rotation stops working immediately.
    */
   apiKey: string;
 }

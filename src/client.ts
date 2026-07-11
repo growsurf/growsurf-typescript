@@ -196,6 +196,7 @@ export class Growsurf {
     this.maxRetries = options.maxRetries ?? 2;
     this.fetch = options.fetch ?? Shims.getDefaultFetch();
     this.#encoder = Opts.FallbackEncoder;
+    this.idempotencyHeader = 'Idempotency-Key';
 
     const customHeadersEnv = readEnv('GROWSURF_CUSTOM_HEADERS');
     if (customHeadersEnv) {
