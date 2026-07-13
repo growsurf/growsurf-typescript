@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/growsurf/growsurf-typescript/compare/v1.1.2...v1.2.0) (2026-07-13)
+
+
+### Features
+
+* **api:** add Team resource ([4cd6dbe](https://github.com/growsurf/growsurf-typescript/commit/4cd6dbede75b7db35981e5b0880ad2bfa9d08a8a))
+
 ## [1.1.2](https://github.com/growsurf/growsurf-typescript/compare/v1.1.1...v1.1.2) (2026-07-11)
 
 
