@@ -2,19 +2,27 @@
 
 Types:
 
-- <code><a href="./src/resources/account.ts">Account</a></code>
 - <code><a href="./src/resources/account.ts">AccountCreateResponse</a></code>
-- <code><a href="./src/resources/account.ts">AccountRotateApiKeyResponse</a></code>
-- <code><a href="./src/resources/account.ts">AccountResendVerificationEmailResponse</a></code>
 
 Methods:
 
 - <code title="post /accounts">client.account.<a href="./src/resources/account.ts">create</a>({ ...params }) -> AccountCreateResponse</code>
-- <code title="get /account">client.account.<a href="./src/resources/account.ts">retrieve</a>() -> Account</code>
-- <code title="patch /account">client.account.<a href="./src/resources/account.ts">update</a>({ ...params }) -> Account</code>
-- <code title="post /account/api-key">client.account.<a href="./src/resources/account.ts">rotateApiKey</a>() -> AccountRotateApiKeyResponse</code>
-- <code title="post /account/verification-request">client.account.<a href="./src/resources/account.ts">requestVerification</a>() -> Account</code>
-- <code title="post /account/verification-email">client.account.<a href="./src/resources/account.ts">resendVerificationEmail</a>() -> AccountResendVerificationEmailResponse</code>
+
+# Team
+
+Types:
+
+- <code><a href="./src/resources/team.ts">Team</a></code>
+- <code><a href="./src/resources/team.ts">TeamRotateApiKeyResponse</a></code>
+- <code><a href="./src/resources/team.ts">TeamResendOwnerVerificationEmailResponse</a></code>
+
+Methods:
+
+- <code title="get /team">client.team.<a href="./src/resources/team.ts">retrieve</a>() -> Team</code>
+- <code title="patch /team">client.team.<a href="./src/resources/team.ts">update</a>({ ...params }) -> Team</code>
+- <code title="post /api-key/rotate">client.team.<a href="./src/resources/team.ts">rotateApiKey</a>() -> TeamRotateApiKeyResponse</code>
+- <code title="post /team/verification-request">client.team.<a href="./src/resources/team.ts">requestVerification</a>() -> Team</code>
+- <code title="post /team/owner/verification-email">client.team.<a href="./src/resources/team.ts">resendOwnerVerificationEmail</a>() -> TeamResendOwnerVerificationEmailResponse</code>
 
 # Campaign
 

@@ -33,7 +33,7 @@ describe('instantiate client', () => {
 
     test('mutating requests include a retry-stable idempotency key', async () => {
       const options: { path: string; method: 'post'; idempotencyKey?: string } = {
-        path: '/account/api-key',
+        path: '/api-key/rotate',
         method: 'post',
       };
       const { req } = await client.buildRequest(options);

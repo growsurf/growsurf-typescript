@@ -17,15 +17,14 @@ import * as Errors from './core/error';
 import * as Uploads from './core/uploads';
 import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
+import { AccountCreateParams, AccountCreateResponse, AccountResource } from './resources/account';
 import {
-  Account,
-  AccountCreateParams,
-  AccountCreateResponse,
-  AccountResendVerificationEmailResponse,
-  AccountResource,
-  AccountRotateApiKeyResponse,
-  AccountUpdateParams,
-} from './resources/account';
+  Team,
+  TeamResendOwnerVerificationEmailResponse,
+  TeamResource,
+  TeamRotateApiKeyResponse,
+  TeamUpdateParams,
+} from './resources/team';
 import {
   Campaign,
   CampaignCreateMobileParticipantTokenParams,
@@ -170,14 +169,10 @@ export class Growsurf {
     apiKey = readEnv('GROWSURF_API_KEY'),
     ...opts
   }: ClientOptions = {}) {
-    if (apiKey === undefined) {
-      throw new Errors.GrowsurfError(
-        "The GROWSURF_API_KEY environment variable is missing or empty; either provide it, or instantiate the Growsurf client with an apiKey option, like new Growsurf({ apiKey: 'My API Key' }).",
-      );
-    }
+    const resolvedAPIKey = apiKey ?? '';
 
     const options: ClientOptions = {
-      apiKey,
+      apiKey: resolvedAPIKey,
       ...opts,
       baseURL: baseURL || `https://api.growsurf.com/v2`,
     };
@@ -212,7 +207,7 @@ export class Growsurf {
 
     this._options = options;
 
-    this.apiKey = apiKey;
+    this.apiKey = resolvedAPIKey;
   }
 
   /**
@@ -250,6 +245,7 @@ export class Growsurf {
   }
 
   protected async authHeaders(opts: FinalRequestOptions): Promise<NullableHeaders | undefined> {
+    if (!this.apiKey) return undefined;
     return buildHeaders([{ Authorization: `Bearer ${this.apiKey}` }]);
   }
 
@@ -769,10 +765,12 @@ export class Growsurf {
   static toFile = Uploads.toFile;
 
   account: API.AccountResource = new API.AccountResource(this);
+  team: API.TeamResource = new API.TeamResource(this);
   campaign: API.CampaignResource = new API.CampaignResource(this);
 }
 
 Growsurf.AccountResource = AccountResource;
+Growsurf.TeamResource = TeamResource;
 Growsurf.CampaignResource = CampaignResource;
 
 export declare namespace Growsurf {
@@ -780,12 +778,16 @@ export declare namespace Growsurf {
 
   export {
     AccountResource as AccountResource,
-    type Account as Account,
     type AccountCreateResponse as AccountCreateResponse,
-    type AccountRotateApiKeyResponse as AccountRotateApiKeyResponse,
-    type AccountResendVerificationEmailResponse as AccountResendVerificationEmailResponse,
     type AccountCreateParams as AccountCreateParams,
-    type AccountUpdateParams as AccountUpdateParams,
+  };
+
+  export {
+    TeamResource as TeamResource,
+    type Team as Team,
+    type TeamRotateApiKeyResponse as TeamRotateApiKeyResponse,
+    type TeamResendOwnerVerificationEmailResponse as TeamResendOwnerVerificationEmailResponse,
+    type TeamUpdateParams as TeamUpdateParams,
   };
 
   export {
