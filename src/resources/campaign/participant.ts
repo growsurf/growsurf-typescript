@@ -130,7 +130,8 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Retrieves a paged list of commissions earned by a participant.
+   * **Affiliate programs only.** Retrieves a paged list of commissions earned by a
+   * participant.
    *
    * @example
    * ```ts
@@ -154,7 +155,8 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Retrieves a paged list of payouts that belong to a participant.
+   * **Affiliate programs only.** Retrieves a paged list of payouts that belong to a
+   * participant.
    *
    * @example
    * ```ts
@@ -226,15 +228,12 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Records a sale made by a referred customer and generates affiliate commissions
-   * for their referrer when applicable.
-   *
-   * At least one transaction identifier is required: one of `externalId`,
-   * `transactionId`, `orderId`, `paymentId`, `invoiceId`, `paymentIntentId`, or
-   * `chargeId`. `customerId` and `subscriptionId` do not count, since they identify the
-   * customer or subscription rather than the specific transaction. Without an
-   * identifier, resending the same sale creates a duplicate commission and double-pays
-   * the referrer; the server rejects such requests with HTTP 400.
+   * **Affiliate programs only.** Records a sale made by a referred customer and
+   * generates affiliate commissions for their referrer when applicable. Requires at
+   * least one transaction identifier (externalId, transactionId, orderId, paymentId,
+   * invoiceId, paymentIntentId, or chargeId) so repeated requests can be de-duplicated
+   * — without one, a resent sale would create a second commission. Reuse the same
+   * identifier(s) when refunding.
    *
    * @example
    * ```ts
@@ -266,9 +265,9 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Records an amendment (refund, partial refund, refund cancellation, or
-   * chargeback) against a previously recorded transaction and reverses or adjusts
-   * the referrer's commission. The inverse of recording an affiliate transaction.
+   * **Affiliate programs only.** Records an amendment (refund, partial refund, refund
+   * cancellation, or chargeback) against a previously recorded transaction and reverses
+   * or adjusts the referrer's commission. The inverse of Record Affiliate Transaction.
    * Identify the original transaction with the same identifier(s) you sent when
    * recording it. Commissions already paid out to the affiliate are not clawed back;
    * the amendment is recorded for tax reporting only.
@@ -302,7 +301,7 @@ export class ParticipantResource extends APIResource {
 
   /**
    * Sends email invites on behalf of a participant to a list of email addresses.
-   * Sending invites via the API requires a verified custom email domain on the
+   * Sending invites via the API requires a **verified custom email domain** on the
    * program; the request fails until one is verified.
    *
    * @example
@@ -391,8 +390,8 @@ export class ParticipantResource extends APIResource {
    * Free-form emails are sent with the same compliance handling (company name,
    * postal address, and an unsubscribe link are added automatically, and unsubscribed
    * participants are suppressed). Sending requires the team to be verified by GrowSurf.
-   * Requires a verified custom email domain on the program (set up in
-   * Campaign Editor > 3. Emails > Email Settings). Returns `400` until one is
+   * Requires a **verified custom email domain** on the program (which can be completed
+   * in *Campaign Editor > 3. Emails > Email Settings*). Returns `400` until one is
    * verified. The email is accepted for delivery.
    *
    * @example
@@ -418,7 +417,8 @@ export class ParticipantResource extends APIResource {
   /**
    * Retrieves analytics for a single participant — all-time engagement counters,
    * leaderboard ranks, and per-channel share counts (plus affiliate money metrics for
-   * affiliate programs). Useful for segmenting and re-engaging participants.
+   * affiliate programs). Useful for segmenting and re-engaging participants. Pass
+   * `include=series` to also get this participant's own activity over time.
    *
    * @example
    * ```ts

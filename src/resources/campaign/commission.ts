@@ -10,7 +10,7 @@ import { path } from '../../internal/utils/path';
  */
 export class Commission extends APIResource {
   /**
-   * Removes a pending participant commission.
+   * **Affiliate programs only.** Removes a pending participant commission.
    *
    * @example
    * ```ts
@@ -30,7 +30,8 @@ export class Commission extends APIResource {
   }
 
   /**
-   * Approves a pending participant commission so it can become eligible for payout.
+   * **Affiliate programs only.** Approves a pending participant commission so it can
+   * become eligible for payout.
    *
    * @example
    * ```ts

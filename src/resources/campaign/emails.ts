@@ -15,7 +15,7 @@ export class Emails extends APIResource {
    * Program Editor's **Emails** tab. Returns each editable email template
    * (`subject`, `preheader`, `body`, `isEnabled`) plus the `settings` block (sender,
    * contact, and design). The set of email templates returned depends on the program
-   * type.
+   * type (referral vs affiliate).
    *
    * @example
    * ```ts
@@ -28,9 +28,11 @@ export class Emails extends APIResource {
 
   /**
    * Updates a program's email configuration. Only the fields you send are changed;
-   * anything you leave out is untouched. You may only write the email templates the
-   * dashboard exposes for the program type. Some fields are read-only
-   * (`settings.sender.fromEmail`).
+   * omitted fields are left untouched. You may only write the email templates the
+   * dashboard exposes for the program type — writing a template that is not available
+   * for the program type returns a `400`. Some fields are read-only
+   * (`settings.sender.fromEmail`, whose custom value requires dashboard domain
+   * verification).
    *
    * @example
    * ```ts

@@ -6,7 +6,9 @@ import { RequestOptions } from '../internal/request-options';
 
 export class TeamResource extends APIResource {
   /**
-   * Retrieves the team bound to the API key or OAuth connection.
+   * Retrieves the team bound to the API key or OAuth connection. `verificationStatus`
+   * is `VERIFIED` once GrowSurf has verified the team, which is required before a
+   * program can send participant emails.
    *
    * @example
    * ```ts
@@ -19,7 +21,8 @@ export class TeamResource extends APIResource {
 
   /**
    * Updates the name of the team bound to the API key or OAuth connection. Any other
-   * property is rejected with a `400`.
+   * property is rejected with a `400`. Personal profiles, billing, and team ownership
+   * are not editable here.
    *
    * @example
    * ```ts
@@ -32,9 +35,14 @@ export class TeamResource extends APIResource {
 
   /**
    * Generates a new API key and makes the key used on this request stop working when
-   * rotation succeeds. The SDK sends a retry-safe `Idempotency-Key`, so automatic
-   * retries return the same replacement. Store the new key, then update every
-   * integration that used the old key. This operation is unavailable through MCP.
+   * rotation succeeds. Send a unique, random `Idempotency-Key`. If the response is
+   * interrupted, immediately retry with the original API key and the same
+   * `Idempotency-Key` to receive the same new key. Update every integration that used
+   * the old key. The team owner is notified by email whenever the key is rotated.
+   * GrowSurf SDKs generate the idempotency key automatically. This endpoint accepts an
+   * API key with `api_key:rotate`. If this scope is unavailable, rotate the key in the
+   * authenticated dashboard instead. This operation is available only through the REST
+   * API or a GrowSurf API SDK, not through MCP.
    *
    * @example
    * ```ts
@@ -46,8 +54,9 @@ export class TeamResource extends APIResource {
   }
 
   /**
-   * Requests GrowSurf to verify the bound team. Calling this again while a request is
-   * pending does not create a duplicate.
+   * Requests GrowSurf to verify the bound team (required before a program can email its
+   * participants). Idempotent — calling it again while a request is pending does not
+   * create a duplicate. Returns the team with its updated `verificationStatus`.
    *
    * @example
    * ```ts
@@ -60,7 +69,9 @@ export class TeamResource extends APIResource {
 
   /**
    * Resends the email-verification message to the bound team's owner. The response never
-   * reveals the owner's email address.
+   * reveals the owner's email address. A `200` with `status: SENT` is returned only when
+   * an email was actually dispatched. Returns `400` if the email is already verified,
+   * and `429` if a verification email was sent too recently — wait a moment, then retry.
    *
    * @example
    * ```ts
