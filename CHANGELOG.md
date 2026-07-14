@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/growsurf/growsurf-typescript/compare/v1.2.0...v1.2.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* align method docs with the REST v2 contract ([47e3c48](https://github.com/growsurf/growsurf-typescript/commit/47e3c485b2184dfbd7107e056acf4188c4a9164e))
+
 ## [1.2.0](https://github.com/growsurf/growsurf-typescript/compare/v1.1.2...v1.2.0) (2026-07-13)
 
 
