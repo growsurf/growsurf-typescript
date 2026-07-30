@@ -8,6 +8,78 @@ const client = new Growsurf({
 });
 
 describe('resource campaign', () => {
+  test('affiliate response types accept runtime nulls', () => {
+    const application: Growsurf.AffiliateApplication = {
+      id: 'app_123',
+      answers: [
+        {
+          fieldId: 'primaryChannelUrl',
+          label: 'Website or social media channel',
+          type: 'url',
+          value: 'https://aviato.com',
+        },
+        {
+          fieldId: 'teamSize',
+          label: 'Team size',
+          type: 'number',
+          value: 4,
+        },
+        {
+          fieldId: 'acceptRules',
+          label: 'Accept rules',
+          type: 'checkbox',
+          value: true,
+        },
+      ],
+      createdAt: 1752710400000,
+      decidedAt: null,
+      email: null,
+      firstName: null,
+      lastName: null,
+      participantId: null,
+      reapplyAllowedAt: null,
+      rejectionReason: null,
+      reviewedAt: null,
+      riskLevel: null,
+      status: 'PENDING',
+      termsAcceptedAt: null,
+    };
+    const invite: Growsurf.AffiliateInvite = {
+      acceptedAt: null,
+      firstName: null,
+      lastName: null,
+      revokedAt: null,
+    };
+
+    expect(application.email).toBeNull();
+    expect(invite.acceptedAt).toBeNull();
+  });
+
+  test('campaign email analytics response types include lifecycle metrics', () => {
+    const response: Growsurf.CampaignRetrieveAnalyticsResponse = {
+      analytics: {},
+      endDate: 2,
+      startDate: 1,
+      email: {
+        sent: 2,
+        delivered: 1,
+        opened: 1,
+        clicked: 1,
+        bounced: 1,
+        spamComplaints: 0,
+        deliveryRate: 0.5,
+        openRate: 1,
+        clickRate: 1,
+        bounceRate: 0.5,
+        byType: [],
+        coverageStartDate: null,
+        isPartial: false,
+      },
+    };
+
+    expect(response.email?.sent).toBe(2);
+  });
+
   // Mock server tests are disabled
   test.skip('retrieve', async () => {
     const responsePromise = client.campaign.retrieve('id');
@@ -117,6 +189,136 @@ describe('resource campaign', () => {
       referralStatus: 'CREDIT_PENDING',
       referredBy: 'referredBy',
     });
+  });
+
+  test.skip('listAffiliateApplications', async () => {
+    const responsePromise = client.campaign.listAffiliateApplications('id');
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('listAffiliateApplications: request options and params are passed correctly', async () => {
+    // ensure the request options are being passed correctly by passing an invalid HTTP method in order to cause an error
+    await expect(
+      client.campaign.listAffiliateApplications(
+        'id',
+        { limit: 1, offset: 0, status: 'PENDING' },
+        { path: '/_stainless_unknown_path' },
+      ),
+    ).rejects.toThrow(Growsurf.NotFoundError);
+  });
+
+  test.skip('retrieveAffiliateApplication: only required params', async () => {
+    const responsePromise = client.campaign.retrieveAffiliateApplication('applicationId', { id: 'id' });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('retrieveAffiliateApplication: required and optional params', async () => {
+    const response = await client.campaign.retrieveAffiliateApplication('applicationId', { id: 'id' });
+  });
+
+  test.skip('reviewAffiliateApplication: only required params', async () => {
+    const responsePromise = client.campaign.reviewAffiliateApplication('applicationId', { id: 'id' });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('reviewAffiliateApplication: required and optional params', async () => {
+    const response = await client.campaign.reviewAffiliateApplication('applicationId', {
+      id: 'id',
+      allowImmediateReapply: true,
+      reapplyAllowedAt: 0,
+      rejectionReason: 'rejectionReason',
+      reviewNote: 'reviewNote',
+      status: 'APPROVED',
+    });
+  });
+
+  test.skip('listAffiliateInvites', async () => {
+    const responsePromise = client.campaign.listAffiliateInvites('id');
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('listAffiliateInvites: request options and params are passed correctly', async () => {
+    // ensure the request options are being passed correctly by passing an invalid HTTP method in order to cause an error
+    await expect(
+      client.campaign.listAffiliateInvites(
+        'id',
+        { limit: 1, offset: 0, status: 'PENDING' },
+        { path: '/_stainless_unknown_path' },
+      ),
+    ).rejects.toThrow(Growsurf.NotFoundError);
+  });
+
+  test.skip('createAffiliateInvite: only required params', async () => {
+    const responsePromise = client.campaign.createAffiliateInvite('id', { email: 'dev@stainless.com' });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('createAffiliateInvite: required and optional params', async () => {
+    const response = await client.campaign.createAffiliateInvite('id', {
+      email: 'dev@stainless.com',
+      firstName: 'firstName',
+      lastName: 'lastName',
+    });
+  });
+
+  test.skip('revokeAffiliateInvite: only required params', async () => {
+    const responsePromise = client.campaign.revokeAffiliateInvite('inviteId', { id: 'id' });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('revokeAffiliateInvite: required and optional params', async () => {
+    const response = await client.campaign.revokeAffiliateInvite('inviteId', { id: 'id' });
+  });
+
+  test.skip('resendAffiliateInvite: only required params', async () => {
+    const responsePromise = client.campaign.resendAffiliateInvite('inviteId', { id: 'id' });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  test.skip('resendAffiliateInvite: required and optional params', async () => {
+    const response = await client.campaign.resendAffiliateInvite('inviteId', { id: 'id' });
   });
 
   // Mock server tests are disabled

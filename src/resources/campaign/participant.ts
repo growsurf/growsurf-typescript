@@ -30,7 +30,11 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Updates a participant by GrowSurf participant ID or email address.
+   * Updates a participant by GrowSurf participant ID or email address. For affiliate
+   * programs, set `affiliateStatus` to `APPROVED`, `SUSPENDED`, or `BANNED`. `APPROVED`
+   * enrolls the participant as an affiliate. `SUSPENDED` and `BANNED` require an
+   * existing affiliate. This endpoint does not accept `isAffiliate`, and affiliate
+   * enrollment cannot be removed through REST.
    *
    * @example
    * ```ts
@@ -39,6 +43,7 @@ export class ParticipantResource extends APIResource {
    *     'participantIdOrEmail',
    *     {
    *       id: 'id',
+   *       affiliateStatus: 'APPROVED',
    *       firstName: 'Gavin',
    *       lastName: 'Belson',
    *       metadata: { company: 'Hooli, Inc' },
@@ -103,7 +108,12 @@ export class ParticipantResource extends APIResource {
 
   /**
    * Adds a new participant to the program. If the email already exists, the existing
-   * participant is returned.
+   * participant is returned unchanged. For affiliate programs, set `isAffiliate` to
+   * `true` to enroll a new participant as an approved affiliate or `false` to create a
+   * non-affiliate. If you omit `isAffiliate`, a valid `referredBy` creates a referred
+   * non-affiliate; without a valid referrer, the new participant is enrolled as an
+   * approved affiliate. You can send a valid `referredBy` with `isAffiliate: true` to
+   * keep the referral attribution and enroll the participant as an affiliate.
    *
    * @example
    * ```ts
@@ -112,6 +122,7 @@ export class ParticipantResource extends APIResource {
    *   {
    *     email: 'gavin@hooli.com',
    *     firstName: 'Gavin',
+   *     isAffiliate: true,
    *     ipAddress: '203.0.113.10',
    *     lastName: 'Belson',
    *     metadata: {
@@ -416,9 +427,12 @@ export class ParticipantResource extends APIResource {
 
   /**
    * Retrieves analytics for a single participant — all-time engagement counters,
-   * leaderboard ranks, and per-channel share counts (plus affiliate money metrics for
-   * affiliate programs). Useful for segmenting and re-engaging participants. Pass
-   * `include=series` to also get this participant's own activity over time.
+   * leaderboard ranks, and per-channel share counts (plus affiliate revenue,
+   * commission, and payout metrics for affiliate programs). Pass `include=email` for
+   * `sent` (accepted for delivery), `delivered`, `opened`, `clicked`, `bounced`, and
+   * `spamComplaints` metrics attributed to this participant, including invitations
+   * they sent. Use `include=email,series` to include the same counts in each UTC
+   * series bucket.
    *
    * @example
    * ```ts
@@ -465,6 +479,61 @@ export class ParticipantResource extends APIResource {
       ...options,
     });
   }
+
+  /**
+   * Returns a participant's payout-destination status across every payout provider
+   * enabled for the program (PayPal and/or Wise). For each provider it reports the
+   * current status, the confirmed claim email, the legal recipient type, and — when a
+   * delivery bounced or a recipient was invalidated — the repair reason. `activeProvider`
+   * is the provider that currently gets paid, or `null` until the participant confirms
+   * one.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.getPayoutDestination(
+   *     'participantIdOrEmail',
+   *     { id: 'id' },
+   *   );
+   * ```
+   */
+  getPayoutDestination(
+    participantIDOrEmail: string,
+    params: ParticipantGetPayoutDestinationParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantGetPayoutDestinationResponse> {
+    const { id } = params;
+    return this._client.get(
+      path`/campaign/${id}/participant/${participantIDOrEmail}/payout-destination`,
+      options,
+    );
+  }
+
+  /**
+   * Sends the participant a one-time link to confirm their payout destination for the
+   * chosen provider. Only the participant can open the link and confirm — this endpoint
+   * just triggers the message. The provider must be enabled for the program.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.participant.requestPayoutDestinationConfirmation(
+   *     'participantIdOrEmail',
+   *     { id: 'id', provider: 'PAYPAL' },
+   *   );
+   * ```
+   */
+  requestPayoutDestinationConfirmation(
+    participantIDOrEmail: string,
+    params: ParticipantRequestPayoutDestinationConfirmationParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantRequestPayoutDestinationConfirmationResponse> {
+    const { id, ...body } = params;
+    return this._client.post(
+      path`/campaign/${id}/participant/${participantIDOrEmail}/payout-destination/request-confirmation`,
+      { body, ...options },
+    );
+  }
 }
 
 export interface Create {
@@ -475,6 +544,14 @@ export interface Create {
   firstName?: string;
 
   ipAddress?: string;
+
+  /**
+   * Affiliate programs only. Controls affiliate enrollment for a new participant. `true`
+   * enrolls the participant with `affiliateStatus: APPROVED`; `false` creates a
+   * non-affiliate without `affiliateStatus`. Existing participants are returned
+   * unchanged.
+   */
+  isAffiliate?: boolean;
 
   lastName?: string;
 
@@ -520,7 +597,24 @@ export interface Participant {
 
   rewards: Array<ParticipantReward>;
 
-  shareUrl: string;
+  /**
+   * The unique share URL of the participant. Omitted for affiliate program
+   * participants who are not approved affiliates.
+   */
+  shareUrl?: string;
+
+  /**
+   * Affiliate programs only. How the affiliate enrolled (`OPEN_ENROLLMENT`,
+   * `APPLICATION`, `PARTICIPANT_AUTH`, `INVITE`, `REST_API`, `CSV`, or `DASHBOARD`).
+   * `null` when not recorded.
+   */
+  affiliateEnrollmentSource?: string | null;
+
+  /**
+   * Affiliate programs only. The enrolled affiliate's status (`APPROVED`,
+   * `SUSPENDED`, or `BANNED`). `null` for participants who are not affiliates.
+   */
+  affiliateStatus?: string | null;
 
   allMatchingFraudsters?: Array<{ [key: string]: unknown }>;
 
@@ -539,6 +633,12 @@ export interface Participant {
   inviteCount?: number;
 
   ipAddress?: string | null;
+
+  /**
+   * Affiliate programs only. Whether this participant is an enrolled affiliate. A
+   * referred customer who has not joined the program is `false`.
+   */
+  isAffiliate?: boolean;
 
   isNew?: boolean;
 
@@ -564,7 +664,7 @@ export interface Participant {
 
   /**
    * Payout-related actions the participant must complete before a payout can be
-   * released (e.g. confirming a PayPal email or submitting a W-9/W-8 tax form).
+   * released (e.g. configuring a payout destination or submitting a W-9/W-8 tax form).
    * Always present; the requiredActions array is empty when no action is required.
    */
   payoutSettings?: Participant.PayoutSettings;
@@ -601,11 +701,11 @@ export interface Participant {
 export namespace Participant {
   /**
    * Payout-related actions the participant must complete before a payout can be
-   * released (e.g. confirming a PayPal email or submitting a W-9/W-8 tax form).
+   * released (e.g. configuring a payout destination or submitting a W-9/W-8 tax form).
    * Always present; the requiredActions array is empty when no action is required.
    */
   export interface PayoutSettings {
-    requiredActions?: Array<'PAYPAL_EMAIL' | 'TAX_INFO'>;
+    requiredActions?: Array<'PAYOUT_DESTINATION' | 'TAX_INFO'>;
   }
 
   export interface Referrer {
@@ -892,7 +992,12 @@ export interface ParticipantRetrieveAnalyticsResponse {
   shareCount: { [key: string]: number };
 
   /**
-   * Present only with `include=series`. Window end (Unix ms).
+   * Present only when `include` contains `email`.
+   */
+  email?: ParticipantRetrieveAnalyticsResponse.Email;
+
+  /**
+   * Present only when `include` contains `series` or `email`. Window end (Unix ms).
    */
   endDate?: number;
 
@@ -904,12 +1009,48 @@ export interface ParticipantRetrieveAnalyticsResponse {
   series?: Array<ParticipantRetrieveAnalyticsResponse.Series>;
 
   /**
-   * Present only with `include=series`. Window start (Unix ms).
+   * Present only when `include` contains `series` or `email`. Window start (Unix ms).
    */
   startDate?: number;
 }
 
 export namespace ParticipantRetrieveAnalyticsResponse {
+  /**
+   * Accepted-send and lifecycle metrics attributed to this participant, including
+   * invitations they sent.
+   */
+  export interface Email {
+    bounceRate: number;
+    bounced: number;
+    byType: Array<Email.ByType>;
+    clickRate: number;
+    clicked: number;
+    coverageStartDate: number | null;
+    delivered: number;
+    deliveryRate: number;
+    isPartial: boolean;
+    opened: number;
+    openRate: number;
+    sent: number;
+    spamComplaints: number;
+  }
+
+  export namespace Email {
+    export interface ByType {
+      bounceRate: number;
+      bounced: number;
+      clickRate: number;
+      clicked: number;
+      delivered: number;
+      deliveryRate: number;
+      emailType: string;
+      opened: number;
+      openRate: number;
+      sent: number;
+      spamComplaints: number;
+    }
+  }
+
   export interface Analytics {
     currencyISO?: string;
 
@@ -972,6 +1113,11 @@ export namespace ParticipantRetrieveAnalyticsResponse {
     copyRefLinkShares?: number;
 
     emailShares?: number;
+
+    /**
+     * Per-period email counts when both `series` and `email` are requested.
+     */
+    email?: Series.Email;
 
     facebookShares?: number;
 
@@ -1036,6 +1182,17 @@ export namespace ParticipantRetrieveAnalyticsResponse {
 
     whatsAppShares?: number;
   }
+
+  export namespace Series {
+    export interface Email {
+      bounced: number;
+      clicked: number;
+      delivered: number;
+      opened: number;
+      sent: number;
+      spamComplaints: number;
+    }
+  }
 }
 
 export interface ParticipantListActivityLogsResponse {
@@ -1079,6 +1236,13 @@ export interface ParticipantUpdateParams {
   id: string;
 
   /**
+   * Body param: Affiliate programs only. Sets the affiliate status. `APPROVED` also
+   * enrolls a participant who is not yet an affiliate. `SUSPENDED` and `BANNED` are
+   * rejected for non-affiliates.
+   */
+  affiliateStatus?: 'APPROVED' | 'SUSPENDED' | 'BANNED';
+
+  /**
    * Body param
    */
   email?: string;
@@ -1103,11 +1267,6 @@ export interface ParticipantUpdateParams {
    * exposed to participants).
    */
   notes?: string;
-
-  /**
-   * Body param: The participant's PayPal email address, used for affiliate payouts.
-   */
-  paypalEmail?: string;
 
   /**
    * Body param
@@ -1154,6 +1313,14 @@ export interface ParticipantAddParams {
 
   ipAddress?: string;
 
+  /**
+   * Affiliate programs only. Controls affiliate enrollment for a new participant.
+   * `true` enrolls the participant with `affiliateStatus: APPROVED`; `false` creates a
+   * non-affiliate without `affiliateStatus`. Existing participants are returned
+   * unchanged.
+   */
+  isAffiliate?: boolean;
+
   lastName?: string;
 
   /**
@@ -1179,6 +1346,87 @@ export interface ParticipantAddParams {
    * Referrer participant ID or email address.
    */
   referredBy?: string;
+}
+
+export interface ParticipantGetPayoutDestinationResponse {
+  /**
+   * The provider that currently gets paid, or null until the participant confirms one.
+   */
+  activeProvider?: string | null;
+
+  /**
+   * One entry per enabled payout provider describing the participant's destination for
+   * it.
+   */
+  destinations?: Array<ParticipantGetPayoutDestinationResponse.Destination>;
+
+  /**
+   * The payout providers enabled for this program.
+   */
+  enabledProviders?: Array<string>;
+}
+
+export namespace ParticipantGetPayoutDestinationResponse {
+  export interface Destination {
+    /**
+     * The confirmed payout email for this provider.
+     */
+    claimEmail?: string | null;
+
+    /**
+     * When the destination was confirmed, in epoch milliseconds.
+     */
+    confirmedAt?: number | null;
+
+    /**
+     * The legal recipient type the participant confirmed, if any.
+     */
+    legalEntityType?: 'INDIVIDUAL' | 'BUSINESS' | null;
+
+    /**
+     * When status is `NEEDS_REPAIR`, why (e.g. a bounced delivery).
+     */
+    needsRepairReason?: string | null;
+
+    /**
+     * The payout provider this entry describes.
+     */
+    provider?: string;
+
+    /**
+     * The customer-facing provider name (e.g. "PayPal", "Wise").
+     */
+    providerDisplayName?: string;
+
+    /**
+     * The destination's current status: `NONE` (not set up), `PENDING_CONFIRMATION`,
+     * `CONFIRMED`, `ACTIVE`, `NEEDS_REPAIR`, or `EXPIRED`. Historical superseded or
+     * revoked destinations are projected as `NONE`.
+     */
+    status?: string;
+  }
+}
+
+export interface ParticipantRequestPayoutDestinationConfirmationResponse {
+  /**
+   * When the confirmation link expires, in epoch milliseconds.
+   */
+  expiresAt?: number | null;
+
+  /**
+   * The provider the participant was asked to confirm.
+   */
+  provider?: string;
+
+  /**
+   * The customer-facing provider name (e.g. "PayPal", "Wise").
+   */
+  providerDisplayName?: string;
+
+  /**
+   * Confirms the message was requested.
+   */
+  status?: 'CONFIRMATION_REQUESTED';
 }
 
 export interface ParticipantListCommissionsParams {
@@ -1222,7 +1470,7 @@ export interface ParticipantListPayoutsParams {
   /**
    * Query param: Participant payout status.
    */
-  status?: 'UPCOMING' | 'QUEUED' | 'ISSUED' | 'FAILED';
+  status?: 'UPCOMING' | 'QUEUED' | 'ISSUED' | 'FAILED' | 'REVERSED';
 }
 
 export interface ParticipantListReferralsParams {
@@ -1616,14 +1864,19 @@ export interface ParticipantRetrieveAnalyticsParams {
   endDate?: number;
 
   /**
-   * Query param: Set to `series` to also return this participant's own activity per
-   * period.
+   * Query param: Comma-separated optional data. `series` returns this participant's
+   * own activity per period; `email` returns `sent`, `delivered`, `opened`,
+   * `clicked`, `bounced`, `spamComplaints`, and per-email-type metrics attributed to
+   * the participant for the requested analytics window (including invitations they
+   * sent). Request both in either order to add email counts to every series item for
+   * emails sent during that period. Only documented tokens are accepted; an unknown
+   * token returns `400`.
    */
-  include?: 'series';
+  include?: string;
 
   /**
-   * Query param: Bucket size for the `series` (only used with `include=series`).
-   * Defaults to `day`.
+   * Query param: Bucket size for the `series` (only used when `include` contains
+   * `series`). Defaults to `day`.
    */
   interval?: 'day' | 'week' | 'month';
 
@@ -1651,6 +1904,25 @@ export interface ParticipantListActivityLogsParams {
   offset?: number;
 }
 
+export interface ParticipantGetPayoutDestinationParams {
+  /**
+   * GrowSurf program ID.
+   */
+  id: string;
+}
+
+export interface ParticipantRequestPayoutDestinationConfirmationParams {
+  /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Body param: The payout provider the participant should confirm a destination for.
+   */
+  provider: 'PAYPAL' | 'WISECOM';
+}
+
 export declare namespace ParticipantResource {
   export {
     type Create as Create,
@@ -1670,6 +1942,8 @@ export declare namespace ParticipantResource {
     type ParticipantEmailResponse as ParticipantEmailResponse,
     type ParticipantRetrieveAnalyticsResponse as ParticipantRetrieveAnalyticsResponse,
     type ParticipantListActivityLogsResponse as ParticipantListActivityLogsResponse,
+    type ParticipantGetPayoutDestinationResponse as ParticipantGetPayoutDestinationResponse,
+    type ParticipantRequestPayoutDestinationConfirmationResponse as ParticipantRequestPayoutDestinationConfirmationResponse,
     type ParticipantRetrieveParams as ParticipantRetrieveParams,
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
@@ -1687,5 +1961,7 @@ export declare namespace ParticipantResource {
     type ParticipantEmailParams as ParticipantEmailParams,
     type ParticipantRetrieveAnalyticsParams as ParticipantRetrieveAnalyticsParams,
     type ParticipantListActivityLogsParams as ParticipantListActivityLogsParams,
+    type ParticipantGetPayoutDestinationParams as ParticipantGetPayoutDestinationParams,
+    type ParticipantRequestPayoutDestinationConfirmationParams as ParticipantRequestPayoutDestinationConfirmationParams,
   };
 }

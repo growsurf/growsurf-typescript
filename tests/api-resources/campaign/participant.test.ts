@@ -1,6 +1,10 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
 import Growsurf from 'growsurf-typescript';
+import type {
+  ParticipantRetrieveAnalyticsParams,
+  ParticipantRetrieveAnalyticsResponse,
+} from 'growsurf-typescript/resources/campaign/participant';
 
 const client = new Growsurf({
   apiKey: 'My API Key',
@@ -8,6 +12,36 @@ const client = new Growsurf({
 });
 
 describe('resource participant', () => {
+  test('participant email analytics response and include types are available', () => {
+    const params: ParticipantRetrieveAnalyticsParams = {
+      id: 'campaign',
+      include: 'email,futureEnrichment',
+    };
+    const response: ParticipantRetrieveAnalyticsResponse = {
+      analytics: {},
+      ranks: {},
+      shareCount: {},
+      email: {
+        sent: 1,
+        delivered: 1,
+        opened: 0,
+        clicked: 0,
+        bounced: 0,
+        spamComplaints: 0,
+        deliveryRate: 1,
+        openRate: 0,
+        clickRate: 0,
+        bounceRate: 0,
+        byType: [],
+        coverageStartDate: null,
+        isPartial: false,
+      },
+    };
+
+    expect(params.include).toBe('email,futureEnrichment');
+    expect(response.email?.delivered).toBe(1);
+  });
+
   // Mock server tests are disabled
   test.skip('retrieve: only required params', async () => {
     const responsePromise = client.campaign.participant.retrieve('participantIdOrEmail', { id: 'id' });
@@ -41,6 +75,7 @@ describe('resource participant', () => {
   test.skip('update: required and optional params', async () => {
     const response = await client.campaign.participant.update('participantIdOrEmail', {
       id: 'id',
+      affiliateStatus: 'APPROVED',
       email: 'dev@stainless.com',
       firstName: 'Gavin',
       lastName: 'Belson',
@@ -109,6 +144,7 @@ describe('resource participant', () => {
       fingerprint: 'fingerprint',
       firstName: 'firstName',
       ipAddress: 'ipAddress',
+      isAffiliate: true,
       lastName: 'lastName',
       metadata: { foo: 'bar' },
       mobileInstanceId: 'mobileInstanceId',
@@ -358,5 +394,42 @@ describe('resource participant', () => {
     const response = await client.campaign.participant.cancelDelayedReferral('participantIdOrEmail', {
       id: 'id',
     });
+  });
+
+  // Mock server tests are disabled
+  test.skip('getPayoutDestination: only required params', async () => {
+    const responsePromise = client.campaign.participant.getPayoutDestination('participantIdOrEmail', {
+      id: 'id',
+    });
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('requestPayoutDestinationConfirmation: only required params', async () => {
+    const responsePromise = client.campaign.participant.requestPayoutDestinationConfirmation(
+      'participantIdOrEmail',
+      { id: 'id', provider: 'PAYPAL' },
+    );
+    const rawResponse = await responsePromise.asResponse();
+    expect(rawResponse).toBeInstanceOf(Response);
+    const response = await responsePromise;
+    expect(response).not.toBeInstanceOf(Response);
+    const dataAndResponse = await responsePromise.withResponse();
+    expect(dataAndResponse.data).toBe(response);
+    expect(dataAndResponse.response).toBe(rawResponse);
+  });
+
+  // Mock server tests are disabled
+  test.skip('requestPayoutDestinationConfirmation: required and optional params', async () => {
+    const response = await client.campaign.participant.requestPayoutDestinationConfirmation(
+      'participantIdOrEmail',
+      { id: 'id', provider: 'PAYPAL' },
+    );
   });
 });

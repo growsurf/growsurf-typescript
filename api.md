@@ -37,6 +37,10 @@ Types:
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignListResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignCreateMobileParticipantTokenResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignRetrieveAnalyticsResponse</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">AffiliateApplication</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">AffiliateApplicationListResponse</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">AffiliateInvite</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">AffiliateInviteListResponse</a></code>
 
 Methods:
 
@@ -46,6 +50,13 @@ Methods:
 - <code title="patch /campaign/{id}">client.campaign.<a href="./src/resources/campaign/campaign.ts">update</a>(id, { ...params }) -> Campaign</code>
 - <code title="post /campaign/{id}/clone">client.campaign.<a href="./src/resources/campaign/campaign.ts">clone</a>(id) -> Campaign</code>
 - <code title="post /campaign/{id}/mobile-participant-token">client.campaign.<a href="./src/resources/campaign/campaign.ts">createMobileParticipantToken</a>(id, { ...params }) -> CampaignCreateMobileParticipantTokenResponse</code>
+- <code title="get /campaign/{id}/affiliate-applications">client.campaign.<a href="./src/resources/campaign/campaign.ts">listAffiliateApplications</a>(id, { ...params }) -> AffiliateApplicationListResponse</code>
+- <code title="get /campaign/{id}/affiliate-applications/{applicationId}">client.campaign.<a href="./src/resources/campaign/campaign.ts">retrieveAffiliateApplication</a>(applicationID, { ...params }) -> AffiliateApplication</code>
+- <code title="patch /campaign/{id}/affiliate-applications/{applicationId}">client.campaign.<a href="./src/resources/campaign/campaign.ts">reviewAffiliateApplication</a>(applicationID, { ...params }) -> AffiliateApplication</code>
+- <code title="get /campaign/{id}/affiliate-invites">client.campaign.<a href="./src/resources/campaign/campaign.ts">listAffiliateInvites</a>(id, { ...params }) -> AffiliateInviteListResponse</code>
+- <code title="post /campaign/{id}/affiliate-invites">client.campaign.<a href="./src/resources/campaign/campaign.ts">createAffiliateInvite</a>(id, { ...params }) -> AffiliateInvite</code>
+- <code title="delete /campaign/{id}/affiliate-invites/{inviteId}">client.campaign.<a href="./src/resources/campaign/campaign.ts">revokeAffiliateInvite</a>(inviteID, { ...params }) -> AffiliateInvite</code>
+- <code title="post /campaign/{id}/affiliate-invites/{inviteId}/resend">client.campaign.<a href="./src/resources/campaign/campaign.ts">resendAffiliateInvite</a>(inviteID, { ...params }) -> AffiliateInvite</code>
 - <code title="get /campaign/{id}/commissions">client.campaign.<a href="./src/resources/campaign/campaign.ts">listCommissions</a>(id, { ...params }) -> ParticipantCommissionList</code>
 - <code title="get /campaign/{id}/leaderboard">client.campaign.<a href="./src/resources/campaign/campaign.ts">listLeaderboard</a>(id, { ...params }) -> ParticipantList</code>
 - <code title="get /campaign/{id}/participants">client.campaign.<a href="./src/resources/campaign/campaign.ts">listParticipants</a>(id, { ...params }) -> ParticipantList</code>
@@ -74,6 +85,8 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantEmailResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRetrieveAnalyticsResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantListActivityLogsResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantGetPayoutDestinationResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantRequestPayoutDestinationConfirmationResponse</a></code>
 
 Methods:
 
@@ -94,6 +107,8 @@ Methods:
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}/email">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">email</a>(participantIDOrEmail, { ...params }) -> ParticipantEmailResponse</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/analytics">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">retrieveAnalytics</a>(participantIDOrEmail, { ...params }) -> ParticipantRetrieveAnalyticsResponse</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/activity-logs">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listActivityLogs</a>(participantIDOrEmail, { ...params }) -> ParticipantListActivityLogsResponse</code>
+- <code title="get /campaign/{id}/participant/{participantIdOrEmail}/payout-destination">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">getPayoutDestination</a>(participantIDOrEmail, { ...params }) -> ParticipantGetPayoutDestinationResponse</code>
+- <code title="post /campaign/{id}/participant/{participantIdOrEmail}/payout-destination/request-confirmation">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">requestPayoutDestinationConfirmation</a>(participantIDOrEmail, { ...params }) -> ParticipantRequestPayoutDestinationConfirmationResponse</code>
 
 ## Reward
 

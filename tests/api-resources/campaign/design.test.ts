@@ -22,7 +22,10 @@ describe('resource design', () => {
 
   // Mock server tests are disabled
   test.skip('update', async () => {
-    const responsePromise = client.campaign.design.update('id', { foo: 'bar' });
+    const responsePromise = client.campaign.design.update('id', {
+      login: { heading: 'Sign in', buttonText: 'Send sign-in link', successHeading: 'Check your email' },
+      payoutDestinationConfirmation: { headline: 'Confirm your {{payoutProvider}} payout email' },
+    });
     const rawResponse = await responsePromise.asResponse();
     expect(rawResponse).toBeInstanceOf(Response);
     const response = await responsePromise;
