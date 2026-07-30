@@ -124,7 +124,7 @@ export class CampaignResource extends APIResource {
   }
 
   /**
-   * Creates a new program, plus any optional program rewards. The new program is
+   * Creates a new program, plus any optional campaign rewards. The new program is
    * created in `DRAFT` status and owned by the API key's bound team.
    *
    * @example
@@ -197,6 +197,159 @@ export class CampaignResource extends APIResource {
     options?: RequestOptions,
   ): APIPromise<CampaignCreateMobileParticipantTokenResponse> {
     return this._client.post(path`/campaign/${id}/mobile-participant-token`, { body, ...options });
+  }
+
+  /**
+   * Lists an affiliate program's applications, newest first. Applications exist on
+   * programs that review public signups (an `affiliateApplicationMode` of
+   * `MANUAL_REVIEW` or `AUTO_APPROVE`). A pending applicant is not a participant until
+   * their application is approved.
+   *
+   * @example
+   * ```ts
+   * const affiliateApplications =
+   *   await client.campaign.listAffiliateApplications('id');
+   * ```
+   */
+  listAffiliateApplications(
+    id: string,
+    query: CampaignListAffiliateApplicationsParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<AffiliateApplicationListResponse> {
+    return this._client.get(path`/campaign/${id}/affiliate-applications`, { query, ...options });
+  }
+
+  /**
+   * Returns one affiliate application, including its submitted form answers.
+   *
+   * @example
+   * ```ts
+   * const affiliateApplication =
+   *   await client.campaign.retrieveAffiliateApplication(
+   *     'applicationId',
+   *     { id: 'id' },
+   *   );
+   * ```
+   */
+  retrieveAffiliateApplication(
+    applicationID: string,
+    params: CampaignRetrieveAffiliateApplicationParams,
+    options?: RequestOptions,
+  ): APIPromise<AffiliateApplication> {
+    const { id } = params;
+    return this._client.get(path`/campaign/${id}/affiliate-applications/${applicationID}`, options);
+  }
+
+  /**
+   * Decides a pending application. Set `status` to `APPROVED` to enroll the applicant
+   * (this creates the participant, or upgrades an existing participant with the same
+   * email), or to `DENIED` with an optional `rejectionReason`. A denied applicant may
+   * reapply after the program's reapplication cooldown; send an earlier
+   * `reapplyAllowedAt` (without `status`) to shorten that wait for one applicant.
+   * Provide exactly one of `status` or `reapplyAllowedAt`. Denial-only fields are only
+   * valid with `status: 'DENIED'`. Approval is idempotent: repeating it returns the
+   * same participant.
+   *
+   * @example
+   * ```ts
+   * const affiliateApplication =
+   *   await client.campaign.reviewAffiliateApplication(
+   *     'applicationId',
+   *     { id: 'id' },
+   *   );
+   * ```
+   */
+  reviewAffiliateApplication(
+    applicationID: string,
+    params: CampaignReviewAffiliateApplicationParams,
+    options?: RequestOptions,
+  ): APIPromise<AffiliateApplication> {
+    const { id, ...body } = params;
+    return this._client.patch(path`/campaign/${id}/affiliate-applications/${applicationID}`, {
+      body,
+      ...options,
+    });
+  }
+
+  /**
+   * Lists an affiliate program's enrollment invites, newest first.
+   *
+   * @example
+   * ```ts
+   * const affiliateInvites =
+   *   await client.campaign.listAffiliateInvites('id');
+   * ```
+   */
+  listAffiliateInvites(
+    id: string,
+    query: CampaignListAffiliateInvitesParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<AffiliateInviteListResponse> {
+    return this._client.get(path`/campaign/${id}/affiliate-invites`, { query, ...options });
+  }
+
+  /**
+   * Invites someone to join the affiliate program. GrowSurf emails them a single-use
+   * accept link; accepting it enrolls them as an approved affiliate without going
+   * through the public application. One active invite can exist per email address.
+   *
+   * @example
+   * ```ts
+   * const affiliateInvite = await client.campaign.createAffiliateInvite('id', {
+   *   email: 'erlich@aviato.com',
+   *   firstName: 'Erlich',
+   *   lastName: 'Bachman',
+   * });
+   * ```
+   */
+  createAffiliateInvite(
+    id: string,
+    body: CampaignCreateAffiliateInviteParams,
+    options?: RequestOptions,
+  ): APIPromise<AffiliateInvite> {
+    return this._client.post(path`/campaign/${id}/affiliate-invites`, { body, ...options });
+  }
+
+  /**
+   * Revokes a pending invite. Its emailed accept link stops working immediately.
+   *
+   * @example
+   * ```ts
+   * const affiliateInvite =
+   *   await client.campaign.revokeAffiliateInvite('inviteId', {
+   *     id: 'id',
+   *   });
+   * ```
+   */
+  revokeAffiliateInvite(
+    inviteID: string,
+    params: CampaignRevokeAffiliateInviteParams,
+    options?: RequestOptions,
+  ): APIPromise<AffiliateInvite> {
+    const { id } = params;
+    return this._client.delete(path`/campaign/${id}/affiliate-invites/${inviteID}`, options);
+  }
+
+  /**
+   * Re-sends a pending invite with a fresh accept link (the previous link stops
+   * working). Resends are rate limited per invite; retry after a few minutes if a
+   * resend was just sent.
+   *
+   * @example
+   * ```ts
+   * const affiliateInvite =
+   *   await client.campaign.resendAffiliateInvite('inviteId', {
+   *     id: 'id',
+   *   });
+   * ```
+   */
+  resendAffiliateInvite(
+    inviteID: string,
+    params: CampaignResendAffiliateInviteParams,
+    options?: RequestOptions,
+  ): APIPromise<AffiliateInvite> {
+    const { id } = params;
+    return this._client.post(path`/campaign/${id}/affiliate-invites/${inviteID}/resend`, options);
   }
 
   /**
@@ -291,7 +444,11 @@ export class CampaignResource extends APIResource {
   /**
    * Retrieves analytics for a program. Pass `interval` to also get a time-series
    * (`series`) alongside the totals, and `include` to add previous-period totals,
-   * status breakdowns, or derived rates — useful for detecting trends over time.
+   * status breakdowns, derived rates, or email performance. Add `email` to `include`
+   * for `sent` (accepted for delivery), `delivered`, `opened`, `clicked`, `bounced`,
+   * and `spamComplaints` metrics plus per-email-type breakdowns. Email rates are
+   * ratios from `0` to `1`, and `isPartial` identifies windows that begin before
+   * complete coverage.
    *
    * @example
    * ```ts
@@ -357,11 +514,18 @@ export namespace Campaign {
     imageUrl?: string | null;
 
     /**
+     * Whether the reward is enabled (visible and awardable). When `false`, the reward is
+     * disabled: hidden from participants and no longer awarded, including participants
+     * who already earned it.
+     */
+    isVisible?: boolean;
+
+    /**
      * `-1` represents an unlimited reward in REST responses.
      */
     limit?: number | null;
 
-    limitDuration?: 'IN_TOTAL' | 'PER_MONTH' | null;
+    limitDuration?: 'IN_TOTAL' | 'PER_MONTH' | 'PER_YEAR' | null;
 
     nextMilestonePrefix?: string | null;
 
@@ -383,10 +547,15 @@ export namespace Campaign {
     referredRewardUpfront?: boolean;
 
     /**
-     * Tax valuation for the referred friend's side of a double-sided reward. Defaults
-     * to not tax-reportable (a purchase rebate).
+     * Tax treatment override for the referred friend's side of a double-sided reward. Defaults
+     * to the program's confirmed default.
      */
     referredValue?: RewardsAPI.RewardTaxValuation | null;
+
+    /**
+     * The reward title (internal label).
+     */
+    title?: string | null;
 
     /**
      * Tax valuation for the reward (the referrer's side of a double-sided reward).
@@ -468,25 +637,25 @@ export namespace ParticipantCommissionList {
 
     amountInCampaignCurrency?: number | null;
 
-    approvedAt?: number;
+    approvedAt?: number | null;
 
     campaignCurrencyISO?: string | null;
 
     exchangeRate?: number | null;
 
-    exchangeRateAt?: number;
+    exchangeRateAt?: number | null;
 
     fxError?: string | null;
 
     holdDuration?: number | null;
 
-    paidAt?: number;
+    paidAt?: number | null;
 
-    payoutQueuedAt?: number;
+    payoutQueuedAt?: number | null;
 
     provider?: string | null;
 
-    reversedAt?: number;
+    reversedAt?: number | null;
 
     saleAmountInCampaignCurrency?: number | null;
   }
@@ -522,7 +691,7 @@ export namespace ParticipantPayoutList {
 
     participantId: string;
 
-    status: 'UPCOMING' | 'QUEUED' | 'ISSUED' | 'FAILED';
+    status: 'UPCOMING' | 'QUEUED' | 'ISSUED' | 'FAILED' | 'REVERSED';
 
     amountInCampaignCurrency?: number | null;
 
@@ -530,17 +699,19 @@ export namespace ParticipantPayoutList {
 
     exchangeRate?: number | null;
 
-    exchangeRateAt?: number;
+    exchangeRateAt?: number | null;
 
-    failedAt?: number;
+    failedAt?: number | null;
 
     fxError?: string | null;
 
-    issuedAt?: number;
+    issuedAt?: number | null;
 
     provider?: string | null;
 
     queuedAt?: number | null;
+
+    reversedAt?: number | null;
   }
 }
 
@@ -606,6 +777,11 @@ export interface CampaignRetrieveAnalyticsResponse {
   endDate: number;
 
   startDate: number;
+
+  /**
+   * Present only when `include` contains `email`.
+   */
+  email?: CampaignRetrieveAnalyticsResponse.Email;
 
   /**
    * Present only when `include` contains `previousPeriod`.
@@ -707,6 +883,11 @@ export namespace CampaignRetrieveAnalyticsResponse {
 
     emailShares?: number;
 
+    /**
+     * Per-period email counts. Present only when `include` contains `email`.
+     */
+    email?: Series.Email;
+
     facebookShares?: number;
 
     impressions?: number;
@@ -771,11 +952,62 @@ export namespace CampaignRetrieveAnalyticsResponse {
     whatsAppShares?: number;
   }
 
+  export namespace Series {
+    export interface Email {
+      bounced: number;
+      clicked: number;
+      delivered: number;
+      opened: number;
+      sent: number;
+      spamComplaints: number;
+    }
+  }
+
+  /**
+   * Accepted-send and lifecycle metrics for program emails in the requested window.
+   */
+  export interface Email {
+    bounceRate: number;
+    bounced: number;
+    byType: Array<Email.ByType>;
+    clickRate: number;
+    clicked: number;
+    coverageStartDate: number | null;
+    delivered: number;
+    deliveryRate: number;
+    isPartial: boolean;
+    opened: number;
+    openRate: number;
+    sent: number;
+    spamComplaints: number;
+  }
+
+  export namespace Email {
+    export interface ByType {
+      bounceRate: number;
+      bounced: number;
+      clickRate: number;
+      clicked: number;
+      delivered: number;
+      deliveryRate: number;
+      emailType: string;
+      opened: number;
+      openRate: number;
+      sent: number;
+      spamComplaints: number;
+    }
+  }
+
   /**
    * Totals for the equal-length window immediately preceding the requested one.
    */
   export interface PreviousPeriod {
     analytics?: CampaignRetrieveAnalyticsResponse.Analytics;
+
+    /**
+     * Present when the parent request includes both `previousPeriod` and `email`.
+     */
+    email?: CampaignRetrieveAnalyticsResponse.Email;
 
     endDate?: number;
 
@@ -867,6 +1099,8 @@ export namespace CampaignRetrieveAnalyticsResponse {
 
       queued?: StatusCounts.PayoutStatusMetric;
 
+      reversed?: StatusCounts.PayoutStatusMetric;
+
       upcoming?: StatusCounts.PayoutStatusMetric;
     }
 
@@ -888,6 +1122,207 @@ export namespace CampaignRetrieveAnalyticsResponse {
       pending?: number;
     }
   }
+}
+
+export interface AffiliateApplication {
+  /**
+   * Public application ID.
+   */
+  id: string;
+
+  /**
+   * Configurable application responses captured from the saved form. Use `fieldId`
+   * as the stable question identifier.
+   */
+  answers: Array<AffiliateApplication.Answer>;
+
+  /**
+   * When the application was submitted, as a Unix timestamp in milliseconds.
+   */
+  createdAt: number;
+
+  /**
+   * When the decision was made, in Unix milliseconds, or `null` while pending.
+   */
+  decidedAt: number | null;
+
+  /**
+   * Required applicant email address, or `null` after applicant data is removed under
+   * the Program's retention policy.
+   */
+  email: string | null;
+
+  /**
+   * Required applicant first name, or `null` after applicant data is removed under the
+   * Program's retention policy.
+   */
+  firstName: string | null;
+
+  /**
+   * Required applicant last name, or `null` after applicant data is removed under the
+   * Program's retention policy.
+   */
+  lastName: string | null;
+
+  /**
+   * Public participant ID created or upgraded by approval, or `null` before approval.
+   */
+  participantId: string | null;
+
+  /**
+   * When a denied applicant may apply again, in Unix milliseconds, or `null` when not
+   * applicable.
+   */
+  reapplyAllowedAt: number | null;
+
+  /**
+   * Reason recorded when the application was denied, or `null` before denial.
+   */
+  rejectionReason: string | null;
+
+  /**
+   * When the application was reviewed, in Unix milliseconds, or `null` while pending.
+   */
+  reviewedAt: number | null;
+
+  /**
+   * GrowSurf risk assessment. Applications that are not `LOW` risk are held for manual
+   * review; `null` means no assessment was recorded.
+   */
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
+
+  /**
+   * Where the application is in review. Only `PENDING` applications can be decided.
+   */
+  status: 'PENDING' | 'APPROVED' | 'DENIED';
+
+  /**
+   * When the applicant accepted the Program Terms, in Unix milliseconds, or `null` when
+   * acceptance was not required.
+   */
+  termsAcceptedAt: number | null;
+}
+
+export namespace AffiliateApplication {
+  export interface Answer {
+    /**
+     * Stable key of the saved application-form field this answer belongs to.
+     */
+    fieldId: string;
+
+    /**
+     * Customer-configured field label captured when the applicant submitted.
+     */
+    label: string;
+
+    /**
+     * Saved field type that determined how the scalar answer was validated.
+     */
+    type: 'text' | 'textarea' | 'url' | 'country' | 'number' | 'dropdown' | 'radio' | 'checkbox';
+
+    /**
+     * Applicant answer. Text, URL, country, dropdown, and radio values are strings;
+     * number values are numbers; checkbox values are booleans.
+     */
+    value: string | number | boolean;
+  }
+}
+
+export interface AffiliateApplicationListResponse {
+  /**
+   * One page of the program's applications, newest first.
+   */
+  applications: Array<AffiliateApplication>;
+
+  /**
+   * Total number of applications matching the filter.
+   */
+  total: number;
+
+  /**
+   * The page size used.
+   */
+  limit?: number;
+
+  /**
+   * The offset this page started at.
+   */
+  offset?: number;
+}
+
+export interface AffiliateInvite {
+  /**
+   * Invite ID.
+   */
+  id?: string;
+
+  /**
+   * When the invite was accepted, in Unix milliseconds. `null` until accepted.
+   */
+  acceptedAt?: number | null;
+
+  /**
+   * When the invite was created, in Unix milliseconds.
+   */
+  createdAt?: number;
+
+  /**
+   * Invitee email address.
+   */
+  email?: string;
+
+  /**
+   * When the emailed accept link stops working, in Unix milliseconds.
+   */
+  expiresAt?: number;
+
+  /**
+   * Invitee first name, when provided.
+   */
+  firstName?: string | null;
+
+  /**
+   * Invitee last name, when provided.
+   */
+  lastName?: string | null;
+
+  /**
+   * When the invite email was last sent, in Unix milliseconds.
+   */
+  lastSentAt?: number;
+
+  /**
+   * When the invite was revoked, in Unix milliseconds. `null` unless revoked.
+   */
+  revokedAt?: number | null;
+
+  /**
+   * The invite's lifecycle state. Accepting a pending invite enrolls the invitee as an
+   * approved affiliate.
+   */
+  status?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'REVOKED';
+}
+
+export interface AffiliateInviteListResponse {
+  /**
+   * One page of the program's invites, newest first.
+   */
+  invites: Array<AffiliateInvite>;
+
+  /**
+   * Total number of invites matching the filter.
+   */
+  total: number;
+
+  /**
+   * The page size used.
+   */
+  limit?: number;
+
+  /**
+   * The offset this page started at.
+   */
+  offset?: number;
 }
 
 export interface CampaignCreateParams {
@@ -939,6 +1374,14 @@ export interface CampaignCreateMobileParticipantTokenParams {
   firstName?: string;
 
   ipAddress?: string;
+
+  /**
+   * Affiliate programs only. Controls affiliate enrollment for a new participant. `true`
+   * enrolls the participant with `affiliateStatus: APPROVED`; `false` creates a
+   * non-affiliate without `affiliateStatus`. Existing participants are returned
+   * unchanged.
+   */
+  isAffiliate?: boolean;
 
   lastName?: string;
 
@@ -1041,7 +1484,7 @@ export interface CampaignListPayoutsParams {
   /**
    * Participant payout status.
    */
-  status?: 'UPCOMING' | 'QUEUED' | 'ISSUED' | 'FAILED';
+  status?: 'UPCOMING' | 'QUEUED' | 'ISSUED' | 'FAILED' | 'REVERSED';
 }
 
 export interface CampaignListReferralsParams {
@@ -1108,11 +1551,14 @@ export interface CampaignRetrieveAnalyticsParams {
   endDate?: number;
 
   /**
-   * Comma-separated list of optional enrichments (opt-in to keep the default response
-   * lean). Any of `previousPeriod` (totals for the equal-length window immediately
-   * before the requested one), `statusCounts` (reward and, for affiliate programs,
-   * affiliate/commission/payout status breakdowns), and `rates` (derived referral
-   * rates).
+   * Comma-separated list of optional data to include: `previousPeriod` adds totals for
+   * the equal-length window immediately before the requested one; `statusCounts` adds
+   * reward (and, for affiliate programs, affiliate/commission/payout) status breakdowns;
+   * `rates` adds derived referral rates; `email` adds `sent`, `delivered`, `opened`,
+   * `clicked`, `bounced`, `spamComplaints`, and per-email-type metrics. When `email` and
+   * an interval are both requested, each `series` item also contains counts for emails
+   * sent during that period. Combine `email` with `previousPeriod` to include the same
+   * email metrics in both windows.
    */
   include?: string;
 
@@ -1127,6 +1573,119 @@ export interface CampaignRetrieveAnalyticsParams {
    * Required if `days` is not set.
    */
   startDate?: number;
+}
+
+export interface CampaignListAffiliateApplicationsParams {
+  /**
+   * How many applications to return per page (1-100).
+   */
+  limit?: number;
+
+  /**
+   * Offset number used to skip through a result set.
+   */
+  offset?: number;
+
+  /**
+   * Only return applications with this status.
+   */
+  status?: 'PENDING' | 'APPROVED' | 'DENIED';
+}
+
+export interface CampaignRetrieveAffiliateApplicationParams {
+  /**
+   * GrowSurf program ID.
+   */
+  id: string;
+}
+
+/**
+ * Either decide a pending application with `status`, or move a denied application's
+ * reapplication window with `reapplyAllowedAt`. Provide exactly one of those fields.
+ */
+export interface CampaignReviewAffiliateApplicationParams {
+  /**
+   * Path param: GrowSurf program ID.
+   */
+  id: string;
+
+  /**
+   * Body param: When denying, let the applicant reapply right away instead of waiting
+   * out the program's reapplication cooldown. Only valid when `status` is `DENIED`.
+   */
+  allowImmediateReapply?: boolean;
+
+  /**
+   * Body param: For an already-denied application, move the reapplication window to
+   * this earlier time, in Unix milliseconds. Send without `status`.
+   */
+  reapplyAllowedAt?: number;
+
+  /**
+   * Body param: Short reason recorded with a denial. Only valid when `status` is
+   * `DENIED`. Maximum 255 characters.
+   */
+  rejectionReason?: string;
+
+  /**
+   * Body param: Private note recorded with a denial. Only valid when `status` is
+   * `DENIED`; never shown to the applicant. Maximum 500 characters.
+   */
+  reviewNote?: string;
+
+  /**
+   * Body param: The decision. `APPROVED` enrolls the applicant as an affiliate;
+   * `DENIED` closes the application.
+   */
+  status?: 'APPROVED' | 'DENIED';
+}
+
+export interface CampaignListAffiliateInvitesParams {
+  /**
+   * How many invites to return per page (1-100).
+   */
+  limit?: number;
+
+  /**
+   * Offset number used to skip through a result set.
+   */
+  offset?: number;
+
+  /**
+   * Only return invites with this status.
+   */
+  status?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'REVOKED';
+}
+
+export interface CampaignCreateAffiliateInviteParams {
+  /**
+   * Valid email address to invite. Maximum 255 characters.
+   */
+  email: string;
+
+  /**
+   * Invitee first name, used in the invite email. Maximum 255 characters.
+   */
+  firstName?: string;
+
+  /**
+   * Invitee last name. Maximum 255 characters.
+   */
+  lastName?: string;
+}
+
+export interface CampaignRevokeAffiliateInviteParams {
+  /**
+   * GrowSurf program ID.
+   */
+  id: string;
+}
+
+export interface CampaignResendAffiliateInviteParams {
+  /**
+   * GrowSurf program ID.
+   */
+  id: string;
 }
 
 CampaignResource.ParticipantResource = ParticipantResource;
@@ -1150,6 +1709,10 @@ export declare namespace CampaignResource {
     type CampaignListResponse as CampaignListResponse,
     type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
+    type AffiliateApplication as AffiliateApplication,
+    type AffiliateApplicationListResponse as AffiliateApplicationListResponse,
+    type AffiliateInvite as AffiliateInvite,
+    type AffiliateInviteListResponse as AffiliateInviteListResponse,
     type CampaignCreateParams as CampaignCreateParams,
     type CampaignUpdateParams as CampaignUpdateParams,
     type CampaignCreateMobileParticipantTokenParams as CampaignCreateMobileParticipantTokenParams,
@@ -1159,6 +1722,13 @@ export declare namespace CampaignResource {
     type CampaignListPayoutsParams as CampaignListPayoutsParams,
     type CampaignListReferralsParams as CampaignListReferralsParams,
     type CampaignRetrieveAnalyticsParams as CampaignRetrieveAnalyticsParams,
+    type CampaignListAffiliateApplicationsParams as CampaignListAffiliateApplicationsParams,
+    type CampaignRetrieveAffiliateApplicationParams as CampaignRetrieveAffiliateApplicationParams,
+    type CampaignReviewAffiliateApplicationParams as CampaignReviewAffiliateApplicationParams,
+    type CampaignListAffiliateInvitesParams as CampaignListAffiliateInvitesParams,
+    type CampaignCreateAffiliateInviteParams as CampaignCreateAffiliateInviteParams,
+    type CampaignRevokeAffiliateInviteParams as CampaignRevokeAffiliateInviteParams,
+    type CampaignResendAffiliateInviteParams as CampaignResendAffiliateInviteParams,
   };
 
   export {

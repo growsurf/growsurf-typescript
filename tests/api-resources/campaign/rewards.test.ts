@@ -74,9 +74,9 @@ describe('resource rewards', () => {
       referralCouponCode: 'referralCouponCode',
       referralDescription: 'referralDescription',
       referredRewardUpfront: true,
-      referredValue: { fairMarketValueUSD: 0, isTaxReportable: true },
+      referredValue: { fairMarketValueUSD: 0, taxCharacter: 'PURCHASE_REBATE' },
       title: 'title',
-      value: { fairMarketValueUSD: 0, isTaxReportable: true },
+      value: { fairMarketValueUSD: 0, taxCharacter: 'PRIZE_OR_AWARD' },
     });
   });
 
@@ -134,9 +134,9 @@ describe('resource rewards', () => {
       referralCouponCode: 'referralCouponCode',
       referralDescription: 'referralDescription',
       referredRewardUpfront: true,
-      referredValue: { fairMarketValueUSD: 0, isTaxReportable: true },
+      referredValue: { fairMarketValueUSD: 0, taxCharacter: 'PURCHASE_REBATE' },
       title: 'title',
-      value: { fairMarketValueUSD: 0, isTaxReportable: true },
+      value: { fairMarketValueUSD: 0, taxCharacter: 'PRIZE_OR_AWARD' },
     });
   });
 

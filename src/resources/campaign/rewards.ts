@@ -111,6 +111,13 @@ export interface Reward {
   imageUrl?: string | null;
 
   /**
+   * Whether the reward is enabled (visible and awardable). When `false`, the reward is
+   * disabled: hidden from participants and no longer awarded, including participants
+   * who already earned it.
+   */
+  isVisible?: boolean;
+
+  /**
    * `-1` represents an unlimited reward in REST responses.
    */
   limit?: number | null;
@@ -138,10 +145,15 @@ export interface Reward {
   referredRewardUpfront?: boolean;
 
   /**
-   * Tax valuation for the referred friend's side of a double-sided reward. Defaults
-   * to not tax-reportable (a purchase rebate).
+   * Tax treatment override for the referred friend's side of a double-sided reward. Defaults
+   * to the program's confirmed default.
    */
   referredValue?: RewardTaxValuation | null;
+
+  /**
+   * The reward title (internal label).
+   */
+  title?: string | null;
 
   /**
    * Tax valuation for the reward (the referrer's side of a double-sided reward).
@@ -162,10 +174,17 @@ export interface RewardTaxValuation {
   fairMarketValueUSD?: number | null;
 
   /**
-   * Whether the reward's value counts toward 1099 thresholds/totals. `null` = use
-   * the smart default for the reward's source.
+   * The reason the recipient earns this reward. `null` inherits the program's confirmed
+   * tax treatment for configurable non-commission rewards. Commission rewards always
+   * use `NONEMPLOYEE_SERVICES`.
    */
-  isTaxReportable?: boolean | null;
+  taxCharacter?:
+    | 'NONEMPLOYEE_SERVICES'
+    | 'PRIZE_OR_AWARD'
+    | 'PURCHASE_REBATE'
+    | 'OTHER_INCOME'
+    | 'REVIEW_REQUIRED'
+    | null;
 }
 
 export interface CampaignRewardListResponse {
@@ -290,8 +309,8 @@ export interface RewardCreateParams {
   referredRewardUpfront?: boolean;
 
   /**
-   * Tax valuation for the referred friend's side of a double-sided reward. Defaults
-   * to not tax-reportable (a purchase rebate).
+   * Tax treatment override for the referred friend's side of a double-sided reward. Defaults
+   * to the program's confirmed default.
    */
   referredValue?: RewardTaxValuation | null;
 
@@ -415,8 +434,8 @@ export interface RewardUpdateParams {
   referredRewardUpfront?: boolean;
 
   /**
-   * Body param: Tax valuation for the referred friend's side of a double-sided
-   * reward. Defaults to not tax-reportable (a purchase rebate).
+   * Body param: Tax treatment override for the referred friend's side of a double-sided
+   * reward. Defaults to the program's confirmed default.
    */
   referredValue?: RewardTaxValuation | null;
 

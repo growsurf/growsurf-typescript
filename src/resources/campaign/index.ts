@@ -11,6 +11,10 @@ export {
   type CampaignListResponse,
   type CampaignCreateMobileParticipantTokenResponse,
   type CampaignRetrieveAnalyticsResponse,
+  type AffiliateApplication,
+  type AffiliateApplicationListResponse,
+  type AffiliateInvite,
+  type AffiliateInviteListResponse,
   type CampaignCreateParams,
   type CampaignUpdateParams,
   type CampaignCreateMobileParticipantTokenParams,
@@ -20,6 +24,13 @@ export {
   type CampaignListPayoutsParams,
   type CampaignListReferralsParams,
   type CampaignRetrieveAnalyticsParams,
+  type CampaignListAffiliateApplicationsParams,
+  type CampaignRetrieveAffiliateApplicationParams,
+  type CampaignReviewAffiliateApplicationParams,
+  type CampaignListAffiliateInvitesParams,
+  type CampaignCreateAffiliateInviteParams,
+  type CampaignRevokeAffiliateInviteParams,
+  type CampaignResendAffiliateInviteParams,
 } from './campaign';
 export {
   Commission,
@@ -47,6 +58,8 @@ export {
   type ParticipantEmailResponse,
   type ParticipantRetrieveAnalyticsResponse,
   type ParticipantListActivityLogsResponse,
+  type ParticipantGetPayoutDestinationResponse,
+  type ParticipantRequestPayoutDestinationConfirmationResponse,
   type ParticipantRetrieveParams,
   type ParticipantUpdateParams,
   type ParticipantDeleteParams,
@@ -64,6 +77,8 @@ export {
   type ParticipantEmailParams,
   type ParticipantRetrieveAnalyticsParams,
   type ParticipantListActivityLogsParams,
+  type ParticipantGetPayoutDestinationParams,
+  type ParticipantRequestPayoutDestinationConfirmationParams,
 } from './participant';
 export {
   Reward,
