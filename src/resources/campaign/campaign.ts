@@ -1114,12 +1114,20 @@ export namespace CampaignRetrieveAnalyticsResponse {
     }
 
     export interface RewardStatus {
-      approved?: number;
+      /**
+       * Approved rewards that are fulfilled.
+       */
+      completed?: number;
 
       /**
-       * Unapproved rewards awaiting fulfillment.
+       * Unapproved rewards awaiting review.
        */
-      pending?: number;
+      unapproved?: number;
+
+      /**
+       * Rewards that are approved but not fulfilled.
+       */
+      unfulfilled?: number;
     }
   }
 }

@@ -1064,7 +1064,7 @@ export namespace ParticipantRetrieveAnalyticsResponse {
 
     monthlyReferrals?: number;
 
-    pendingRewards?: number;
+    rewardStatus?: CampaignAPI.CampaignRetrieveAnalyticsResponse.StatusCounts.RewardStatus;
 
     /**
      * Affiliate only. Revenue attributed to this participant's referrals, in minor
@@ -1073,8 +1073,6 @@ export namespace ParticipantRetrieveAnalyticsResponse {
     referralRevenue?: number;
 
     referrals?: number;
-
-    rewardsEarned?: number;
 
     /**
      * Affiliate only. Total commissions earned, in minor currency units.
