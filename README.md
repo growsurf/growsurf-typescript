@@ -341,7 +341,10 @@ TypeScript >= 4.9 is supported.
 The following runtimes are supported:
 
 - Web browsers (Up-to-date Chrome, Firefox, Safari, Edge, and more)
-- Node.js 20 LTS or later ([non-EOL](https://endoflife.date/nodejs)) versions.
+- Node.js 22 LTS or later ([non-EOL](https://endoflife.date/nodejs)) versions. Version 1.3.0 documents
+  Node.js 22 instead of 20, which reached end of life on 2026-04-30, and is the first version to declare
+  an `engines.node` range. Older Node.js now produces an install warning, or an error under
+  `engine-strict`. Stay on 1.2.x if you still run Node.js 20.
 - Deno v1.28.0 or higher.
 - Bun 1.0 or later.
 - Cloudflare Workers.

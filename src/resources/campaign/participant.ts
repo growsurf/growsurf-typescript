@@ -777,11 +777,11 @@ export interface ParticipantReward {
 
   approved?: boolean;
 
-  approvedAt?: number;
+  approvedAt?: number | null;
 
   commissionStructure?: CampaignAPI.CommissionStructure | null;
 
-  fulfilledAt?: number;
+  fulfilledAt?: number | null;
 
   isAvailable?: boolean;
 
@@ -796,7 +796,7 @@ export interface ParticipantReward {
   unread?: boolean;
 }
 
-export type ReferralSource = 'DIRECT' | 'PARTICIPANT';
+export type ReferralSource = 'DIRECT' | 'PARTICIPANT' | 'DELETED_PARTICIPANT' | 'IMPORT' | 'MANUAL';
 
 export type ReferralStatus = 'CREDIT_PENDING' | 'CREDIT_AWARDED' | 'CREDIT_EXPIRED' | 'INVITE_SENT';
 
@@ -887,8 +887,7 @@ export interface ParticipantListRewardsResponse {
 }
 
 export type ParticipantRecordTransactionResponse =
-  | ParticipantRecordTransactionResponse.UnionMember0
-  | ParticipantRecordTransactionResponse.UnionMember1;
+  ParticipantRecordTransactionResponse.UnionMember0 | ParticipantRecordTransactionResponse.UnionMember1;
 
 export namespace ParticipantRecordTransactionResponse {
   export interface UnionMember0 {
@@ -1064,7 +1063,10 @@ export namespace ParticipantRetrieveAnalyticsResponse {
 
     monthlyReferrals?: number;
 
-    pendingRewards?: number;
+    /**
+     * This participant's reward counts grouped by review and fulfillment status.
+     */
+    rewardStatus?: CampaignAPI.CampaignRetrieveAnalyticsResponse.StatusCounts.RewardStatus;
 
     /**
      * Affiliate only. Revenue attributed to this participant's referrals, in minor
@@ -1073,8 +1075,6 @@ export namespace ParticipantRetrieveAnalyticsResponse {
     referralRevenue?: number;
 
     referrals?: number;
-
-    rewardsEarned?: number;
 
     /**
      * Affiliate only. Total commissions earned, in minor currency units.
@@ -1175,6 +1175,12 @@ export namespace ParticipantRetrieveAnalyticsResponse {
     tumblrShares?: number;
 
     twitterShares?: number;
+
+    /**
+     * Affiliate programs only. Number of unique referred participants represented by
+     * commissions in the requested timeframe.
+     */
+    uniqueCommissionReferrals?: number;
 
     uniqueImpressions?: number;
 
@@ -1523,13 +1529,7 @@ export interface ParticipantListReferralsParams {
    * Query param: Field used to sort referral results.
    */
   sortBy?:
-    | 'updatedAt'
-    | 'createdAt'
-    | 'email'
-    | 'firstName'
-    | 'lastName'
-    | 'referralStatus'
-    | 'referralTriggeredAt';
+    'updatedAt' | 'createdAt' | 'email' | 'firstName' | 'lastName' | 'referralStatus' | 'referralTriggeredAt';
 }
 
 export interface ParticipantListRewardsParams {

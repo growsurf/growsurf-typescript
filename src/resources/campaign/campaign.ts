@@ -487,7 +487,7 @@ export interface Campaign {
 
   winnerCount: number;
 
-  currencyISO?: string;
+  currencyISO?: string | null;
 }
 
 export namespace Campaign {
@@ -867,6 +867,12 @@ export namespace CampaignRetrieveAnalyticsResponse {
 
     twitterShares?: number;
 
+    /**
+     * Affiliate programs only. Number of unique referred participants represented by
+     * commissions in the requested timeframe.
+     */
+    uniqueCommissionReferrals?: number;
+
     uniqueImpressions?: number;
 
     wechatShares?: number;
@@ -944,6 +950,12 @@ export namespace CampaignRetrieveAnalyticsResponse {
     tumblrShares?: number;
 
     twitterShares?: number;
+
+    /**
+     * Affiliate programs only. Number of unique referred participants represented by
+     * commissions in the requested timeframe.
+     */
+    uniqueCommissionReferrals?: number;
 
     uniqueImpressions?: number;
 
@@ -1113,13 +1125,24 @@ export namespace CampaignRetrieveAnalyticsResponse {
       totalAmount?: number;
     }
 
+    /**
+     * Reward counts grouped by review and fulfillment status.
+     */
     export interface RewardStatus {
-      approved?: number;
+      /**
+       * Approved rewards that are fulfilled.
+       */
+      completed?: number;
 
       /**
-       * Unapproved rewards awaiting fulfillment.
+       * Unapproved rewards awaiting review.
        */
-      pending?: number;
+      unapproved?: number;
+
+      /**
+       * Rewards that are approved but not fulfilled.
+       */
+      unfulfilled?: number;
     }
   }
 }
@@ -1342,7 +1365,7 @@ export interface CampaignCreateParams {
   currencyISO?: string;
 
   /**
-   * The program name. Defaults to "Untitled Program".
+   * The program name. Defaults to a generated friendly label plus the creation date.
    */
   name?: string;
 
@@ -1529,13 +1552,7 @@ export interface CampaignListReferralsParams {
    * Field used to sort referral results.
    */
   sortBy?:
-    | 'updatedAt'
-    | 'createdAt'
-    | 'email'
-    | 'firstName'
-    | 'lastName'
-    | 'referralStatus'
-    | 'referralTriggeredAt';
+    'updatedAt' | 'createdAt' | 'email' | 'firstName' | 'lastName' | 'referralStatus' | 'referralTriggeredAt';
 }
 
 export interface CampaignRetrieveAnalyticsParams {

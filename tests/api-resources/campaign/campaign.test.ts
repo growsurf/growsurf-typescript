@@ -1,6 +1,7 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
 import Growsurf from 'growsurf-typescript';
+import type { ParticipantRetrieveAnalyticsResponse } from 'growsurf-typescript/resources/campaign/participant';
 
 const client = new Growsurf({
   apiKey: 'My API Key',
@@ -55,9 +56,9 @@ describe('resource campaign', () => {
     expect(invite.acceptedAt).toBeNull();
   });
 
-  test('campaign email analytics response types include lifecycle metrics', () => {
+  test('campaign analytics response types include lifecycle and affiliate metrics', () => {
     const response: Growsurf.CampaignRetrieveAnalyticsResponse = {
-      analytics: {},
+      analytics: { uniqueCommissionReferrals: 3 },
       endDate: 2,
       startDate: 1,
       email: {
@@ -75,9 +76,25 @@ describe('resource campaign', () => {
         coverageStartDate: null,
         isPartial: false,
       },
+      series: [{ periodStart: 1, uniqueCommissionReferrals: 2 }],
+      previousPeriod: {
+        analytics: { uniqueCommissionReferrals: 1 },
+        startDate: 0,
+        endDate: 1,
+      },
+    };
+    const participantResponse: ParticipantRetrieveAnalyticsResponse = {
+      analytics: {},
+      ranks: {},
+      shareCount: {},
+      series: [{ periodStart: 1, uniqueCommissionReferrals: 4 }],
     };
 
     expect(response.email?.sent).toBe(2);
+    expect(response.analytics.uniqueCommissionReferrals).toBe(3);
+    expect(response.series?.[0]?.uniqueCommissionReferrals).toBe(2);
+    expect(response.previousPeriod?.analytics?.uniqueCommissionReferrals).toBe(1);
+    expect(participantResponse.series?.[0]?.uniqueCommissionReferrals).toBe(4);
   });
 
   // Mock server tests are disabled
