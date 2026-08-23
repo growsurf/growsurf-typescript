@@ -43,6 +43,14 @@ describe('instantiate client', () => {
       expect(options.idempotencyKey).toBe(idempotencyKey);
     });
 
+    test('other mutating requests do not include a misleading idempotency key', async () => {
+      const { req } = await client.buildRequest({
+        path: '/campaign/p36rol/participant/email',
+        method: 'post',
+      });
+      expect(req.headers.has('idempotency-key')).toBe(false);
+    });
+
     test('can ignore `undefined` and leave the default', async () => {
       const { req } = await client.buildRequest({
         path: '/foo',
@@ -557,6 +565,78 @@ describe('default encoder', () => {
 });
 
 describe('retries', () => {
+  test('does not retry a non-idempotent mutation after a lost response', async () => {
+    let count = 0;
+    const client = new Growsurf({
+      apiKey: 'My API Key',
+      fetch: async () => {
+        count++;
+        throw new Error('response lost after the mutation completed');
+      },
+    });
+
+    await expect(
+      client.request({ path: '/campaign/p36rol/participant/email', method: 'post' }),
+    ).rejects.toThrow();
+    expect(count).toEqual(1);
+  });
+
+  test('keeps the timeout active while parsing the response body', async () => {
+    const body = new ReadableStream({ start() {} });
+    const client = new Growsurf({
+      apiKey: 'My API Key',
+      timeout: 10,
+      maxRetries: 0,
+      fetch: async () => new Response(body, { headers: { 'Content-Type': 'application/json' } }),
+    });
+
+    await expect(client.request({ path: '/foo', method: 'get' })).rejects.toBeInstanceOf(
+      Growsurf.APIConnectionTimeoutError,
+    );
+  });
+
+  test('keeps the timeout active while reading an error response body', async () => {
+    const body = new ReadableStream({ start() {} });
+    const client = new Growsurf({
+      apiKey: 'My API Key',
+      timeout: 10,
+      maxRetries: 0,
+      fetch: async () => new Response(body, { status: 400 }),
+    });
+    let guard: ReturnType<typeof setTimeout> | undefined;
+
+    try {
+      const request = client.request({ path: '/foo', method: 'get' });
+      const testGuard = new Promise<never>((_, reject) => {
+        guard = setTimeout(() => reject(new Error('request remained pending after its deadline')), 100);
+      });
+
+      await expect(Promise.race([request, testGuard])).rejects.toBeInstanceOf(
+        Growsurf.APIConnectionTimeoutError,
+      );
+    } finally {
+      clearTimeout(guard);
+    }
+  });
+
+  test('rejects a buffered response returned after the deadline', async () => {
+    const client = new Growsurf({
+      apiKey: 'My API Key',
+      timeout: 10,
+      maxRetries: 0,
+      fetch: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 25));
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      },
+    });
+
+    await expect(client.request({ path: '/foo', method: 'get' })).rejects.toBeInstanceOf(
+      Growsurf.APIConnectionTimeoutError,
+    );
+  });
+
   test('retry on timeout', async () => {
     let count = 0;
     const testFetch = async (
@@ -564,8 +644,8 @@ describe('retries', () => {
       { signal }: RequestInit = {},
     ): Promise<Response> => {
       if (count++ === 0) {
-        return new Promise(
-          (resolve, reject) => signal?.addEventListener('abort', () => reject(new Error('timed out'))),
+        return new Promise((resolve, reject) =>
+          signal?.addEventListener('abort', () => reject(new Error('timed out'))),
         );
       }
       return new Response(JSON.stringify({ a: 1 }), { headers: { 'Content-Type': 'application/json' } });

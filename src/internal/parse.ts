@@ -2,6 +2,7 @@
 
 import type { FinalRequestOptions } from './request-options';
 import { type Growsurf } from '../client';
+import { APIConnectionTimeoutError } from '../core/error';
 import { formatRequestDetails, loggerFor } from './utils/log';
 
 export type APIResponseProps = {
@@ -13,9 +14,38 @@ export type APIResponseProps = {
   startTime: number;
 };
 
+/** Reads a response body without allowing the request deadline to expire. */
+export async function readResponseBody<T>(
+  client: Growsurf,
+  props: APIResponseProps,
+  reader: (response: Response) => Promise<T>,
+): Promise<T> {
+  const { response, startTime } = props;
+  const timeoutMs = props.options.timeout ?? client.timeout;
+  const remainingTimeoutMs = Math.max(0, timeoutMs - (Date.now() - startTime));
+  const abort = () => {
+    props.controller.abort();
+    void response.body?.cancel().catch(() => undefined);
+  };
+  if (remainingTimeoutMs <= 0) {
+    abort();
+    throw new APIConnectionTimeoutError();
+  }
+
+  let bodyTimeout: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    bodyTimeout = setTimeout(() => {
+      abort();
+      reject(new APIConnectionTimeoutError());
+    }, remainingTimeoutMs);
+  });
+
+  return Promise.race([reader(response), timeoutPromise]).finally(() => clearTimeout(bodyTimeout));
+}
+
 export async function defaultParseResponse<T>(client: Growsurf, props: APIResponseProps): Promise<T> {
   const { response, requestLogID, retryOfRequestLogID, startTime } = props;
-  const body = await (async () => {
+  const body = await readResponseBody(client, props, async (response) => {
     // fetch refuses to read the body when the status code is 204.
     if (response.status === 204) {
       return null as T;
@@ -41,7 +71,7 @@ export async function defaultParseResponse<T>(client: Growsurf, props: APIRespon
 
     const text = await response.text();
     return text as unknown as T;
-  })();
+  });
   loggerFor(client).debug(
     `[${requestLogID}] response parsed`,
     formatRequestDetails({

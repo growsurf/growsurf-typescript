@@ -179,12 +179,7 @@ export interface RewardTaxValuation {
    * use `NONEMPLOYEE_SERVICES`.
    */
   taxCharacter?:
-    | 'NONEMPLOYEE_SERVICES'
-    | 'PRIZE_OR_AWARD'
-    | 'PURCHASE_REBATE'
-    | 'OTHER_INCOME'
-    | 'REVIEW_REQUIRED'
-    | null;
+    'NONEMPLOYEE_SERVICES' | 'PRIZE_OR_AWARD' | 'PURCHASE_REBATE' | 'OTHER_INCOME' | 'REVIEW_REQUIRED' | null;
 }
 
 export interface CampaignRewardListResponse {

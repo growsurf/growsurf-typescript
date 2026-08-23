@@ -7,7 +7,7 @@ import { validatePositiveInteger, isAbsoluteURL, safeJSON } from './internal/uti
 import { sleep } from './internal/utils/sleep';
 export type { Logger, LogLevel } from './internal/utils/log';
 import { castToError, isAbortError } from './internal/errors';
-import type { APIResponseProps } from './internal/parse';
+import { readResponseBody, type APIResponseProps } from './internal/parse';
 import { getPlatformHeaders } from './internal/detect-platform';
 import * as Shims from './internal/shims';
 import * as Opts from './internal/request-options';
@@ -189,7 +189,7 @@ export class Growsurf {
     };
 
     this.baseURL = options.baseURL!;
-    this.timeout = options.timeout ?? Growsurf.DEFAULT_TIMEOUT /* 1 minute */;
+    this.timeout = options.timeout ?? Growsurf.DEFAULT_TIMEOUT; /* 1 minute */
     this.logger = options.logger ?? console;
     const defaultLogLevel = 'warn';
     // Set default logLevel early so that we can log a warning in parseLogLevel.
@@ -418,7 +418,7 @@ export class Growsurf {
       const isTimeout =
         isAbortError(response) ||
         /timed? ?out/i.test(String(response) + ('cause' in response ? String(response.cause) : ''));
-      if (retriesRemaining) {
+      if (retriesRemaining && this.isRetrySafe(options)) {
         loggerFor(this).info(
           `[${requestLogID}] connection ${isTimeout ? 'timed out' : 'failed'} - ${retryMessage}`,
         );
@@ -454,10 +454,18 @@ export class Growsurf {
     const responseInfo = `[${requestLogID}${retryLogStr}] ${req.method} ${url} ${
       response.ok ? 'succeeded' : 'failed'
     } with status ${response.status} in ${headersTime - startTime}ms`;
+    const responseProps: APIResponseProps = {
+      response,
+      options,
+      controller,
+      requestLogID,
+      retryOfRequestLogID,
+      startTime,
+    };
 
     if (!response.ok) {
       const shouldRetry = await this.shouldRetry(response);
-      if (retriesRemaining && shouldRetry) {
+      if (retriesRemaining && this.isRetrySafe(options) && shouldRetry) {
         const retryMessage = `retrying, ${retriesRemaining} attempts remaining`;
 
         // We don't need the body of this response.
@@ -485,7 +493,13 @@ export class Growsurf {
 
       loggerFor(this).info(`${responseInfo} - ${retryMessage}`);
 
-      const errText = await response.text().catch((err: any) => castToError(err).message);
+      const errText = await readResponseBody(this, responseProps, (response) => response.text()).catch(
+        (err: any) => {
+          const error = castToError(err);
+          if (error instanceof Errors.APIConnectionTimeoutError) throw error;
+          return error.message;
+        },
+      );
       const errJSON = safeJSON(errText) as any;
       const errMessage = errJSON ? undefined : errText;
 
@@ -517,7 +531,7 @@ export class Growsurf {
       }),
     );
 
-    return { response, options, controller, requestLogID, retryOfRequestLogID, startTime };
+    return responseProps;
   }
 
   async fetchWithTimeout(
@@ -577,6 +591,13 @@ export class Growsurf {
     if (response.status >= 500) return true;
 
     return false;
+  }
+
+  /** Returns whether replaying this request cannot duplicate a customer-visible mutation. */
+  private isRetrySafe(options: FinalRequestOptions): boolean {
+    const method = options.method.toLowerCase();
+    const path = options.path?.split('?')[0]?.replace(/\/$/, '');
+    return method === 'get' || method === 'head' || (method === 'post' && path === '/api-key/rotate');
   }
 
   private async retryRequest(
@@ -672,7 +693,8 @@ export class Growsurf {
     retryCount: number;
   }): Promise<Headers> {
     let idempotencyHeaders: HeadersLike = {};
-    if (this.idempotencyHeader && method !== 'get') {
+    const path = options.path?.split('?')[0]?.replace(/\/$/, '');
+    if (this.idempotencyHeader && method === 'post' && path === '/api-key/rotate') {
       if (!options.idempotencyKey) options.idempotencyKey = this.defaultIdempotencyKey();
       idempotencyHeaders[this.idempotencyHeader] = options.idempotencyKey;
     }
