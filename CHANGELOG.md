@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/growsurf/growsurf-typescript/compare/v1.2.1...v1.3.0) (2026-08-23)
+
+
+### Features
+
+* **api:** add affiliate and payout destination APIs ([3d0601c](https://github.com/growsurf/growsurf-typescript/commit/3d0601cb3bf5def7a56444243324cc50a0beaeca))
+* **api:** add affiliate and payout destination APIs ([a6b87c1](https://github.com/growsurf/growsurf-typescript/commit/a6b87c1e640a9d8b0dd635a4da50ec18f68f15ec))
+* release 1.3.0 with Node.js 22+ baseline, retry safety, and body-read timeouts ([be07e45](https://github.com/growsurf/growsurf-typescript/commit/be07e45da3d5c5d412560ae3983ebf7716890477))
+
+
+### Bug Fixes
+
+* **api:** align analytics reward status models ([1105ad5](https://github.com/growsurf/growsurf-typescript/commit/1105ad5e031d3790d9f18e59502e1a90f19e795d))
+
 ## [1.2.1](https://github.com/growsurf/growsurf-typescript/compare/v1.2.0...v1.2.1) (2026-07-14)
 
 
