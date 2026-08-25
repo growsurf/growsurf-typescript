@@ -108,6 +108,13 @@ export interface Reward {
 
   description?: string | null;
 
+  /**
+   * The event that earns this Campaign Reward. Present only for `SINGLE_SIDED`,
+   * `DOUBLE_SIDED`, and `MILESTONE` referral rewards. Legacy Campaign Rewards return
+   * `CONVERSION`.
+   */
+  event?: 'LEAD' | 'CONVERSION' | null;
+
   imageUrl?: string | null;
 
   /**
@@ -225,6 +232,14 @@ export interface RewardCreateParams {
    * The reward description shown to the referrer.
    */
   description?: string;
+
+  /**
+   * The event that earns this Campaign Reward. Supported only for `SINGLE_SIDED`,
+   * `DOUBLE_SIDED`, and `MILESTONE` referral rewards. `LEAD` requires
+   * `installation.referralTrigger` to be `CUSTOM`. If omitted, the Campaign Reward
+   * uses `CONVERSION`.
+   */
+  event?: 'LEAD' | 'CONVERSION';
 
   /**
    * An image URL for the reward.
@@ -348,6 +363,14 @@ export interface RewardUpdateParams {
    * Body param: The reward description shown to the referrer.
    */
   description?: string;
+
+  /**
+   * Body param: The event that earns this Campaign Reward. Supported only for
+   * `SINGLE_SIDED`, `DOUBLE_SIDED`, and `MILESTONE` referral rewards. `LEAD` requires
+   * `installation.referralTrigger` to be `CUSTOM`. If omitted, the Campaign Reward
+   * keeps its current event.
+   */
+  event?: 'LEAD' | 'CONVERSION';
 
   /**
    * Body param: An image URL for the reward.
