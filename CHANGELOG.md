@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/growsurf/growsurf-typescript/compare/v1.3.0...v1.4.0) (2026-08-25)
+
+
+### Features
+
+* **api:** add reward and commission event support ([dfc9750](https://github.com/growsurf/growsurf-typescript/commit/dfc9750f7746fcfcd405000ed71c8172daaaa0ea))
+
 ## [1.3.0](https://github.com/growsurf/growsurf-typescript/compare/v1.2.1...v1.3.0) (2026-08-23)
 
 
