@@ -432,7 +432,9 @@ export class ParticipantResource extends APIResource {
    * `sent` (accepted for delivery), `delivered`, `opened`, `clicked`, `bounced`, and
    * `spamComplaints` metrics attributed to this participant, including invitations
    * they sent. Use `include=email,series` to include the same counts in each UTC
-   * series bucket.
+   * series bucket. `days`, `startDate`, and `endDate` filter only the optional
+   * `series` and `email` data. They do not filter the top-level `analytics`, `ranks`,
+   * or `shareCount` values.
    *
    * @example
    * ```ts
@@ -773,7 +775,7 @@ export interface ParticipantReward {
 
   rewardId: string;
 
-  status: 'PENDING' | 'FULFILLED';
+  status: 'PENDING' | 'FULFILLED' | 'CANCELLED';
 
   approved?: boolean;
 
@@ -1852,14 +1854,15 @@ export interface ParticipantRetrieveAnalyticsParams {
   id: string;
 
   /**
-   * Query param: Last number of days to retrieve analytics for. Defaults to 365.
-   * Maximum 1825.
+   * Query param: Last number of days for optional `series` and `email` analytics.
+   * Defaults to 365. Maximum 1825. Does not filter the top-level all-time totals.
    */
   days?: number;
 
   /**
-   * Query param: End date of the analytics timeframe as a Unix timestamp in
-   * milliseconds. Required if `days` is not set.
+   * Query param: End of a custom `series` and `email` analytics window as a Unix
+   * timestamp in milliseconds. Set it together with `startDate`. Does not filter the
+   * top-level all-time totals.
    */
   endDate?: number;
 
@@ -1881,8 +1884,9 @@ export interface ParticipantRetrieveAnalyticsParams {
   interval?: 'day' | 'week' | 'month';
 
   /**
-   * Query param: Start date of the analytics timeframe as a Unix timestamp in
-   * milliseconds. Required if `days` is not set.
+   * Query param: Start of a custom `series` and `email` analytics window as a Unix
+   * timestamp in milliseconds. Set it together with `endDate`. Does not filter the
+   * top-level all-time totals.
    */
   startDate?: number;
 }

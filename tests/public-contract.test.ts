@@ -1,7 +1,12 @@
-import type { AffiliateApplication, Campaign, CampaignCreateParams } from 'growsurf-typescript/resources';
+import type {
+  AffiliateApplication,
+  Campaign,
+  CampaignCreateParams,
+  CommissionStructure,
+} from 'growsurf-typescript/resources';
 import type { ParticipantReward, ReferralSource } from 'growsurf-typescript/resources/campaign/participant';
 
-test('public response types accept every runtime referral source and documented null', () => {
+test('public response types accept documented enum values and null fields', () => {
   const referralSources: ReferralSource[] = [
     'DIRECT',
     'PARTICIPANT',
@@ -13,16 +18,19 @@ test('public response types accept every runtime referral source and documented 
   const reward: ParticipantReward = {
     id: 'reward_1',
     rewardId: 'configured_reward_1',
-    status: 'PENDING',
+    status: 'CANCELLED',
     approvedAt: null,
     fulfilledAt: null,
   };
+  const commissionEvent: 'CLICK' | 'LEAD' | 'SALE' | null | undefined = ({} as CommissionStructure).event;
   const createParams: CampaignCreateParams = { type: 'REFERRAL' };
   const application = {} as AffiliateApplication;
 
   expect(referralSources).toHaveLength(5);
   expect(campaign.currencyISO).toBeNull();
+  expect(commissionEvent).toBeUndefined();
   expect(reward.approvedAt).toBeNull();
+  expect(reward.status).toBe('CANCELLED');
   expect(createParams).toEqual({ type: 'REFERRAL' });
   expect(application).toBeDefined();
 });

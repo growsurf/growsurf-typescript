@@ -511,6 +511,13 @@ export namespace Campaign {
 
     description?: string | null;
 
+    /**
+     * The event that earns this Campaign Reward. Present only for `SINGLE_SIDED`,
+     * `DOUBLE_SIDED`, and `MILESTONE` referral rewards. Legacy Campaign Rewards return
+     * `CONVERSION`.
+     */
+    event?: 'LEAD' | 'CONVERSION' | null;
+
     imageUrl?: string | null;
 
     /**
@@ -576,7 +583,7 @@ export interface CommissionStructure {
 
   durationInMonths?: number | null;
 
-  event?: string | null;
+  event?: 'CLICK' | 'LEAD' | 'SALE' | null;
 
   hasIntro?: boolean | null;
 
@@ -626,6 +633,9 @@ export namespace ParticipantCommissionList {
     createdAt: number;
 
     currencyISO: string;
+
+    /** The event that created the commission. */
+    event: 'LEAD' | 'SALE';
 
     referredId: string;
 
