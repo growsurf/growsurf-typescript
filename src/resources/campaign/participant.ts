@@ -280,8 +280,9 @@ export class ParticipantResource extends APIResource {
    * cancellation, or chargeback) against a previously recorded transaction and reverses
    * or adjusts the referrer's commission. The inverse of Record Affiliate Transaction.
    * Identify the original transaction with the same identifier(s) you sent when
-   * recording it. Commissions already paid out to the affiliate are not clawed back;
-   * the amendment is recorded for tax reporting only.
+   * recording it. Commissions already paid out to the affiliate are not clawed back.
+   * The amendment still updates the sale revenue used in program reporting; full
+   * refunds and chargebacks also update tax reporting.
    *
    * @example
    * ```ts
@@ -431,10 +432,12 @@ export class ParticipantResource extends APIResource {
    * commission, and payout metrics for affiliate programs). Pass `include=email` for
    * `sent` (accepted for delivery), `delivered`, `opened`, `clicked`, `bounced`, and
    * `spamComplaints` metrics attributed to this participant, including invitations
-   * they sent. Use `include=email,series` to include the same counts in each UTC
-   * series bucket. `days`, `startDate`, and `endDate` filter only the optional
-   * `series` and `email` data. They do not filter the top-level `analytics`, `ranks`,
-   * or `shareCount` values.
+   * they sent. Add `activation` for covered first milestones and the cohort anchor.
+   * Use `include=activation,series` for covered portal-view and share-action counts
+   * in each series bucket. Unknown history stays `null` with an explicit state and
+   * reason. `days`, `startDate`, and `endDate` filter only the optional `series` and
+   * `email` data. They do not filter the top-level `analytics`, `ranks`, or
+   * `shareCount` values.
    *
    * @example
    * ```ts
@@ -982,6 +985,75 @@ export interface ParticipantEmailResponse {
   success: boolean;
 }
 
+export interface ParticipantActivationCohort {
+  anchorField: 'enrolledAsAdvocateAt' | 'approvedAsAffiliateAt';
+
+  anchorAt: number | null;
+}
+
+export interface ParticipantActivationMilestones {
+  firstPortalViewedAt: number | null;
+
+  firstReferralLinkCopiedAt: number | null;
+
+  firstShareAt: number | null;
+
+  firstShareChannel:
+    | 'email'
+    | 'facebook'
+    | 'twitter'
+    | 'linkedin'
+    | 'pinterest'
+    | 'threads'
+    | 'bluesky'
+    | 'sms'
+    | 'messenger'
+    | 'whatsapp'
+    | 'wechat'
+    | 'telegram'
+    | 'reddit'
+    | 'tumblr'
+    | 'qrcode'
+    | 'copyRefLink'
+    | 'iosNativeShare'
+    | 'androidNativeShare'
+    | null;
+
+  firstUniqueClickAt: number | null;
+
+  firstLeadAt: number | null;
+
+  firstReferralAt: number | null;
+
+  firstRewardAt: number | null;
+
+  firstCommissionAt: number | null;
+
+  payoutSetupCompletedAt: number | null;
+}
+
+/**
+ * Covered first milestones for one participant. Unknown history remains `null` and
+ * is paired with an explicit state and reason.
+ */
+export interface ParticipantActivationAnalytics {
+  coverageStartAt: number | null;
+
+  metricContractVersion: number;
+
+  programType: 'REFERRAL' | 'AFFILIATE';
+
+  state: CampaignAPI.AnalyticsAvailability;
+
+  reason: CampaignAPI.AnalyticsUnavailableReason | null;
+
+  cohort: ParticipantActivationCohort;
+
+  enrolledAsAdvocateAt: number | null;
+
+  milestones: ParticipantActivationMilestones;
+}
+
 export interface ParticipantRetrieveAnalyticsResponse {
   analytics: ParticipantRetrieveAnalyticsResponse.Analytics;
 
@@ -991,6 +1063,11 @@ export interface ParticipantRetrieveAnalyticsResponse {
    * Per-channel share counts (e.g. `email`, `facebook`, `twitter`, ...).
    */
   shareCount: { [key: string]: number };
+
+  /**
+   * Present only when `include` contains `activation`.
+   */
+  activation?: ParticipantActivationAnalytics;
 
   /**
    * Present only when `include` contains `email`.
@@ -1142,6 +1219,12 @@ export namespace ParticipantRetrieveAnalyticsResponse {
 
     pinterestShares?: number;
 
+    /**
+     * Covered portal views in this period. Present when both `activation` and
+     * `series` are requested. Unknown history is `null`.
+     */
+    portalViews?: number | null;
+
     qrcodeShares?: number;
 
     redditShares?: number;
@@ -1153,6 +1236,12 @@ export namespace ParticipantRetrieveAnalyticsResponse {
     referrals?: number;
 
     smsShares?: number;
+
+    /**
+     * Covered share actions in this period. Present when both `activation` and
+     * `series` are requested. Unknown history is `null`.
+     */
+    shareActions?: number | null;
 
     telegramShares?: number;
 
@@ -1871,9 +1960,10 @@ export interface ParticipantRetrieveAnalyticsParams {
    * own activity per period; `email` returns `sent`, `delivered`, `opened`,
    * `clicked`, `bounced`, `spamComplaints`, and per-email-type metrics attributed to
    * the participant for the requested analytics window (including invitations they
-   * sent). Request both in either order to add email counts to every series item for
-   * emails sent during that period. Only documented tokens are accepted; an unknown
-   * token returns `400`.
+   * sent); `activation` returns the cohort anchor and covered first milestones.
+   * Request `activation,series` to add covered portal-view and share-action counts to
+   * every series item. Only documented tokens are accepted; an unknown token returns
+   * `400`.
    */
   include?: string;
 
@@ -1944,6 +2034,9 @@ export declare namespace ParticipantResource {
     type ParticipantTriggerReferralResponse as ParticipantTriggerReferralResponse,
     type ParticipantCancelDelayedReferralResponse as ParticipantCancelDelayedReferralResponse,
     type ParticipantEmailResponse as ParticipantEmailResponse,
+    type ParticipantActivationCohort as ParticipantActivationCohort,
+    type ParticipantActivationMilestones as ParticipantActivationMilestones,
+    type ParticipantActivationAnalytics as ParticipantActivationAnalytics,
     type ParticipantRetrieveAnalyticsResponse as ParticipantRetrieveAnalyticsResponse,
     type ParticipantListActivityLogsResponse as ParticipantListActivityLogsResponse,
     type ParticipantGetPayoutDestinationResponse as ParticipantGetPayoutDestinationResponse,

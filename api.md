@@ -175,6 +175,8 @@ Methods:
 Types:
 
 - <code><a href="./src/resources/campaign/design.ts">CampaignDesign</a></code>
+- <code><a href="./src/resources/campaign/design.ts">CampaignDesignResources</a></code>
+- <code><a href="./src/resources/campaign/design.ts">CampaignDesignResourcesIcon</a></code>
 
 Methods:
 

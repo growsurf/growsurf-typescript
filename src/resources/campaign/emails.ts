@@ -49,6 +49,7 @@ export class Emails extends APIResource {
  * editable email templates plus the `settings` block. The set of keys is
  * intentionally left open; to see the full object with every field and its current
  * value, `GET` this resource, then `PATCH` back only the fields you want to change.
+ * `offerClaimed` is available to both program types and sends while the Claim Offer Popup is enabled.
  */
 export type CampaignEmails = { [key: string]: unknown };
 

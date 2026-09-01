@@ -4,7 +4,13 @@ import { APIResource } from '../../core/resource';
 import * as CampaignAPI from './campaign';
 import * as CommissionAPI from './commission';
 import * as DesignAPI from './design';
-import { CampaignDesign, Design as DesignAPIDesign, DesignUpdateParams } from './design';
+import {
+  CampaignDesign,
+  CampaignDesignResources,
+  CampaignDesignResourcesIcon,
+  Design as DesignAPIDesign,
+  DesignUpdateParams,
+} from './design';
 import * as EmailsAPI from './emails';
 import { CampaignEmails, EmailUpdateParams, Emails as EmailsAPIEmails } from './emails';
 import * as InstallationAPI from './installation';
@@ -23,6 +29,7 @@ import {
   CommissionDeleteResponse,
 } from './commission';
 import * as ParticipantAPI from './participant';
+import * as ProgramResourcesAPI from './program-resources';
 import {
   Create,
   FraudRiskLevel,
@@ -93,6 +100,7 @@ export class CampaignResource extends APIResource {
   reward: RewardAPI.Reward = new RewardAPI.Reward(this._client);
   commission: CommissionAPI.Commission = new CommissionAPI.Commission(this._client);
   rewards: RewardsAPI.Rewards = new RewardsAPI.Rewards(this._client);
+  resources: ProgramResourcesAPI.ProgramResources = new ProgramResourcesAPI.ProgramResources(this._client);
   webhooks: WebhooksAPI.Webhooks = new WebhooksAPI.Webhooks(this._client);
   design: DesignAPI.Design = new DesignAPI.Design(this._client);
   emails: EmailsAPI.Emails = new EmailsAPI.Emails(this._client);
@@ -444,11 +452,13 @@ export class CampaignResource extends APIResource {
   /**
    * Retrieves analytics for a program. Pass `interval` to also get a time-series
    * (`series`) alongside the totals, and `include` to add previous-period totals,
-   * status breakdowns, derived rates, or email performance. Add `email` to `include`
-   * for `sent` (accepted for delivery), `delivered`, `opened`, `clicked`, `bounced`,
-   * and `spamComplaints` metrics plus per-email-type breakdowns. Email rates are
-   * ratios from `0` to `1`, and `isPartial` identifies windows that begin before
-   * complete coverage.
+   * status breakdowns, derived rates, email performance, or participant engagement.
+   * Add `engagement` for covered participant activity totals, comparisons, series,
+   * and breakdowns. Engagement returns explicit unavailable states when coverage is
+   * unknown. Add `email` for `sent` (accepted for delivery), `delivered`, `opened`,
+   * `clicked`, `bounced`, and `spamComplaints` metrics plus per-email-type
+   * breakdowns. Email rates are ratios from `0` to `1`, and `isPartial` identifies
+   * windows that begin before complete coverage.
    *
    * @example
    * ```ts
@@ -463,6 +473,28 @@ export class CampaignResource extends APIResource {
     options?: RequestOptions,
   ): APIPromise<CampaignRetrieveAnalyticsResponse> {
     return this._client.get(path`/campaign/${id}/analytics`, { query, ...options });
+  }
+
+  /**
+   * Retrieves activation cohorts for a program. Each cohort follows eligible
+   * participants from enrollment through portal views, sharing, referral visits,
+   * leads, and credited referrals. Results include explicit coverage and unavailable
+   * states so an unknown value is not mistaken for zero.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.retrieveActivationAnalytics(
+   *     'id',
+   *   );
+   * ```
+   */
+  retrieveActivationAnalytics(
+    id: string,
+    query: CampaignRetrieveActivationAnalyticsParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<CampaignActivationAnalyticsResponse> {
+    return this._client.get(path`/campaign/${id}/analytics/activation`, { query, ...options });
   }
 }
 
@@ -583,6 +615,12 @@ export interface CommissionStructure {
 
   durationInMonths?: number | null;
 
+  /**
+   * The event that generates a commission. `CLICK` and `LEAD` require `FIXED`
+   * with a positive `amount`; `amountISO` defaults to the program currency when
+   * omitted. `SALE` supports `FIXED` or `PERCENT`. Missing legacy values read as
+   * `SALE`.
+   */
   event?: 'CLICK' | 'LEAD' | 'SALE' | null;
 
   hasIntro?: boolean | null;
@@ -781,6 +819,332 @@ export interface CampaignCreateMobileParticipantTokenResponse {
   participantToken: string;
 }
 
+export type AnalyticsAvailability = 'AVAILABLE' | 'PARTIAL' | 'UNAVAILABLE';
+
+export type AnalyticsUnavailableReason =
+  | 'COVERAGE_UNAVAILABLE'
+  | 'PRE_COVERAGE'
+  | 'PARTIAL_COVERAGE'
+  | 'INSUFFICIENT_COVERAGE'
+  | 'EMPTY_DENOMINATOR'
+  | 'QUERY_LIMIT_EXCEEDED'
+  | 'PARTICIPANT_NOT_ELIGIBLE';
+
+/**
+ * Current participant engagement for the selected program, period, and platform.
+ */
+export interface CampaignEngagementAnalytics {
+  coverageStartAt: number | null;
+
+  metricContractVersion: number;
+
+  programType: 'REFERRAL' | 'AFFILIATE';
+
+  timezone: string;
+
+  interval: 'day' | 'week' | 'month';
+
+  platform: CampaignEngagementAnalytics.PlatformFilter;
+
+  period: CampaignEngagementAnalytics.Period;
+
+  state: AnalyticsAvailability;
+
+  reason: AnalyticsUnavailableReason | null;
+
+  totals: CampaignEngagementAnalytics.Totals;
+
+  previousPeriod: CampaignEngagementAnalytics.PreviousPeriod;
+
+  comparison: CampaignEngagementAnalytics.Comparison;
+
+  series: Array<CampaignEngagementAnalytics.SeriesPoint>;
+
+  breakdowns: CampaignEngagementAnalytics.Breakdowns;
+}
+
+export namespace CampaignEngagementAnalytics {
+  export interface Metric {
+    state: AnalyticsAvailability;
+
+    value: number | null;
+
+    reason: AnalyticsUnavailableReason | null;
+
+    delta?: number;
+  }
+
+  export interface Totals {
+    activeParticipants: Metric;
+
+    sharingParticipants: Metric;
+
+    sharingRate: Metric;
+
+    repeatActiveParticipants: Metric;
+
+    repeatSharingParticipants: Metric;
+
+    retainedActiveParticipants: Metric;
+
+    portalViews: Metric;
+
+    shareActions: Metric;
+  }
+
+  export interface Period {
+    from: number;
+
+    to: number;
+
+    effectiveFrom: number | null;
+
+    previousFrom: number;
+
+    previousTo: number;
+  }
+
+  export interface PlatformFilter {
+    requested: 'ALL' | 'WEB' | 'IOS' | 'ANDROID';
+
+    applied: 'ALL' | 'WEB' | 'IOS' | 'ANDROID';
+
+    state: AnalyticsAvailability;
+  }
+
+  export interface PreviousPeriod {
+    state: AnalyticsAvailability;
+
+    reason: AnalyticsUnavailableReason | null;
+
+    totals: Totals | null;
+  }
+
+  export interface ComparisonMetrics {
+    activeParticipants?: Metric;
+
+    sharingParticipants?: Metric;
+
+    repeatActiveParticipants?: Metric;
+
+    repeatSharingParticipants?: Metric;
+
+    portalViews?: Metric;
+
+    shareActions?: Metric;
+  }
+
+  export interface Comparison {
+    state: AnalyticsAvailability;
+
+    reason: AnalyticsUnavailableReason | null;
+
+    metrics: ComparisonMetrics | null;
+  }
+
+  export interface SeriesPoint {
+    from: number;
+
+    to: number;
+
+    activeParticipants: number;
+
+    sharingParticipants: number;
+
+    portalViews: number;
+
+    shareActions: number;
+  }
+
+  export interface PlatformBreakdown {
+    key: 'WEB' | 'IOS' | 'ANDROID';
+
+    activeParticipants: number;
+
+    sharingParticipants: number;
+
+    portalViews: number;
+
+    shareActions: number;
+  }
+
+  export interface PortalSourceBreakdown {
+    key: 'DEFAULT_LAUNCHER' | 'SDK_OPEN' | 'CSS_CLASS' | 'HOSTED_PORTAL' | 'NATIVE_WINDOW' | 'UNKNOWN';
+
+    activeParticipants: number;
+
+    portalViews: number;
+  }
+
+  export interface ShareChannelBreakdown {
+    key: string;
+
+    sharingParticipants: number;
+
+    shareActions: number;
+  }
+
+  export interface FirstShareChannelBreakdown {
+    key: string;
+
+    sharingParticipants: number;
+  }
+
+  export interface Breakdowns {
+    platforms: Array<PlatformBreakdown>;
+
+    portalViewSources: Array<PortalSourceBreakdown>;
+
+    shareChannels: Array<ShareChannelBreakdown>;
+
+    firstShareChannels: Array<FirstShareChannelBreakdown>;
+  }
+}
+
+/**
+ * Activation cohorts for eligible participants in a referral or affiliate program.
+ */
+export interface CampaignActivationAnalyticsResponse {
+  coverageStartAt: number | null;
+
+  metricContractVersion: number;
+
+  programType: 'REFERRAL' | 'AFFILIATE';
+
+  timezone: string;
+
+  cohortInterval: 'day' | 'week' | 'month';
+
+  observationWindowDays: 7 | 30;
+
+  portalViewedLabel: 'Referral portal viewed' | 'Affiliate portal viewed';
+
+  portalViewedHelperText: string;
+
+  aggregate: CampaignActivationAnalyticsResponse.CohortResult;
+
+  cohorts: Array<CampaignActivationAnalyticsResponse.CohortResult>;
+}
+
+export namespace CampaignActivationAnalyticsResponse {
+  export type StageKey =
+    'ELIGIBLE' | 'PORTAL_VIEWED' | 'SHARE_ACTION' | 'UNIQUE_REFERRAL_VISIT' | 'LEAD' | 'CREDITED_REFERRAL';
+
+  export type StalledSegmentKey =
+    | 'ELIGIBLE_NO_PORTAL_VIEW'
+    | 'PORTAL_VIEWED_NO_SHARE_ACTION'
+    | 'SHARED_NO_UNIQUE_REFERRAL_VISIT'
+    | 'UNIQUE_VISIT_NO_LEAD'
+    | 'LEAD_NO_CREDITED_REFERRAL';
+
+  export interface CohortBounds {
+    from: number;
+
+    to: number;
+
+    effectiveFrom: number | null;
+
+    maturedAt: number;
+
+    asOf: number;
+
+    anchorField: 'enrolledAsAdvocateAt' | 'approvedAsAffiliateAt';
+  }
+
+  export interface Stage {
+    key: StageKey;
+
+    count: number;
+
+    conversionRateFromPrior: number | null;
+
+    conversionRateFromEligible: number | null;
+
+    dropOffCount: number | null;
+
+    dropOffRate: number | null;
+
+    medianTimeToStageMs: number | null;
+
+    stalledSegmentKey: StalledSegmentKey | null;
+  }
+
+  export interface StageCounts {
+    ELIGIBLE: number;
+
+    PORTAL_VIEWED: number;
+
+    SHARE_ACTION: number;
+
+    UNIQUE_REFERRAL_VISIT: number;
+
+    LEAD: number;
+
+    CREDITED_REFERRAL: number;
+  }
+
+  export interface StalledSegment {
+    key: StalledSegmentKey;
+
+    fromStage: Exclude<StageKey, 'CREDITED_REFERRAL'>;
+
+    toStage: Exclude<StageKey, 'ELIGIBLE'>;
+
+    count: number;
+  }
+
+  export interface OutcomeCount {
+    count: number;
+  }
+
+  export interface Outcomes {
+    FIRST_REWARD?: OutcomeCount;
+
+    FIRST_COMMISSION?: OutcomeCount;
+
+    PAYOUT_SETUP_COMPLETED?: OutcomeCount;
+  }
+
+  export interface LargestDrop {
+    fromStage: string;
+
+    toStage: string;
+
+    count: number;
+
+    rate: number;
+
+    stalledSegmentKey: string;
+
+    improvementAreaKey:
+      | 'PORTAL_ACCESS'
+      | 'SHARING_EXPERIENCE'
+      | 'SHARE_EFFECTIVENESS'
+      | 'VISITOR_SIGNUP'
+      | 'ATTRIBUTION_AND_QUALIFICATION';
+
+    improvementArea: string;
+  }
+
+  export interface CohortResult {
+    state: AnalyticsAvailability;
+
+    reason: AnalyticsUnavailableReason | null;
+
+    cohort: CohortBounds;
+
+    strictStages: Array<Stage> | null;
+
+    rawStageCounts: StageCounts | null;
+
+    stalledSegments: Array<StalledSegment> | null;
+
+    outcomes: Outcomes | null;
+
+    largestDrop: LargestDrop | null;
+  }
+}
+
 export interface CampaignRetrieveAnalyticsResponse {
   analytics: CampaignRetrieveAnalyticsResponse.Analytics;
 
@@ -792,6 +1156,11 @@ export interface CampaignRetrieveAnalyticsResponse {
    * Present only when `include` contains `email`.
    */
   email?: CampaignRetrieveAnalyticsResponse.Email;
+
+  /**
+   * Present only when `include` contains `engagement`.
+   */
+  engagement?: CampaignEngagementAnalytics;
 
   /**
    * Present only when `include` contains `previousPeriod`.
@@ -1585,21 +1954,62 @@ export interface CampaignRetrieveAnalyticsParams {
    * `clicked`, `bounced`, `spamComplaints`, and per-email-type metrics. When `email` and
    * an interval are both requested, each `series` item also contains counts for emails
    * sent during that period. Combine `email` with `previousPeriod` to include the same
-   * email metrics in both windows.
+   * email metrics in both windows. `engagement` adds covered participant activity
+   * totals, comparisons, series, and breakdowns.
    */
   include?: string;
 
   /**
    * When set to `day`, `week`, or `month`, the response also includes a `series` array
-   * with per-period totals. Defaults to `total` (no series).
+   * with per-period totals and uses the same bucket size for `engagement.series`.
+   * Defaults to `total` (no legacy series); `engagement.series` uses daily buckets when
+   * `interval` is `total` or omitted.
    */
   interval?: 'day' | 'week' | 'month' | 'total';
+
+  /**
+   * Participant platform used for `engagement`. Defaults to `ALL`.
+   */
+  platform?: 'ALL' | 'WEB' | 'IOS' | 'ANDROID';
 
   /**
    * Start date of the analytics timeframe as a Unix timestamp in milliseconds.
    * Required if `days` is not set.
    */
   startDate?: number;
+
+  /**
+   * IANA timezone used for engagement periods and buckets. Defaults to `UTC`.
+   */
+  timezone?: string;
+}
+
+export interface CampaignRetrieveActivationAnalyticsParams {
+  /**
+   * Inclusive cohort enrollment start as a Unix timestamp in milliseconds.
+   */
+  cohortFrom?: number;
+
+  /**
+   * Cohort bucket size. Defaults to `day`.
+   */
+  cohortInterval?: 'day' | 'week' | 'month';
+
+  /**
+   * Exclusive cohort enrollment end as a Unix timestamp in milliseconds.
+   */
+  cohortTo?: number;
+
+  /**
+   * Days after enrollment allowed for each participant to reach a stage. Defaults to
+   * `30`.
+   */
+  observationWindowDays?: 7 | 30;
+
+  /**
+   * IANA timezone used for cohort bounds. Defaults to `UTC`.
+   */
+  timezone?: string;
 }
 
 export interface CampaignListAffiliateApplicationsParams {
@@ -1729,6 +2139,9 @@ export declare namespace CampaignResource {
   export {
     type Campaign as Campaign,
     type CommissionStructure as CommissionStructure,
+    type AnalyticsAvailability as AnalyticsAvailability,
+    type AnalyticsUnavailableReason as AnalyticsUnavailableReason,
+    type CampaignEngagementAnalytics as CampaignEngagementAnalytics,
     type ParticipantCommissionList as ParticipantCommissionList,
     type ParticipantList as ParticipantList,
     type ParticipantPayoutList as ParticipantPayoutList,
@@ -1736,6 +2149,7 @@ export declare namespace CampaignResource {
     type CampaignListResponse as CampaignListResponse,
     type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
+    type CampaignActivationAnalyticsResponse as CampaignActivationAnalyticsResponse,
     type AffiliateApplication as AffiliateApplication,
     type AffiliateApplicationListResponse as AffiliateApplicationListResponse,
     type AffiliateInvite as AffiliateInvite,
@@ -1749,6 +2163,7 @@ export declare namespace CampaignResource {
     type CampaignListPayoutsParams as CampaignListPayoutsParams,
     type CampaignListReferralsParams as CampaignListReferralsParams,
     type CampaignRetrieveAnalyticsParams as CampaignRetrieveAnalyticsParams,
+    type CampaignRetrieveActivationAnalyticsParams as CampaignRetrieveActivationAnalyticsParams,
     type CampaignListAffiliateApplicationsParams as CampaignListAffiliateApplicationsParams,
     type CampaignRetrieveAffiliateApplicationParams as CampaignRetrieveAffiliateApplicationParams,
     type CampaignReviewAffiliateApplicationParams as CampaignReviewAffiliateApplicationParams,
@@ -1831,6 +2246,8 @@ export declare namespace CampaignResource {
   export {
     DesignAPIDesign as Design,
     type CampaignDesign as CampaignDesign,
+    type CampaignDesignResources as CampaignDesignResources,
+    type CampaignDesignResourcesIcon as CampaignDesignResourcesIcon,
     type DesignUpdateParams as DesignUpdateParams,
   };
 

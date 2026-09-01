@@ -4,6 +4,9 @@ export {
   CampaignResource,
   type Campaign,
   type CommissionStructure,
+  type AnalyticsAvailability,
+  type AnalyticsUnavailableReason,
+  type CampaignEngagementAnalytics,
   type ParticipantCommissionList,
   type ParticipantList,
   type ParticipantPayoutList,
@@ -11,6 +14,7 @@ export {
   type CampaignListResponse,
   type CampaignCreateMobileParticipantTokenResponse,
   type CampaignRetrieveAnalyticsResponse,
+  type CampaignActivationAnalyticsResponse,
   type AffiliateApplication,
   type AffiliateApplicationListResponse,
   type AffiliateInvite,
@@ -24,6 +28,7 @@ export {
   type CampaignListPayoutsParams,
   type CampaignListReferralsParams,
   type CampaignRetrieveAnalyticsParams,
+  type CampaignRetrieveActivationAnalyticsParams,
   type CampaignListAffiliateApplicationsParams,
   type CampaignRetrieveAffiliateApplicationParams,
   type CampaignReviewAffiliateApplicationParams,
@@ -56,6 +61,9 @@ export {
   type ParticipantTriggerReferralResponse,
   type ParticipantCancelDelayedReferralResponse,
   type ParticipantEmailResponse,
+  type ParticipantActivationCohort,
+  type ParticipantActivationMilestones,
+  type ParticipantActivationAnalytics,
   type ParticipantRetrieveAnalyticsResponse,
   type ParticipantListActivityLogsResponse,
   type ParticipantGetPayoutDestinationResponse,
@@ -98,6 +106,21 @@ export {
   type RewardUpdateParams,
 } from './rewards';
 export {
+  ProgramResources,
+  type ProgramResource,
+  type ProgramResourceFile,
+  type ProgramResourceType,
+  type ProgramResourceModerationStatus,
+  type ProgramResourceListResponse,
+  type ProgramResourceUploadResult,
+  type ProgramResourceCreateParams,
+  type ProgramResourceUpdateParams,
+  type ProgramResourceDeleteParams,
+  type DeleteProgramResourceResponse,
+  type ProgramResourceUploadTicketParams,
+  type ProgramResourceUploadTicket,
+} from './program-resources';
+export {
   Webhooks,
   type WebhookEvent,
   type Webhook,
@@ -109,7 +132,13 @@ export {
   type WebhookDeleteParams,
   type WebhookTestParams,
 } from './webhooks';
-export { Design, type CampaignDesign, type DesignUpdateParams } from './design';
+export {
+  Design,
+  type CampaignDesign,
+  type CampaignDesignResources,
+  type CampaignDesignResourcesIcon,
+  type DesignUpdateParams,
+} from './design';
 export { Emails, type CampaignEmails, type EmailUpdateParams } from './emails';
 export { Options, type CampaignOptions, type OptionUpdateParams } from './options';
 export { Installation, type CampaignInstallation, type InstallationUpdateParams } from './installation';
