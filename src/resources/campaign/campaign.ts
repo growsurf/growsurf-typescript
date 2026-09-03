@@ -969,7 +969,14 @@ export namespace CampaignEngagementAnalytics {
   }
 
   export interface PortalSourceBreakdown {
-    key: 'DEFAULT_LAUNCHER' | 'SDK_OPEN' | 'CSS_CLASS' | 'HOSTED_PORTAL' | 'NATIVE_WINDOW' | 'UNKNOWN';
+    key:
+      | 'DEFAULT_LAUNCHER'
+      | 'SDK_OPEN'
+      | 'CSS_CLASS'
+      | 'EMBEDDABLE_ELEMENT'
+      | 'HOSTED_PORTAL'
+      | 'NATIVE_WINDOW'
+      | 'UNKNOWN';
 
     activeParticipants: number;
 
