@@ -11,10 +11,23 @@ describe('payout provider forward compatibility', () => {
     const response: ParticipantGetPayoutDestinationResponse = {
       activeProvider: 'TESTBANK',
       enabledProviders: ['TESTBANK'],
-      destinations: [{ provider: 'TESTBANK' }],
+      destinations: [
+        {
+          provider: 'TESTBANK',
+          providerDisplayName: 'Test Bank',
+          status: 'ACTIVE',
+          claimEmail: 'richard@piedpiper.com',
+          legalEntityType: 'INDIVIDUAL',
+          confirmedAt: 1752000000000,
+          needsRepairReason: null,
+        },
+      ],
     };
     const confirmation: ParticipantRequestPayoutDestinationConfirmationResponse = {
       provider: 'TESTBANK',
+      providerDisplayName: 'Test Bank',
+      status: 'CONFIRMATION_REQUESTED',
+      expiresAt: 1752604800000,
     };
 
     expect(response.activeProvider).toBe('TESTBANK');

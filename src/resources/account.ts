@@ -17,11 +17,14 @@ export class AccountResource extends APIResource {
    * The key is locked until the team owner's email address is verified:
    * authenticated program and resource endpoints return a `403` with error code
    * `EMAIL_NOT_VERIFIED_ERROR` until then (resend the email via
-   * `POST /team/owner/verification-email`, then retry). A welcome email is sent to the
-   * address with the verification link and a set-password link for dashboard access.
-   * Accounts whose email is never verified are deleted automatically after 7 days. For
-   * security, the API key is rotated the first time the account owner signs in to the
-   * GrowSurf dashboard. Some actions (such as emailing participants) additionally
+   * `POST /team/owner/verification-email`, then retry). Verification unlocks this same
+   * key — keep it and retry rather than requesting a replacement. A welcome email is
+   * sent to the address with the verification link and a set-password link for
+   * dashboard access. Accounts whose email is never verified are deleted automatically
+   * after 7 days. Separately, for security, the API key is replaced the first time the
+   * account owner signs in to the GrowSurf dashboard; email verification does not
+   * trigger that, and the previous key then returns a `403` with error code
+   * `NOT_AUTHORIZED_ERROR`. Some actions (such as emailing participants) additionally
    * require GrowSurf to verify the team first. Calling this endpoint accepts those
    * policies on the account holder's behalf.
    *
@@ -49,9 +52,10 @@ export interface AccountCreateResponse {
 
   /**
    * An API key for the new account. Use it as the `Bearer` token on subsequent
-   * requests. It is shown once, locked (`403` `EMAIL_NOT_VERIFIED_ERROR`) until the
-   * account's email is verified, and rotated when the account owner first signs in to
-   * the GrowSurf dashboard.
+   * requests. It is shown once and locked (`403` `EMAIL_NOT_VERIFIED_ERROR`) until the
+   * account's email is verified; verification unlocks this same key, so keep it and
+   * retry. It is replaced only when the account owner first signs in to the GrowSurf
+   * dashboard.
    */
   apiKey: string;
 

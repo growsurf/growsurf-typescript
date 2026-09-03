@@ -106,6 +106,9 @@ export type CampaignDesignResources = {
   /** TEXT resource copy action. Maximum 100 characters. */
   copyButtonText?: string;
 
+  /** Shown in place of the list when no resources are published. Maximum 500 characters. */
+  emptyState?: string;
+
   /** TEXT resource copy confirmation. Maximum 100 characters. */
   copiedText?: string;
 

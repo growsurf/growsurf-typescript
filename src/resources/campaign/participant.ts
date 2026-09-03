@@ -1449,18 +1449,18 @@ export interface ParticipantGetPayoutDestinationResponse {
   /**
    * The provider that currently gets paid, or null until the participant confirms one.
    */
-  activeProvider?: string | null;
+  activeProvider: string | null;
 
   /**
    * One entry per enabled payout provider describing the participant's destination for
    * it.
    */
-  destinations?: Array<ParticipantGetPayoutDestinationResponse.Destination>;
+  destinations: Array<ParticipantGetPayoutDestinationResponse.Destination>;
 
   /**
    * The payout providers enabled for this program.
    */
-  enabledProviders?: Array<string>;
+  enabledProviders: Array<string>;
 }
 
 export namespace ParticipantGetPayoutDestinationResponse {
@@ -1468,39 +1468,39 @@ export namespace ParticipantGetPayoutDestinationResponse {
     /**
      * The confirmed payout email for this provider.
      */
-    claimEmail?: string | null;
+    claimEmail: string | null;
 
     /**
      * When the destination was confirmed, in epoch milliseconds.
      */
-    confirmedAt?: number | null;
+    confirmedAt: number | null;
 
     /**
      * The legal recipient type the participant confirmed, if any.
      */
-    legalEntityType?: 'INDIVIDUAL' | 'BUSINESS' | null;
+    legalEntityType: 'INDIVIDUAL' | 'BUSINESS' | null;
 
     /**
      * When status is `NEEDS_REPAIR`, why (e.g. a bounced delivery).
      */
-    needsRepairReason?: string | null;
+    needsRepairReason: string | null;
 
     /**
      * The payout provider this entry describes.
      */
-    provider?: string;
+    provider: string;
 
     /**
      * The customer-facing provider name (e.g. "PayPal", "Wise").
      */
-    providerDisplayName?: string;
+    providerDisplayName: string;
 
     /**
      * The destination's current status: `NONE` (not set up), `PENDING_CONFIRMATION`,
      * `CONFIRMED`, `ACTIVE`, `NEEDS_REPAIR`, or `EXPIRED`. Historical superseded or
      * revoked destinations are projected as `NONE`.
      */
-    status?: string;
+    status: string;
   }
 }
 
@@ -1508,22 +1508,22 @@ export interface ParticipantRequestPayoutDestinationConfirmationResponse {
   /**
    * When the confirmation link expires, in epoch milliseconds.
    */
-  expiresAt?: number | null;
+  expiresAt: number | null;
 
   /**
    * The provider the participant was asked to confirm.
    */
-  provider?: string;
+  provider: string;
 
   /**
    * The customer-facing provider name (e.g. "PayPal", "Wise").
    */
-  providerDisplayName?: string;
+  providerDisplayName: string;
 
   /**
    * Confirms the message was requested.
    */
-  status?: 'CONFIRMATION_REQUESTED';
+  status: 'CONFIRMATION_REQUESTED';
 }
 
 export interface ParticipantListCommissionsParams {
