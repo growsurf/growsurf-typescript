@@ -71,12 +71,130 @@ export class Design extends APIResource {
  * `null` fields are returned as `null`; omitted and `null` fields use localized defaults. `PATCH`
  * back only the sections or fields you want to change (arrays such as `signup.fields` replace
  * wholesale). `participantAvatarStyle` accepts `CHARACTERS`, `INITIALS`, `ANIMALS`, or `GRADIENT`;
- * new programs use `CHARACTERS`, while missing or unknown stored values return `INITIALS`. The set
- * of keys is intentionally left open. `resources` controls the participant-facing Resources
- * destination; resource items and their order use the Program Resources operations.
+ * new programs use `CHARACTERS`, while missing or unknown stored values return `INITIALS`. Known
+ * structured fields are typed. Sections whose nested fields are intentionally open in the REST
+ * contract remain open here. `resources` controls the participant-facing Resources destination;
+ * resource items and their order use the Program Resources operations.
  */
 export type CampaignDesign = {
+  participantAvatarStyle?: 'CHARACTERS' | 'INITIALS' | 'ANIMALS' | 'GRADIENT';
+  window?: CampaignDesignOpenSection;
+  header?: CampaignDesignOpenSection;
+  stats?: CampaignDesignOpenSection;
+  share?: CampaignDesignOpenSection;
+  signup?: CampaignDesignOpenSection;
+  login?: ParticipantLoginDesign;
+  payoutDestinationConfirmation?: PayoutDestinationConfirmationDesign;
+  countryLabels?: Record<string, string | null>;
+  referralStatus?: CampaignDesignOpenSection;
+  leaderboard?: CampaignDesignOpenSection;
+  referredExperience?: CampaignDesignReferredExperience;
+  referralSummary?: CampaignDesignOpenSection;
+  affiliateSummary?: CampaignDesignOpenSection;
+  commissions?: CampaignDesignOpenSection;
+  payouts?: CampaignDesignOpenSection;
+  rewards?: CampaignDesignOpenSection;
   resources?: CampaignDesignResources;
+  participantSettings?: CampaignDesignOpenSection;
+  landingPages?: CampaignDesignOpenSection;
+  theme?: CampaignDesignTheme;
+  [key: string]: unknown;
+};
+
+/** A design section whose nested fields are intentionally open in the REST contract. */
+export type CampaignDesignOpenSection = Record<string, unknown>;
+
+/** Participant sign-in text. */
+export type ParticipantLoginDesign = {
+  heading?: string;
+  description?: string;
+  fieldLabel?: string;
+  fieldPlaceholder?: string;
+  buttonText?: string;
+  successHeading?: string;
+  successBody?: string;
+  resendPrompt?: string;
+  resend?: string;
+  resent?: string;
+  invalidEmail?: string;
+  cooldown?: string;
+  serverError?: string;
+  invalidLink?: string;
+};
+
+/** Validation and link-status messages for payout-destination confirmation. */
+export type PayoutDestinationConfirmationErrorMessages = {
+  invalidEmail?: string | null;
+  emailMismatch?: string | null;
+  tokenExpired?: string | null;
+  tokenUsed?: string | null;
+  alreadyConfirmed?: string | null;
+  generic?: string | null;
+};
+
+/** Participant-facing payout-destination confirmation text. */
+export type PayoutDestinationConfirmationDesign = {
+  headline?: string | null;
+  description?: string | null;
+  emailLabel?: string | null;
+  emailPlaceholder?: string | null;
+  emailAgainLabel?: string | null;
+  emailAgainPlaceholder?: string | null;
+  legalNameLabel?: string | null;
+  legalNamePlaceholder?: string | null;
+  legalTypeLabel?: string | null;
+  legalTypeIndividual?: string | null;
+  legalTypeBusiness?: string | null;
+  button?: string | null;
+  success?: string | null;
+  claimPending?: string | null;
+  errorMessages?: PayoutDestinationConfirmationErrorMessages;
+};
+
+/** Copy and behavior shown to visitors who arrive through a referral link. */
+export type CampaignDesignReferredExperience = {
+  isOfferPopupEnabled?: boolean;
+  offerPopupTitle?: string | null;
+  offerPopupDescription?: string | null;
+  offerPopupButtonText?: string | null;
+  offerPopupImageUrl?: string | null;
+  isOfferPopupReferrerImageShown?: boolean;
+  offerPopupPlacement?: 'CENTER' | 'BOTTOM' | 'BOTTOM_RIGHT' | 'BOTTOM_LEFT' | 'TOP';
+  offerPopupDelaySeconds?: 0 | 3 | 5 | 10;
+  offerPopupThankYouText?: string | null;
+  offerPopupThankYouButtonText?: string | null;
+  isOfferPopupConfettiEnabled?: boolean;
+  isOfferPopupShownOnAllPages?: boolean;
+  offerPopupSecondaryLinkText?: string | null;
+  offerPopupSecondaryLinkUrl?: string | null;
+  isOfferPopupOverlayDimmed?: boolean;
+  offerPopupEmailPlaceholder?: string | null;
+  offerPopupPromoCodeCopyLabel?: string | null;
+  offerPopupSubmitError?: string | null;
+  isBannerEnabled?: boolean;
+  bannerText?: string | null;
+  bannerPlacement?: 'TOP' | 'BOTTOM';
+  isBannerClickableToSignupUrl?: boolean;
+  isHeadingEnabled?: boolean;
+  headingText?: string | null;
+  headingTarget?: 'H1' | 'H2' | 'H3' | 'H4' | 'H5';
+  headingPlacement?: 'PREPEND' | 'APPEND' | 'REPLACE';
+  isHeadingStyled?: boolean;
+  isHeadingClickableToSignupUrl?: boolean;
+  pageTitleReplacement?: string | null;
+  referrerNameFormat?: 'FIRST' | 'FIRST_LAST_INITIAL' | 'FIRST_LAST';
+  referrerNameFallback?: string | null;
+};
+
+/** Claim Offer Popup theme colors. */
+export type CampaignDesignOfferPopupTheme = {
+  color?: string | null;
+  backgroundColor?: string | null;
+};
+
+/** Design theme fields documented by the REST contract. */
+export type CampaignDesignTheme = {
+  referredExperienceOfferPopup?: CampaignDesignOfferPopupTheme;
   [key: string]: unknown;
 };
 
@@ -121,16 +239,20 @@ export type CampaignDesignResources = {
  * is intentionally left open. `GET` the configured fields first, then `PATCH` back only
  * the fields you want to change.
  */
-export type DesignUpdateParams = {
-  resources?: CampaignDesignResources;
-  [key: string]: unknown;
-};
+export type DesignUpdateParams = CampaignDesign;
 
 export declare namespace Design {
   export {
     type CampaignDesign as CampaignDesign,
+    type CampaignDesignOfferPopupTheme as CampaignDesignOfferPopupTheme,
+    type CampaignDesignOpenSection as CampaignDesignOpenSection,
+    type CampaignDesignReferredExperience as CampaignDesignReferredExperience,
     type CampaignDesignResources as CampaignDesignResources,
     type CampaignDesignResourcesIcon as CampaignDesignResourcesIcon,
+    type CampaignDesignTheme as CampaignDesignTheme,
     type DesignUpdateParams as DesignUpdateParams,
+    type ParticipantLoginDesign as ParticipantLoginDesign,
+    type PayoutDestinationConfirmationDesign as PayoutDestinationConfirmationDesign,
+    type PayoutDestinationConfirmationErrorMessages as PayoutDestinationConfirmationErrorMessages,
   };
 }

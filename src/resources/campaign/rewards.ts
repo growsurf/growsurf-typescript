@@ -113,7 +113,7 @@ export interface Reward {
    * `DOUBLE_SIDED`, and `MILESTONE` referral rewards. Legacy Campaign Rewards return
    * `CONVERSION`.
    */
-  event?: 'LEAD' | 'CONVERSION' | null;
+  event?: 'LEAD' | 'CONVERSION';
 
   imageUrl?: string | null;
 

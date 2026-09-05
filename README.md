@@ -4,9 +4,9 @@
 
 This library provides convenient access to the Growsurf REST API from server-side TypeScript or JavaScript.
 
-The REST API documentation can be found on [growsurf.com](https://growsurf.com/settings#contact_support). The full API of this library can be found in [api.md](api.md).
+The [GrowSurf REST API documentation](https://docs.growsurf.com/developer-tools/rest-api/api-reference) describes the underlying API. The full API of this library can be found in [api.md](api.md).
 
-It is generated with [Stainless](https://www.stainless.com/).
+[Stainless](https://www.stainless.com/) originally generated this library. GrowSurf now maintains it by hand.
 
 ## Installation
 
@@ -33,7 +33,7 @@ console.log(campaigns.campaigns);
 
 ### Request & Response types
 
-This library includes TypeScript definitions for all request params and response fields. You may import and use them like so:
+This library includes TypeScript definitions for documented request parameters and response fields. Large Program Editor sections stay open where the REST contract intentionally leaves their nested keys open. You may import and use the types like so:
 
 <!-- prettier-ignore -->
 ```ts
@@ -46,7 +46,7 @@ const client = new Growsurf({
 const campaigns: Growsurf.CampaignListResponse = await client.campaign.list();
 ```
 
-Documentation for each method, request param, and response field are available in docstrings and will appear on hover in most modern editors.
+Method documentation and structured field notes appear on hover in most modern editors. See the REST API documentation for the full Program Editor configuration reference.
 
 ## Handling errors
 
@@ -73,18 +73,25 @@ Error codes are as follows:
 | ----------- | -------------------------- |
 | 400         | `BadRequestError`          |
 | 401         | `AuthenticationError`      |
+| 402         | `APIError`                 |
 | 403         | `PermissionDeniedError`    |
 | 404         | `NotFoundError`            |
+| 406         | `APIError`                 |
+| 409         | `ConflictError`            |
 | 422         | `UnprocessableEntityError` |
+| 423         | `APIError`                 |
 | 429         | `RateLimitError`           |
 | >=500       | `InternalServerError`      |
 | N/A         | `APIConnectionError`       |
 
+Status codes `402`, `406`, and `423` use the base `APIError` because the library does not define dedicated subclasses for them.
+
 ### Retries
 
-Certain errors will be automatically retried 2 times by default, with a short exponential backoff.
-Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict,
-429 Rate Limit, and >=500 Internal errors will all be retried by default.
+`GET` and `HEAD` requests are retried up to 2 times by default, with a short exponential backoff. API-key rotation is also retried because the SDK generates and reuses an `Idempotency-Key` for that request. Other `POST`, `PATCH`, and `DELETE` requests are not retried automatically.
+
+For requests that are safe to retry, the SDK retries connection errors, 408 Request Timeout, 409 Conflict,
+429 Rate Limit, and >=500 Internal errors.
 
 You can use the `maxRetries` option to configure or disable this:
 

@@ -46,21 +46,117 @@ export class Emails extends APIResource {
 
 /**
  * A program's email configuration (dashboard Program Editor **Emails** tab): the
- * editable email templates plus the `settings` block. The set of keys is
- * intentionally left open; to see the full object with every field and its current
- * value, `GET` this resource, then `PATCH` back only the fields you want to change.
- * `offerClaimed` is available to both program types and sends while the Claim Offer Popup is enabled.
+ * editable email templates plus the `settings` block. Known fields are typed, and
+ * the object stays open so newer templates remain usable. `offerClaimed` is
+ * available to both program types and sends while the Claim Offer Popup is enabled.
  */
-export type CampaignEmails = { [key: string]: unknown };
+export interface CampaignEmailTemplate {
+  subject?: string;
+  preheader?: string;
+  body?: string;
+  isEnabled?: boolean;
+}
+
+export interface CampaignInviteEmailTemplate extends CampaignEmailTemplate {
+  useCompanyReplyTo?: boolean;
+}
+
+export interface CampaignEmailSenderSettings {
+  fromName?: string;
+  replyToEmail?: string;
+  /** Read-only. Configure a custom from address in the dashboard. */
+  fromEmail?: string;
+}
+
+export interface CampaignEmailContactSettings {
+  companyName?: string;
+  addressLine1?: string;
+  addressLine2?: string | null;
+  city?: string;
+  state?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+}
+
+export interface CampaignEmailDesignSettings {
+  header?: string | null;
+  footer?: string | null;
+  unsubscribePromotional?: string;
+  unsubscribeInvite?: string;
+  unsubscribeAffiliateInvite?: string;
+  unsubscribeTransactional?: string;
+}
+
+export interface CampaignEmailSettings {
+  sender?: CampaignEmailSenderSettings;
+  contact?: CampaignEmailContactSettings;
+  design?: CampaignEmailDesignSettings;
+}
+
+export interface CampaignEmailSenderUpdate {
+  fromName?: string;
+  replyToEmail?: string;
+}
+
+export interface CampaignEmailSettingsUpdate {
+  sender?: CampaignEmailSenderUpdate;
+  contact?: CampaignEmailContactSettings;
+  design?: CampaignEmailDesignSettings;
+}
+
+export interface CampaignEmailsBase<TSettings> {
+  welcomeNonReferred?: CampaignEmailTemplate;
+  welcomeReferred?: CampaignEmailTemplate;
+  offerClaimed?: CampaignEmailTemplate;
+  referralLinkViewedFirstTime?: CampaignEmailTemplate;
+  referralLinkUsed?: CampaignEmailTemplate;
+  referredSignup?: CampaignEmailTemplate;
+  goalAchieved?: CampaignEmailTemplate;
+  campaignEndedWinners?: CampaignEmailTemplate;
+  campaignEndedNonWinners?: CampaignEmailTemplate;
+  progressUpdateMonthly?: CampaignEmailTemplate;
+  commissionGenerated?: CampaignEmailTemplate;
+  commissionAdjusted?: CampaignEmailTemplate;
+  payoutPending?: CampaignEmailTemplate;
+  payoutSentSuccess?: CampaignEmailTemplate;
+  invite?: CampaignInviteEmailTemplate;
+  loginLink?: CampaignEmailTemplate;
+  payoutDestinationConfirmation?: CampaignEmailTemplate;
+  payoutDestinationChanged?: CampaignEmailTemplate;
+  taxInfoMissing?: CampaignEmailTemplate;
+  taxInfoReceived?: CampaignEmailTemplate;
+  taxInfoApproved?: CampaignEmailTemplate;
+  taxInfoRejected?: CampaignEmailTemplate;
+  affiliateApplicationReceived?: CampaignEmailTemplate;
+  affiliateApplicationApproved?: CampaignEmailTemplate;
+  affiliateApplicationDenied?: CampaignEmailTemplate;
+  inviteAffiliate?: CampaignEmailTemplate;
+  affiliateApplicationStatusLink?: CampaignEmailTemplate;
+  affiliateApplicationEmailCorrection?: CampaignEmailTemplate;
+  affiliateEmailChangeVerification?: CampaignEmailTemplate;
+  settings?: TSettings;
+  [key: string]: unknown;
+}
+
+export type CampaignEmails = CampaignEmailsBase<CampaignEmailSettings>;
 
 /**
- * A partial `CampaignEmails` — only the fields you send are changed. The set of keys
- * is intentionally left open; to see the full object with every field and its
- * current value, `GET` this resource, then `PATCH` back only the fields you want to
- * change.
+ * A partial `CampaignEmails` — only the fields you send are changed. Known fields
+ * are typed, and the object stays open for newer API templates.
  */
-export type EmailUpdateParams = { [key: string]: unknown };
+export type EmailUpdateParams = CampaignEmailsBase<CampaignEmailSettingsUpdate>;
 
 export declare namespace Emails {
-  export { type CampaignEmails as CampaignEmails, type EmailUpdateParams as EmailUpdateParams };
+  export {
+    type CampaignEmailContactSettings as CampaignEmailContactSettings,
+    type CampaignEmailDesignSettings as CampaignEmailDesignSettings,
+    type CampaignEmailSenderSettings as CampaignEmailSenderSettings,
+    type CampaignEmailSenderUpdate as CampaignEmailSenderUpdate,
+    type CampaignEmailSettings as CampaignEmailSettings,
+    type CampaignEmailSettingsUpdate as CampaignEmailSettingsUpdate,
+    type CampaignEmails as CampaignEmails,
+    type CampaignEmailTemplate as CampaignEmailTemplate,
+    type CampaignInviteEmailTemplate as CampaignInviteEmailTemplate,
+    type EmailUpdateParams as EmailUpdateParams,
+  };
 }

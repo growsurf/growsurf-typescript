@@ -30,6 +30,9 @@ Types:
 
 - <code><a href="./src/resources/campaign/campaign.ts">Campaign</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CommissionStructure</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">AnalyticsAvailability</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">AnalyticsUnavailableReason</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">CampaignEngagementAnalytics</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">ParticipantCommissionList</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">ParticipantList</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">ParticipantPayoutList</a></code>
@@ -37,6 +40,7 @@ Types:
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignListResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignCreateMobileParticipantTokenResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignRetrieveAnalyticsResponse</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">CampaignActivationAnalyticsResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">AffiliateApplication</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">AffiliateApplicationListResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">AffiliateInvite</a></code>
@@ -63,6 +67,7 @@ Methods:
 - <code title="get /campaign/{id}/payouts">client.campaign.<a href="./src/resources/campaign/campaign.ts">listPayouts</a>(id, { ...params }) -> ParticipantPayoutList</code>
 - <code title="get /campaign/{id}/referrals">client.campaign.<a href="./src/resources/campaign/campaign.ts">listReferrals</a>(id, { ...params }) -> ReferralList</code>
 - <code title="get /campaign/{id}/analytics">client.campaign.<a href="./src/resources/campaign/campaign.ts">retrieveAnalytics</a>(id, { ...params }) -> CampaignRetrieveAnalyticsResponse</code>
+- <code title="get /campaign/{id}/analytics/activation">client.campaign.<a href="./src/resources/campaign/campaign.ts">retrieveActivationAnalytics</a>(id, { ...params }) -> CampaignActivationAnalyticsResponse</code>
 
 ## Participant
 
@@ -151,6 +156,27 @@ Methods:
 - <code title="post /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">create</a>(id, { ...params }) -> Reward</code>
 - <code title="patch /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">update</a>(campaignRewardID, { ...params }) -> Reward</code>
 - <code title="delete /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">delete</a>(campaignRewardID, { ...params }) -> DeleteRewardResponse</code>
+
+## Program Resources
+
+Types:
+
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResource</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResourceFile</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResourceType</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResourceModerationStatus</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResourceListResponse</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResourceUploadResult</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">DeleteProgramResourceResponse</a></code>
+- <code><a href="./src/resources/campaign/program-resources.ts">ProgramResourceUploadTicket</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/resources">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">list</a>(id) -> ProgramResourceListResponse</code>
+- <code title="post /campaign/{id}/resources">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">create</a>(id, { ...params }) -> ProgramResource</code>
+- <code title="patch /campaign/{id}/resources/{resourceId}">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">update</a>(resourceID, { ...params }) -> ProgramResource</code>
+- <code title="delete /campaign/{id}/resources/{resourceId}">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">delete</a>(resourceID, { ...params }) -> DeleteProgramResourceResponse</code>
+- <code title="post /campaign/{id}/resource-upload-tickets">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">createUploadTicket</a>(id, { ...params }) -> ProgramResourceUploadTicket</code>
 
 ## Webhooks
 

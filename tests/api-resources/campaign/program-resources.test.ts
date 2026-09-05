@@ -1,6 +1,7 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
 import Growsurf from 'growsurf-typescript';
+import { CampaignResource } from 'growsurf-typescript/resources/campaign/campaign';
 import type {
   ProgramResource,
   ProgramResourceCreateParams,
@@ -40,6 +41,7 @@ describe('resource program resources', () => {
       overwrite: false,
     });
     expect(ticket).not.toHaveProperty('cloudName');
+    expect(CampaignResource.ProgramResources).toBeDefined();
 
     const link: ProgramResourceCreateParams = {
       type: 'LINK',
@@ -73,6 +75,9 @@ describe('resource program resources', () => {
     );
     expect(() => client.campaign.resources.update('resourceId', { id: 'id', position: 100 })).toThrow(
       'position must be an integer from 0 through 99',
+    );
+    expect(() => client.campaign.resources.update('resourceId', { id: 'id', type: 'LINK' } as never)).toThrow(
+      'Changing a Program Resource to LINK requires url',
     );
     expect(() =>
       client.campaign.resources.createUploadTicket('id', {

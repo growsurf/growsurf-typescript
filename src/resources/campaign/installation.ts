@@ -54,23 +54,60 @@ export class Installation extends APIResource {
 /**
  * A program's installation configuration (dashboard Program Editor **Installation**
  * tab, plus Mobile SDK settings): referral trigger, signup tracking, share URL +
- * whitelist, custom-form signup, and mobile SDK settings. The set of keys is
- * intentionally left open; to see the full object with every field and its current
- * value, `GET` this resource, then `PATCH` back only the fields you want to change.
+ * whitelist, custom-form signup, and mobile SDK settings. Known fields are typed,
+ * and the object stays open so newer API fields remain usable.
  */
-export type CampaignInstallation = { [key: string]: unknown };
+export interface CampaignInstallationSignup {
+  isCustomForm?: boolean;
+  url?: string | null;
+  redirectAfterSignup?: boolean;
+  redirectUrl?: string | null;
+  trackInputFields?: boolean;
+}
+
+export interface CampaignInstallationMobile {
+  isEnabled?: boolean;
+  /** Read-only publishable key for the mobile SDKs. */
+  publicKey?: string;
+  iosAttributionUrl?: string | null;
+  iosAppStoreUrl?: string | null;
+  androidPackageName?: string | null;
+  androidAppStoreUrl?: string | null;
+}
+
+export interface CampaignInstallationMobileUpdate {
+  isEnabled?: boolean;
+  iosAttributionUrl?: string | null;
+  iosAppStoreUrl?: string | null;
+  androidPackageName?: string | null;
+  androidAppStoreUrl?: string | null;
+}
+
+export interface CampaignInstallationBase<TMobile> {
+  referralTrigger?: 'CUSTOM' | 'ON_SIGNUP';
+  signupEvent?: 'FORM_DETECTION' | 'PROGRAMMATIC';
+  shareUrl?: string;
+  useGrowSurfHostedLinks?: boolean;
+  allowedUrls?: string[];
+  signup?: CampaignInstallationSignup;
+  mobile?: TMobile;
+  [key: string]: unknown;
+}
+
+export type CampaignInstallation = CampaignInstallationBase<CampaignInstallationMobile>;
 
 /**
- * A partial `CampaignInstallation` — only the fields you send are changed. The set
- * of keys is intentionally left open; to see the full object with every field and
- * its current value, `GET` this resource, then `PATCH` back only the fields you want
- * to change.
+ * A partial `CampaignInstallation` — only the fields you send are changed. Known
+ * fields are typed, and the object stays open for newer API fields.
  */
-export type InstallationUpdateParams = { [key: string]: unknown };
+export type InstallationUpdateParams = CampaignInstallationBase<CampaignInstallationMobileUpdate>;
 
 export declare namespace Installation {
   export {
     type CampaignInstallation as CampaignInstallation,
+    type CampaignInstallationMobile as CampaignInstallationMobile,
+    type CampaignInstallationMobileUpdate as CampaignInstallationMobileUpdate,
+    type CampaignInstallationSignup as CampaignInstallationSignup,
     type InstallationUpdateParams as InstallationUpdateParams,
   };
 }

@@ -784,7 +784,13 @@ export interface ParticipantReward {
 
   approvedAt?: number | null;
 
+  /** Delivered gift-card value in major units, or `null` when no trusted amount is available. */
+  amount?: number | null;
+
   commissionStructure?: CampaignAPI.CommissionStructure | null;
+
+  /** ISO 4217 currency code for `amount`, or `null` when `amount` is `null`. */
+  currencyISO?: string | null;
 
   fulfilledAt?: number | null;
 

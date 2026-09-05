@@ -16,6 +16,15 @@ function validateProgramResourceUpdate(body: Omit<ProgramResourceUpdateParams, '
   ) {
     throw new RangeError('Program Resource position must be an integer from 0 through 99');
   }
+  if (body.type === 'FILE' && (body.uploadTicket === undefined || body.uploadResult === undefined)) {
+    throw new Error('Changing a Program Resource to FILE requires uploadTicket and uploadResult');
+  }
+  if (body.type === 'LINK' && body.url === undefined) {
+    throw new Error('Changing a Program Resource to LINK requires url');
+  }
+  if (body.type === 'TEXT' && body.text === undefined) {
+    throw new Error('Changing a Program Resource to TEXT requires text');
+  }
 }
 
 /** Enforces the public upload-ticket filename limit before making a request. */
@@ -159,7 +168,7 @@ interface ProgramResourceCommonUpdateParams {
 export type ProgramResourceUpdateParams = ProgramResourceCommonUpdateParams &
   (
     | {
-        type?: ProgramResourceType;
+        type?: never;
         url?: never;
         text?: never;
         uploadTicket?: never;

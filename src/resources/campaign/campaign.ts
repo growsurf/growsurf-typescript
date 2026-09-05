@@ -31,6 +31,21 @@ import {
 import * as ParticipantAPI from './participant';
 import * as ProgramResourcesAPI from './program-resources';
 import {
+  DeleteProgramResourceResponse,
+  ProgramResource,
+  ProgramResourceCreateParams,
+  ProgramResourceDeleteParams,
+  ProgramResourceFile,
+  ProgramResourceListResponse,
+  ProgramResourceModerationStatus,
+  ProgramResources as ProgramResourcesAPIProgramResources,
+  ProgramResourceType,
+  ProgramResourceUpdateParams,
+  ProgramResourceUploadResult,
+  ProgramResourceUploadTicket,
+  ProgramResourceUploadTicketParams,
+} from './program-resources';
+import {
   Create,
   FraudRiskLevel,
   Participant,
@@ -513,7 +528,7 @@ export interface Campaign {
 
   rewards: Array<Campaign.Reward>;
 
-  status: 'DRAFT' | 'IN_PROGRESS' | 'COMPLETE' | 'DELETED';
+  status: 'DRAFT' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETE' | 'CANCELLED' | 'DELETED';
 
   type: 'REFERRAL' | 'AFFILIATE';
 
@@ -548,7 +563,7 @@ export namespace Campaign {
      * `DOUBLE_SIDED`, and `MILESTONE` referral rewards. Legacy Campaign Rewards return
      * `CONVERSION`.
      */
-    event?: 'LEAD' | 'CONVERSION' | null;
+    event?: 'LEAD' | 'CONVERSION';
 
     imageUrl?: string | null;
 
@@ -1400,16 +1415,16 @@ export namespace CampaignRetrieveAnalyticsResponse {
    * Totals for the equal-length window immediately preceding the requested one.
    */
   export interface PreviousPeriod {
-    analytics?: CampaignRetrieveAnalyticsResponse.Analytics;
+    analytics: CampaignRetrieveAnalyticsResponse.Analytics;
 
     /**
      * Present when the parent request includes both `previousPeriod` and `email`.
      */
     email?: CampaignRetrieveAnalyticsResponse.Email;
 
-    endDate?: number;
+    endDate: number;
 
-    startDate?: number;
+    startDate: number;
   }
 
   /**
@@ -2158,6 +2173,7 @@ CampaignResource.ParticipantResource = ParticipantResource;
 CampaignResource.Reward = RewardAPIReward;
 CampaignResource.Commission = CommissionAPICommission;
 CampaignResource.Rewards = RewardsAPIRewards;
+CampaignResource.ProgramResources = ProgramResourcesAPIProgramResources;
 CampaignResource.Webhooks = WebhooksAPIWebhooks;
 CampaignResource.Design = DesignAPIDesign;
 CampaignResource.Emails = EmailsAPIEmails;
@@ -2257,6 +2273,22 @@ export declare namespace CampaignResource {
     type DeleteRewardResponse as DeleteRewardResponse,
     type RewardCreateParams as RewardCreateParams,
     type RewardUpdateParams as RewardUpdateParams,
+  };
+
+  export {
+    ProgramResourcesAPIProgramResources as ProgramResources,
+    type ProgramResource as ProgramResource,
+    type ProgramResourceFile as ProgramResourceFile,
+    type ProgramResourceType as ProgramResourceType,
+    type ProgramResourceModerationStatus as ProgramResourceModerationStatus,
+    type ProgramResourceListResponse as ProgramResourceListResponse,
+    type ProgramResourceUploadResult as ProgramResourceUploadResult,
+    type ProgramResourceCreateParams as ProgramResourceCreateParams,
+    type ProgramResourceUpdateParams as ProgramResourceUpdateParams,
+    type ProgramResourceDeleteParams as ProgramResourceDeleteParams,
+    type DeleteProgramResourceResponse as DeleteProgramResourceResponse,
+    type ProgramResourceUploadTicketParams as ProgramResourceUploadTicketParams,
+    type ProgramResourceUploadTicket as ProgramResourceUploadTicket,
   };
 
   export {
