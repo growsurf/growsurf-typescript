@@ -1836,13 +1836,16 @@ export interface ParticipantRefundTransactionParams {
   paymentIntentId?: string;
 
   /**
-   * Body param: The per-refund delta (minor units). Optional bookkeeping field.
+   * Body param: Positive amount for this individual refund, no greater than the sale amount, in minor units. Record it with `refundId` on each original refund to support cancellation and out-of-order amendments. A cancellation may omit an already recorded amount. Missing or conflicting refund history returns `409` without applying the cancellation. Newly observed higher cumulative refunds and incomplete coverage are retained for reconciliation.
    */
   refundAmount?: number;
 
+  /** Confirm only after every original refund ID and amount is recorded, including canceled refunds. Resolves previously incomplete history. Replaying an old confirmation cannot resolve a later gap; confirm a newly reconciled refund or complete provider list. */
+  refundHistoryComplete?: boolean;
+
   /**
-   * Body param: Stable per-refund identifier. Recommended for partial refunds so
-   * repeated calls stay idempotent.
+   * Body param: Stable per-refund identifier. Required when canceling a refund or changing the
+   * refunded total after a cancellation. Reuse the original refund's identifier for its cancellation.
    */
   refundId?: string;
 
