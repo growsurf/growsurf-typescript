@@ -1647,6 +1647,12 @@ export interface ParticipantListRewardsParams {
 }
 
 export interface ParticipantRecordTransactionParams {
+  /** Connected provider. Requires `transactionId` and `testMode`; payment details must match the provider. */
+  paymentProvider?: 'stripe' | 'chargebee' | 'recurly';
+
+  /** `true` for test or `false` for live. Required with `paymentProvider`; otherwise omit. */
+  testMode?: boolean;
+
   /**
    * Path param: GrowSurf program ID.
    */
@@ -1769,6 +1775,12 @@ export interface ParticipantRecordTransactionParams {
 }
 
 export interface ParticipantRefundTransactionParams {
+  /** Provider for the original payment. Requires its `transactionId` and `testMode`. */
+  paymentProvider?: 'stripe' | 'chargebee' | 'recurly';
+
+  /** Original payment mode: `true` for test or `false` for live. Requires `paymentProvider`. */
+  testMode?: boolean;
+
   /**
    * Path param: GrowSurf program ID.
    */
