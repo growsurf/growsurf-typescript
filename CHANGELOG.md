@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.5.0](https://github.com/growsurf/growsurf-typescript/compare/v1.4.0...v1.5.0) (2026-09-10)
+
+
+### Features
+
+* **api:** add campaign integrations list endpoint ([f192a8e](https://github.com/growsurf/growsurf-typescript/commit/f192a8e5cd7574b75ab78a24bb9ee5b61644809f))
+* **api:** add EMBEDDABLE_ELEMENT portal view source ([5c2eb0e](https://github.com/growsurf/growsurf-typescript/commit/5c2eb0ee26f757b2416124e1246521d7f4e271a4))
+* **api:** add paymentProvider and testMode to transaction params ([6feab2c](https://github.com/growsurf/growsurf-typescript/commit/6feab2ce553bcf1b10a2ad34a6a380a1e55d46bb))
+* **api:** add refundHistoryComplete to refund transaction params ([4604a23](https://github.com/growsurf/growsurf-typescript/commit/4604a23cb305d99c5e4a6369e0b5f1a7c36c1215))
+* **api:** add typed Program Editor config sections, attw check, and hand-maintained docs ([4c574dc](https://github.com/growsurf/growsurf-typescript/commit/4c574dc8ebc293a1aefdb9a690f6a78cef0994db))
+* **api:** sync analytics and program resources ([8b7234c](https://github.com/growsurf/growsurf-typescript/commit/8b7234cc00d98e9336309e7611871aab4b9218f1))
+
+
+### Chores
+
+* **deps:** bump js-yaml overrides to 3.15.2/4.3.2 to clear audit advisories ([5473c6e](https://github.com/growsurf/growsurf-typescript/commit/5473c6efd9375de85a42b64032bdfb8f98df0b0a))
+* **deps:** pin browserslist 4.28.8 to clear audit advisories ([aad3308](https://github.com/growsurf/growsurf-typescript/commit/aad33082d3aba1be36b8709f20b0de27b6c7ae33))
+
 ## [1.4.0](https://github.com/growsurf/growsurf-typescript/compare/v1.3.0...v1.4.0) (2026-08-25)
 
 
