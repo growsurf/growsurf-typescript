@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.1](https://github.com/growsurf/growsurf-typescript/compare/v1.5.0...v1.5.1) (2026-09-10)
+
+
+### Chores
+
+* merge main (release 1.5.0) into dev ([8e63ba7](https://github.com/growsurf/growsurf-typescript/commit/8e63ba7c5f766832247a66e50bacbfb082a7ae05))
+
+
+### Documentation
+
+* **api:** warn that a new account API key cannot be recovered ([c4b4520](https://github.com/growsurf/growsurf-typescript/commit/c4b4520d663ba5aa5c3f0f7bf51cc23a2538dd25))
+
 ## [1.5.0](https://github.com/growsurf/growsurf-typescript/compare/v1.4.0...v1.5.0) (2026-09-10)
 
 
