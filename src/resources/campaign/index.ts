@@ -120,6 +120,7 @@ export {
   type ProgramResourceUploadTicketParams,
   type ProgramResourceUploadTicket,
 } from './program-resources';
+export { Integrations, type Integration, type IntegrationListResponse } from './integrations';
 export {
   Webhooks,
   type WebhookEvent,

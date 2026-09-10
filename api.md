@@ -178,6 +178,17 @@ Methods:
 - <code title="delete /campaign/{id}/resources/{resourceId}">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">delete</a>(resourceID, { ...params }) -> DeleteProgramResourceResponse</code>
 - <code title="post /campaign/{id}/resource-upload-tickets">client.campaign.resources.<a href="./src/resources/campaign/program-resources.ts">createUploadTicket</a>(id, { ...params }) -> ProgramResourceUploadTicket</code>
 
+## Integrations
+
+Types:
+
+- <code><a href="./src/resources/campaign/integrations.ts">Integration</a></code>
+- <code><a href="./src/resources/campaign/integrations.ts">IntegrationListResponse</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/integrations">client.campaign.integrations.<a href="./src/resources/campaign/integrations.ts">list</a>(id) -> IntegrationListResponse</code>
+
 ## Webhooks
 
 Types:

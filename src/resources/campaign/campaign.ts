@@ -93,6 +93,12 @@ import {
   RewardUpdateParams,
   Rewards as RewardsAPIRewards,
 } from './rewards';
+import * as IntegrationsAPI from './integrations';
+import {
+  Integration,
+  IntegrationListResponse,
+  Integrations as IntegrationsAPIIntegrations,
+} from './integrations';
 import * as WebhooksAPI from './webhooks';
 import {
   DeleteWebhookResponse,
@@ -116,6 +122,7 @@ export class CampaignResource extends APIResource {
   commission: CommissionAPI.Commission = new CommissionAPI.Commission(this._client);
   rewards: RewardsAPI.Rewards = new RewardsAPI.Rewards(this._client);
   resources: ProgramResourcesAPI.ProgramResources = new ProgramResourcesAPI.ProgramResources(this._client);
+  integrations: IntegrationsAPI.Integrations = new IntegrationsAPI.Integrations(this._client);
   webhooks: WebhooksAPI.Webhooks = new WebhooksAPI.Webhooks(this._client);
   design: DesignAPI.Design = new DesignAPI.Design(this._client);
   emails: EmailsAPI.Emails = new EmailsAPI.Emails(this._client);
@@ -2174,6 +2181,7 @@ CampaignResource.Reward = RewardAPIReward;
 CampaignResource.Commission = CommissionAPICommission;
 CampaignResource.Rewards = RewardsAPIRewards;
 CampaignResource.ProgramResources = ProgramResourcesAPIProgramResources;
+CampaignResource.Integrations = IntegrationsAPIIntegrations;
 CampaignResource.Webhooks = WebhooksAPIWebhooks;
 CampaignResource.Design = DesignAPIDesign;
 CampaignResource.Emails = EmailsAPIEmails;
@@ -2289,6 +2297,12 @@ export declare namespace CampaignResource {
     type DeleteProgramResourceResponse as DeleteProgramResourceResponse,
     type ProgramResourceUploadTicketParams as ProgramResourceUploadTicketParams,
     type ProgramResourceUploadTicket as ProgramResourceUploadTicket,
+  };
+
+  export {
+    IntegrationsAPIIntegrations as Integrations,
+    type Integration as Integration,
+    type IntegrationListResponse as IntegrationListResponse,
   };
 
   export {
