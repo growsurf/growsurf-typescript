@@ -811,11 +811,25 @@ export type ReferralSource = 'DIRECT' | 'PARTICIPANT' | 'DELETED_PARTICIPANT' | 
 
 export type ReferralStatus = 'CREDIT_PENDING' | 'CREDIT_AWARDED' | 'CREDIT_EXPIRED' | 'INVITE_SENT';
 
+/** Analytics erasure accepted for automatic processing; completion is not yet confirmed. */
+export interface PendingAnalyticsErasure {
+  /** Analytics erasure has been accepted but is not confirmed complete. */
+  status: 'pending';
+  /** Opaque reference for support inquiries about this analytics erasure. */
+  operationId: string;
+}
+
 export interface ParticipantDeleteResponse {
+  /** Analytics erasure is pending. Reports can retain removed participants until erasure completes. Do not repeat successful deletions. */
+  analyticsErasure?: PendingAnalyticsErasure;
+
   success: boolean;
 }
 
 export interface ParticipantBulkDeleteResponse {
+  /** Analytics erasure is pending. Reports can retain removed participants until erasure completes. Do not repeat successful deletions. */
+  analyticsErasure?: PendingAnalyticsErasure;
+
   /**
    * One entry per submitted identifier, in the same order as the request.
    */
@@ -2046,6 +2060,7 @@ export declare namespace ParticipantResource {
     type ParticipantReward as ParticipantReward,
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
+    type PendingAnalyticsErasure as PendingAnalyticsErasure,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
     type ParticipantBulkDeleteResponse as ParticipantBulkDeleteResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,

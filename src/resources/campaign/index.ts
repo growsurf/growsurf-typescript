@@ -52,6 +52,7 @@ export {
   type ParticipantReward,
   type ReferralSource,
   type ReferralStatus,
+  type PendingAnalyticsErasure,
   type ParticipantDeleteResponse,
   type ParticipantBulkDeleteResponse,
   type ParticipantListRewardsResponse,
