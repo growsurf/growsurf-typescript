@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/growsurf/growsurf-typescript/compare/v1.5.1...v1.6.0) (2026-09-14)
+
+
+### Features
+
+* **api:** add pending analyticsErasure to participant delete responses ([7e27346](https://github.com/growsurf/growsurf-typescript/commit/7e27346e5859fc58ffab5f5d768c488260787294))
+
+
+### Chores
+
+* merge dev into main ([71ad5cc](https://github.com/growsurf/growsurf-typescript/commit/71ad5ccfa61e46465f29c04d9521b0a68580ce15))
+
 ## [1.5.1](https://github.com/growsurf/growsurf-typescript/compare/v1.5.0...v1.5.1) (2026-09-10)
 
 
