@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/growsurf/growsurf-typescript/compare/v1.6.0...v1.7.0) (2026-09-17)
+
+
+### Features
+
+* **api:** add metadata filter to campaign.listParticipants ([b23f87c](https://github.com/growsurf/growsurf-typescript/commit/b23f87cdcd7c81f7ab13d7b102a2cbbc61586d28))
+
+
+### Chores
+
+* merge main (release 1.6.0) into dev ([82c1fef](https://github.com/growsurf/growsurf-typescript/commit/82c1fefec35e51d612908ce2d06e0595ee9d92c0))
+
 ## [1.6.0](https://github.com/growsurf/growsurf-typescript/compare/v1.5.1...v1.6.0) (2026-09-14)
 
 
