@@ -413,7 +413,7 @@ describe('resource campaign', () => {
     await expect(
       client.campaign.listParticipants(
         'id',
-        { limit: 1, nextId: 'nextId' },
+        { limit: 1, metadata: { foo: 'string' }, nextId: 'nextId' },
         { path: '/_stainless_unknown_path' },
       ),
     ).rejects.toThrow(Growsurf.NotFoundError);

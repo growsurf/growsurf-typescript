@@ -431,7 +431,14 @@ export class CampaignResource extends APIResource {
     query: CampaignListParticipantsParams | null | undefined = {},
     options?: RequestOptions,
   ): APIPromise<ParticipantList> {
-    return this._client.get(path`/campaign/${id}/participants`, { query, ...options });
+    // The query serializer only handles primitives, so flatten `metadata`
+    // into the `metadata[key]=value` pairs the server expects.
+    const { metadata, ...rest } = query ?? {};
+    const flatQuery: Record<string, unknown> = { ...rest };
+    for (const [key, value] of Object.entries(metadata ?? {})) {
+      flatQuery[`metadata[${key}]`] = value;
+    }
+    return this._client.get(path`/campaign/${id}/participants`, { query: flatQuery, ...options });
   }
 
   /**
@@ -1916,6 +1923,13 @@ export interface CampaignListParticipantsParams {
    * Number of results to return. Maximum 100.
    */
   limit?: number;
+
+  /**
+   * Return only participants whose metadata matches every given key and value
+   * exactly. Send each pair as `metadata[key]=value`. Up to 3 keys per request.
+   * Values compare as strings, which is how metadata is stored.
+   */
+  metadata?: { [key: string]: string };
 
   /**
    * ID to start the next paged result set with.
