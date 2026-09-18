@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.1](https://github.com/growsurf/growsurf-typescript/compare/v1.7.0...v1.7.1) (2026-09-18)
+
+
+### Bug Fixes
+
+* **package:** point package homepage at growsurf.com ([6f12634](https://github.com/growsurf/growsurf-typescript/commit/6f1263481bf6ac5ebe477d4962bcd2c16a9a800e))
+
+
+### Chores
+
+* merge dev into main ([fea9b25](https://github.com/growsurf/growsurf-typescript/commit/fea9b25781b599f4da20c8b752c9e5d5cd814811))
+
 ## [1.7.0](https://github.com/growsurf/growsurf-typescript/compare/v1.6.0...v1.7.0) (2026-09-17)
 
 
