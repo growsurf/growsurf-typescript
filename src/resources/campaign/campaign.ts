@@ -1781,13 +1781,17 @@ export interface CampaignCreateParams {
 
   /**
    * What the program is for, which seeds share settings that suit that audience.
-   * Programs selling to businesses (`CUSTOMERS`, `USERS`, `B2B_SAAS_SELF_SERVICE`,
-   * `B2B_SAAS_ENTERPRISE`) start with the LinkedIn share button visible; consumer,
-   * financial, education, insurance, newsletter, and waitlist programs
-   * (`B2C_SUBSCRIPTIONS`, `FINANCIAL_SERVICES`, `ONLINE_EDUCATION`,
-   * `ONLINE_INSURANCE`, `SUBSCRIBERS`, `WAITLIST`) start with it hidden. Omit it and
-   * every share button keeps its standard default. Set only when the program is
-   * created; it is not accepted on update.
+   * Programs whose participants refer other businesses (`CUSTOMERS`, `USERS`,
+   * `B2B_SAAS_SELF_SERVICE`, `B2B_SAAS_ENTERPRISE`, `HEALTHCARE_PROVIDERS`) start with
+   * the LinkedIn share button visible; consumer, financial, education, insurance,
+   * telehealth, newsletter, and waitlist programs (`B2C_SUBSCRIPTIONS`,
+   * `FINANCIAL_SERVICES`, `ONLINE_EDUCATION`, `INSURANCE`, `ONLINE_INSURANCE`,
+   * `TELEHEALTH`, `SUBSCRIBERS`, `WAITLIST`) start with it hidden. `TELEHEALTH` is for
+   * consumer telehealth and wellness subscriptions; `HEALTHCARE_PROVIDERS` is for
+   * provider networks and clinician-facing products. `INSURANCE` replaces
+   * `ONLINE_INSURANCE`, which is still accepted. Omit it and every share button keeps
+   * its standard default. Set only when the program is created; it is not accepted on
+   * update.
    */
   goal?:
     | 'CUSTOMERS'
@@ -1799,7 +1803,10 @@ export interface CampaignCreateParams {
     | 'B2C_SUBSCRIPTIONS'
     | 'FINANCIAL_SERVICES'
     | 'ONLINE_EDUCATION'
-    | 'ONLINE_INSURANCE';
+    | 'INSURANCE'
+    | 'ONLINE_INSURANCE'
+    | 'TELEHEALTH'
+    | 'HEALTHCARE_PROVIDERS';
 
   /**
    * The program name. Defaults to a generated friendly label plus the creation date.

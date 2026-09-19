@@ -85,7 +85,18 @@ test('types documented configuration fields while open sections stay forward com
   const design: DesignUpdateParams = {
     participantAvatarStyle: 'GRADIENT',
     referredExperience: { offerPopupPlacement: 'BOTTOM_RIGHT', offerPopupDelaySeconds: 5 },
-    theme: { referredExperienceOfferPopup: { backgroundColor: '#2f8f4e' }, futureThemeField: true },
+    widget: {
+      isShownToNewVisitors: true,
+      appearance: 'CARD',
+      markKey: null,
+      placement: 'BOTTOM_RIGHT',
+      pageRules: { mode: 'ONLY', patterns: ['/portal/*'] },
+    },
+    theme: {
+      referredExperienceOfferPopup: { backgroundColor: '#2f8f4e' },
+      widget: { borderRadius: '12px' },
+      futureThemeField: true,
+    },
     futureDesignSection: { isEnabled: true },
   };
 
@@ -100,6 +111,8 @@ test('types documented configuration fields while open sections stay forward com
   expect(emails.welcomeNonReferred?.subject).toBe('Welcome');
   expect(installation.mobile?.isEnabled).toBe(true);
   expect(design.referredExperience?.offerPopupPlacement).toBe('BOTTOM_RIGHT');
+  expect(design.widget?.pageRules?.mode).toBe('ONLY');
+  expect(design.widget?.markKey).toBeNull();
   expect(invalidOptions).toBeDefined();
   expect(invalidInstallation).toBeDefined();
   expect(invalidEmails).toBeDefined();
