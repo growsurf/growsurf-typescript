@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0](https://github.com/growsurf/growsurf-typescript/compare/v1.7.1...v1.8.0) (2026-09-19)
+
+
+### Features
+
+* **api:** add campaign design widget section and healthcare goals ([9f1b094](https://github.com/growsurf/growsurf-typescript/commit/9f1b0946d95d0e45376613b208c8ec14a51a2015))
+
+
+### Chores
+
+* merge dev into main ([d966a9c](https://github.com/growsurf/growsurf-typescript/commit/d966a9cea6d1f9bab2d182fc2252935be535e1a7))
+
 ## [1.7.1](https://github.com/growsurf/growsurf-typescript/compare/v1.7.0...v1.7.1) (2026-09-18)
 
 
