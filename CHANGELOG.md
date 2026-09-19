@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.1](https://github.com/growsurf/growsurf-typescript/compare/v1.8.0...v1.8.1) (2026-09-19)
+
+
+### Chores
+
+* merge dev into main ([0675006](https://github.com/growsurf/growsurf-typescript/commit/06750065e4286737ee07233bc15279aa4a4986df))
+
+
+### Documentation
+
+* **api:** document the starter rewards each campaign goal seeds ([6950b78](https://github.com/growsurf/growsurf-typescript/commit/6950b78f7c64dd95b2aa42e31b60e66ddd6509c6))
+
 ## [1.8.0](https://github.com/growsurf/growsurf-typescript/compare/v1.7.1...v1.8.0) (2026-09-19)
 
 
