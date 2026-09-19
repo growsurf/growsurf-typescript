@@ -31,7 +31,8 @@ export class Design extends APIResource {
 
   /**
    * Updates a program's design configuration, including the payout-destination confirmation page
-   * copy configured from payout integration cards. Only the fields you send are changed; anything
+   * copy configured from payout integration cards and the website widget under `widget`. Only the
+   * fields you send are changed; anything
    * you leave out is untouched (arrays such as `signup.fields` replace wholesale). Unknown
    * fields, fields not available for the program type, and invalid values return a `400`.
    * Landing-page custom code and JavaScript are not editable via the API.
@@ -66,7 +67,8 @@ export class Design extends APIResource {
  * while `affiliateSummary`, `commissions`, and `payouts` are affiliate-only).
  * `participantSettings` is available to both program types; its manual payout and Wise fields are
  * affiliate-only. `referredExperience` includes the Claim Offer Popup for both program types, with
- * its colors under `theme.referredExperienceOfferPopup`. `GET` returns the fields configured for the program;
+ * its colors under `theme.referredExperienceOfferPopup`. `widget` is the website widget shown in a
+ * corner of your own site, with its colors under `theme.widget`. `GET` returns the fields configured for the program;
  * `payoutDestinationConfirmation` is omitted when no confirmation fields are stored. Stored
  * `null` fields are returned as `null`; omitted and `null` fields use localized defaults. `PATCH`
  * back only the sections or fields you want to change (arrays such as `signup.fields` replace
@@ -89,6 +91,7 @@ export type CampaignDesign = {
   referralStatus?: CampaignDesignOpenSection;
   leaderboard?: CampaignDesignOpenSection;
   referredExperience?: CampaignDesignReferredExperience;
+  widget?: CampaignDesignWidget;
   referralSummary?: CampaignDesignOpenSection;
   affiliateSummary?: CampaignDesignOpenSection;
   commissions?: CampaignDesignOpenSection;
@@ -186,15 +189,163 @@ export type CampaignDesignReferredExperience = {
   referrerNameFallback?: string | null;
 };
 
+/** Which pages the website widget appears on. */
+export type CampaignDesignWidgetPageRules = {
+  /**
+   * `ALL` shows it everywhere, `ONLY` shows it just on the listed pages, and `EXCEPT` shows it
+   * everywhere but the listed pages. With no pages listed, `ONLY` and `EXCEPT` behave as `ALL`.
+   */
+  mode?: 'ALL' | 'ONLY' | 'EXCEPT';
+
+  /**
+   * The pages to match. Use `*` to stand in for anything, as in `/portal/*`. A path on its own,
+   * such as `/pricing`, matches that path on every domain you have installed. Web addresses are
+   * matched without their query string. Up to 20 entries of at most 500 characters each.
+   */
+  patterns?: Array<string>;
+};
+
+/**
+ * The website widget — the invite that sits in a corner of your own site. It renders as a button
+ * or as a card, and its card folds back into the button when a visitor closes it. Both audience
+ * switches start off, so a program shows nothing until you turn one on.
+ */
+export type CampaignDesignWidget = {
+  /** Whether people who have not joined your program see the widget. */
+  isShownToNewVisitors?: boolean;
+
+  /** Whether people who have already joined see the widget. */
+  isShownToParticipants?: boolean;
+
+  /**
+   * `BUTTON` is a single button in the corner. `CARD` is a small card with a heading, a line of
+   * text, and a button, which a visitor can close.
+   */
+  appearance?: 'BUTTON' | 'CARD';
+
+  /** Whether the card shows a picture above its text. Ignored by the button. */
+  isArtShown?: boolean;
+
+  /** The picture shown at the top of the card. Maximum 500 characters. */
+  artImageUrl?: string | null;
+
+  /**
+   * What people who have not joined read. It is the button's label, and the card's heading.
+   * Maximum 100 characters.
+   */
+  newVisitorText?: string | null;
+
+  /**
+   * What people who have already joined read. It is the button's label, and the card's heading.
+   * Maximum 100 characters.
+   */
+  participantText?: string | null;
+
+  /** The line under the heading for people who have not joined. Card only. Maximum 255 characters. */
+  newVisitorDescription?: string | null;
+
+  /**
+   * The line under the heading for people who have already joined. Card only. Maximum 255
+   * characters.
+   */
+  participantDescription?: string | null;
+
+  /** The label on the card's button, which opens your program. Maximum 100 characters. */
+  buttonText?: string | null;
+
+  /**
+   * The small drawing on the widget. It takes the color you chose for the widget, so it matches
+   * on any background. Send `null` for no drawing.
+   */
+  markKey?:
+    | 'GIFT'
+    | 'TICKET'
+    | 'DISCOUNT'
+    | 'CASH'
+    | 'PERK'
+    | 'SHARE'
+    | 'LINK'
+    | 'INVITE'
+    | 'FRIENDS'
+    | 'THANKS'
+    | null;
+
+  /**
+   * Your own uploaded image instead of a `markKey` drawing. `CUSTOM` uses `iconImageUrl`; `NONE`
+   * shows no image. `DEFAULT` is the old GrowSurf image: a program already set to it keeps it and
+   * can read it back, but it cannot be set. Requires a paid plan.
+   */
+  icon?: 'CUSTOM' | 'NONE' | 'DEFAULT';
+
+  /** Your own image, used when `icon` is `CUSTOM`. Maximum 500 characters. Requires a paid plan. */
+  iconImageUrl?: string | null;
+
+  /** Which corner or edge of the page the widget sits against. */
+  placement?: 'TOP_LEFT' | 'TOP_CENTER' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_CENTER' | 'BOTTOM_RIGHT';
+
+  /**
+   * How far in from the left or right edge, in pixels, following `placement`. For a centered
+   * placement it becomes an even gap on both sides. 0 to 400.
+   */
+  offsetSide?: number;
+
+  /**
+   * How far in from the top or bottom edge, in pixels, following `placement`. Raise it to clear a
+   * chat button that already sits in that corner. 0 to 400.
+   */
+  offsetEdge?: number;
+
+  /**
+   * When the card appears: right away, after `revealDelaySeconds`, or once the visitor scrolls
+   * halfway down the page. The button always appears right away.
+   */
+  reveal?: 'IMMEDIATE' | 'DELAY' | 'SCROLL';
+
+  /** Seconds to wait before showing the card, when `reveal` is `DELAY`. 0 to 120. */
+  revealDelaySeconds?: number;
+
+  /**
+   * Days before the card is offered again to someone who closed it. Until then they keep the
+   * button, so they can still open your program. `0` never offers it again. 0 to 365.
+   */
+  returnAfterDays?: number;
+
+  /**
+   * Whether to leave phones alone. On small screens the card fills the bottom of the page, so
+   * some programs turn it off there.
+   */
+  isHiddenOnMobile?: boolean;
+
+  /**
+   * Which pages the widget appears on. This controls the widget only — referral tracking,
+   * embedded elements, and opening the window from your own code keep working on every page
+   * where GrowSurf is installed.
+   */
+  pageRules?: CampaignDesignWidgetPageRules;
+};
+
 /** Claim Offer Popup theme colors. */
 export type CampaignDesignOfferPopupTheme = {
   color?: string | null;
   backgroundColor?: string | null;
 };
 
+/** Website widget theme colors. */
+export type CampaignDesignWidgetTheme = {
+  /** Text and drawing color on the button, and on the card's own button. */
+  color?: string | null;
+
+  /** Fill color of the button, and of the card's own button. */
+  backgroundColor?: string | null;
+
+  /** Corner rounding, as a CSS length such as `12px`. */
+  borderRadius?: string | null;
+};
+
 /** Design theme fields documented by the REST contract. */
 export type CampaignDesignTheme = {
   referredExperienceOfferPopup?: CampaignDesignOfferPopupTheme;
+  widget?: CampaignDesignWidgetTheme;
   [key: string]: unknown;
 };
 
@@ -250,6 +401,9 @@ export declare namespace Design {
     type CampaignDesignResources as CampaignDesignResources,
     type CampaignDesignResourcesIcon as CampaignDesignResourcesIcon,
     type CampaignDesignTheme as CampaignDesignTheme,
+    type CampaignDesignWidget as CampaignDesignWidget,
+    type CampaignDesignWidgetPageRules as CampaignDesignWidgetPageRules,
+    type CampaignDesignWidgetTheme as CampaignDesignWidgetTheme,
     type DesignUpdateParams as DesignUpdateParams,
     type ParticipantLoginDesign as ParticipantLoginDesign,
     type PayoutDestinationConfirmationDesign as PayoutDestinationConfirmationDesign,
