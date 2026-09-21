@@ -652,6 +652,12 @@ export interface Participant {
   lastName?: string | null;
 
   /**
+   * The number of pending referrals the participant made that have not converted
+   * into successful referrals yet.
+   */
+  leadCount?: number;
+
+  /**
    * Shallow custom metadata object.
    */
   metadata?: { [key: string]: unknown };
@@ -737,6 +743,12 @@ export namespace Participant {
     isWinner?: boolean;
 
     lastName?: string | null;
+
+    /**
+     * The number of pending referrals the participant made that have not converted
+     * into successful referrals yet.
+     */
+    leadCount?: number;
 
     /**
      * Shallow custom metadata object.

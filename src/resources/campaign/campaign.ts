@@ -198,6 +198,28 @@ export class CampaignResource extends APIResource {
   }
 
   /**
+   * Renders the program's current saved configuration into two preview images: the
+   * referrer window a participant sees, and the referred-friend experience. Use them
+   * to show a person what the draft looks like before anything launches. The images
+   * render GrowSurf's own preview, not the program's installed website, so they do
+   * not prove an installation. Each `url` is private and expires at `expiresAt`;
+   * capture again when you need a fresh view. Only the account owner's credential
+   * can capture screenshots, and the endpoint takes no request body.
+   *
+   * @example
+   * ```ts
+   * const response =
+   *   await client.campaign.captureReferralFlowScreenshots('id');
+   * ```
+   */
+  captureReferralFlowScreenshots(
+    id: string,
+    options?: RequestOptions,
+  ): APIPromise<ReferralFlowScreenshotsResponse> {
+    return this._client.post(path`/campaign/${id}/referral-flow-screenshots`, options);
+  }
+
+  /**
    * Creates or returns a participant using the same input behavior as Add
    * Participant, then returns a participant-scoped token for GrowSurf mobile SDK
    * participant endpoints. Use this endpoint from your backend after your mobile app
@@ -846,6 +868,61 @@ export interface CampaignCreateMobileParticipantTokenResponse {
    * Participant-scoped bearer token for GrowSurf mobile SDK participant endpoints.
    */
   participantToken: string;
+}
+
+export interface ReferralFlowScreenshot {
+  /**
+   * Which side of the referral flow the image shows: `referrer` is the window a
+   * participant sees, `referredFriend` is the experience a referred friend sees.
+   */
+  view: 'referrer' | 'referredFriend';
+
+  /**
+   * Human-readable name for the view.
+   */
+  label: string;
+
+  /**
+   * Private link to the image. It expires at `expiresAt`.
+   */
+  url: string;
+
+  /**
+   * When the `url` stops working, as an ISO 8601 timestamp.
+   */
+  expiresAt: string;
+
+  /**
+   * Image width in pixels.
+   */
+  width: number;
+
+  /**
+   * Image height in pixels.
+   */
+  height: number;
+
+  /**
+   * MIME type of the image, for example `image/png`.
+   */
+  contentType: string;
+}
+
+export interface ReferralFlowScreenshotsResponse {
+  /**
+   * When the screenshots were captured, as an ISO 8601 timestamp.
+   */
+  generatedAt: string;
+
+  /**
+   * When every `url` in `screenshots` stops working, as an ISO 8601 timestamp.
+   */
+  expiresAt: string;
+
+  /**
+   * One entry per view: the referrer window and the referred-friend experience.
+   */
+  screenshots: Array<ReferralFlowScreenshot>;
 }
 
 export type AnalyticsAvailability = 'AVAILABLE' | 'PARTIAL' | 'UNAVAILABLE';
@@ -2228,6 +2305,8 @@ export declare namespace CampaignResource {
     type ReferralList as ReferralList,
     type CampaignListResponse as CampaignListResponse,
     type CampaignCreateMobileParticipantTokenResponse as CampaignCreateMobileParticipantTokenResponse,
+    type ReferralFlowScreenshot as ReferralFlowScreenshot,
+    type ReferralFlowScreenshotsResponse as ReferralFlowScreenshotsResponse,
     type CampaignRetrieveAnalyticsResponse as CampaignRetrieveAnalyticsResponse,
     type CampaignActivationAnalyticsResponse as CampaignActivationAnalyticsResponse,
     type AffiliateApplication as AffiliateApplication,

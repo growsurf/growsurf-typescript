@@ -13,6 +13,8 @@ export {
   type ReferralList,
   type CampaignListResponse,
   type CampaignCreateMobileParticipantTokenResponse,
+  type ReferralFlowScreenshot,
+  type ReferralFlowScreenshotsResponse,
   type CampaignRetrieveAnalyticsResponse,
   type CampaignActivationAnalyticsResponse,
   type AffiliateApplication,

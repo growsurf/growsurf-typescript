@@ -39,6 +39,8 @@ Types:
 - <code><a href="./src/resources/campaign/campaign.ts">ReferralList</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignListResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignCreateMobileParticipantTokenResponse</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">ReferralFlowScreenshot</a></code>
+- <code><a href="./src/resources/campaign/campaign.ts">ReferralFlowScreenshotsResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignRetrieveAnalyticsResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">CampaignActivationAnalyticsResponse</a></code>
 - <code><a href="./src/resources/campaign/campaign.ts">AffiliateApplication</a></code>
@@ -53,6 +55,7 @@ Methods:
 - <code title="post /campaigns">client.campaign.<a href="./src/resources/campaign/campaign.ts">create</a>({ ...params }) -> Campaign</code>
 - <code title="patch /campaign/{id}">client.campaign.<a href="./src/resources/campaign/campaign.ts">update</a>(id, { ...params }) -> Campaign</code>
 - <code title="post /campaign/{id}/clone">client.campaign.<a href="./src/resources/campaign/campaign.ts">clone</a>(id) -> Campaign</code>
+- <code title="post /campaign/{id}/referral-flow-screenshots">client.campaign.<a href="./src/resources/campaign/campaign.ts">captureReferralFlowScreenshots</a>(id) -> ReferralFlowScreenshotsResponse</code>
 - <code title="post /campaign/{id}/mobile-participant-token">client.campaign.<a href="./src/resources/campaign/campaign.ts">createMobileParticipantToken</a>(id, { ...params }) -> CampaignCreateMobileParticipantTokenResponse</code>
 - <code title="get /campaign/{id}/affiliate-applications">client.campaign.<a href="./src/resources/campaign/campaign.ts">listAffiliateApplications</a>(id, { ...params }) -> AffiliateApplicationListResponse</code>
 - <code title="get /campaign/{id}/affiliate-applications/{applicationId}">client.campaign.<a href="./src/resources/campaign/campaign.ts">retrieveAffiliateApplication</a>(applicationID, { ...params }) -> AffiliateApplication</code>
