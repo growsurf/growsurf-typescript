@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0](https://github.com/growsurf/growsurf-typescript/compare/v1.8.1...v1.9.0) (2026-09-21)
+
+
+### Features
+
+* **api:** add referral-flow screenshot capture and participant leadCount ([0f977aa](https://github.com/growsurf/growsurf-typescript/commit/0f977aa290b1f841d73455e9b3f9dcc0915d508a))
+
+
+### Chores
+
+* merge origin/main ([7469442](https://github.com/growsurf/growsurf-typescript/commit/746944235de46aa0373c34dd3e3c2714d08f96d9))
+
 ## [1.8.1](https://github.com/growsurf/growsurf-typescript/compare/v1.8.0...v1.8.1) (2026-09-19)
 
 
