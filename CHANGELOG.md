@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/growsurf/growsurf-typescript/compare/v1.9.0...v1.10.0) (2026-09-23)
+
+
+### Features
+
+* **api:** update SDK campaign contracts and request handling ([42676cb](https://github.com/growsurf/growsurf-typescript/commit/42676cb4cb1815205aeecca7ff3840f12b2031d8))
+
 ## [1.9.0](https://github.com/growsurf/growsurf-typescript/compare/v1.8.1...v1.9.0) (2026-09-21)
 
 
