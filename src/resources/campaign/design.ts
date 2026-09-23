@@ -31,7 +31,8 @@ export class Design extends APIResource {
 
   /**
    * Updates a program's design configuration, including the payout-destination confirmation page
-   * copy configured from payout integration cards and the website widget under `widget`. Only the
+   * copy configured from payout integration cards, the website widget under `widget`, and the
+   * participant Traffic report under `trafficInsights` (its labels cannot be blank). Only the
    * fields you send are changed; anything
    * you leave out is untouched (arrays such as `signup.fields` replace wholesale). Unknown
    * fields, fields not available for the program type, and invalid values return a `400`.
@@ -68,7 +69,8 @@ export class Design extends APIResource {
  * `participantSettings` is available to both program types; its manual payout and Wise fields are
  * affiliate-only. `referredExperience` includes the Claim Offer Popup for both program types, with
  * its colors under `theme.referredExperienceOfferPopup`. `widget` is the website widget shown in a
- * corner of your own site, with its colors under `theme.widget`. `GET` returns the fields configured for the program;
+ * corner of your own site, with its colors under `theme.widget`. `trafficInsights` is the
+ * participant Traffic report. `GET` returns the fields configured for the program;
  * `payoutDestinationConfirmation` is omitted when no confirmation fields are stored. Stored
  * `null` fields are returned as `null`; omitted and `null` fields use localized defaults. `PATCH`
  * back only the sections or fields you want to change (arrays such as `signup.fields` replace
@@ -92,6 +94,7 @@ export type CampaignDesign = {
   leaderboard?: CampaignDesignOpenSection;
   referredExperience?: CampaignDesignReferredExperience;
   widget?: CampaignDesignWidget;
+  trafficInsights?: CampaignDesignTrafficInsights;
   referralSummary?: CampaignDesignOpenSection;
   affiliateSummary?: CampaignDesignOpenSection;
   commissions?: CampaignDesignOpenSection;
@@ -385,6 +388,118 @@ export type CampaignDesignResources = {
   icon?: CampaignDesignResourcesIcon;
 };
 
+/** A Traffic report date range. */
+export type CampaignDesignTrafficInsightsDateRange =
+  'LAST_7_DAYS' | 'LAST_30_DAYS' | 'LAST_90_DAYS' | 'ALL_TIME';
+
+/** One visit count at the top of the Traffic report. */
+export type CampaignDesignTrafficInsightsMetric = {
+  /** Whether participants see this count. */
+  isVisible?: boolean;
+
+  /** The count's name. Maximum 100 characters. */
+  label?: string;
+
+  /** A short explanation under the name. Send an empty string to hide it. Maximum 255 characters. */
+  helperText?: string;
+};
+
+/** One breakdown table in the Traffic report. */
+export type CampaignDesignTrafficInsightsBreakdown = {
+  /** Whether participants can choose this breakdown. */
+  isVisible?: boolean;
+
+  /** The breakdown's name in the picker. Maximum 100 characters. */
+  label?: string;
+
+  /**
+   * Names for the levels this breakdown can be read at (`utm`, `geo`, and `technology` only),
+   * such as `country` or `city` for `geo`.
+   */
+  levels?: Record<string, string>;
+
+  /**
+   * Names for rows from a fixed set (`referrer`, `technology`, and `trigger` only), such as
+   * `DIRECT` for `referrer` or `QR_CODE` for `trigger`.
+   */
+  values?: Record<string, string>;
+};
+
+/**
+ * The Traffic report participants can open from the GrowSurf window. It shows visits to their
+ * share link over time and where those visits came from. It starts on for new affiliate programs
+ * and hidden for referral programs. `GET` returns every setting, with the default copy for anything
+ * you have not changed. `PATCH` only the settings you want to change; the rest keep their current
+ * values. Labels cannot be blank.
+ */
+export type CampaignDesignTrafficInsights = {
+  /** Whether participants can open the Traffic report. */
+  isPublicDisplayed?: boolean;
+
+  /** The report heading. Maximum 100 characters. */
+  title?: string;
+
+  /** The label in front of the share link picker. Maximum 100 characters. */
+  trafficForLabel?: string;
+
+  /** The share link picker option that combines all of the participant's links. Maximum 100 characters. */
+  allLinksLabel?: string;
+
+  /** The heading above the visits chart. Maximum 100 characters. */
+  visitsOverTimeTitle?: string;
+
+  /** The heading above the breakdown table. Maximum 100 characters. */
+  breakdownsTitle?: string;
+
+  /** The text of the row or tab that opens the report. Maximum 100 characters. */
+  viewTrafficInsightsLinkText?: string;
+
+  /** The text of the link back from the report. Maximum 100 characters. */
+  backLinkText?: string;
+
+  /** The message shown before the participant's link has any visits. Can be empty. Maximum 255 characters. */
+  emptyState?: string;
+
+  /** The row name for visits that have no value for the chosen breakdown. Maximum 100 characters. */
+  notSetLabel?: string;
+
+  /**
+   * Messages shown when the report cannot show everything: `error`, `unavailable`, `partial`,
+   * `partialFrom` (`{{date}}` is replaced with the first available date), `breakdownPartial`, and
+   * `breakdownEmpty`. Maximum 255 characters each.
+   */
+  messages?: {
+    error?: string;
+    unavailable?: string;
+    partial?: string;
+    partialFrom?: string;
+    breakdownPartial?: string;
+    breakdownEmpty?: string;
+  };
+
+  /** The date range picker labels. Maximum 100 characters each. */
+  dateRangeLabels?: Partial<Record<CampaignDesignTrafficInsightsDateRange, string>>;
+
+  /** The date range the report opens with. */
+  defaultDateRange?: CampaignDesignTrafficInsightsDateRange;
+
+  /** The two visit counts at the top of the report. */
+  metrics?: {
+    visits?: CampaignDesignTrafficInsightsMetric;
+    uniqueVisitors?: CampaignDesignTrafficInsightsMetric;
+  };
+
+  /** The tables that show where visits came from. You can hide or rename each one. */
+  breakdowns?: {
+    utm?: CampaignDesignTrafficInsightsBreakdown;
+    referrer?: CampaignDesignTrafficInsightsBreakdown;
+    destination?: CampaignDesignTrafficInsightsBreakdown;
+    geo?: CampaignDesignTrafficInsightsBreakdown;
+    technology?: CampaignDesignTrafficInsightsBreakdown;
+    trigger?: CampaignDesignTrafficInsightsBreakdown;
+  };
+};
+
 /**
  * A partial `CampaignDesign` — only the fields you send are changed. The set of keys
  * is intentionally left open. `GET` the configured fields first, then `PATCH` back only
@@ -401,6 +516,10 @@ export declare namespace Design {
     type CampaignDesignResources as CampaignDesignResources,
     type CampaignDesignResourcesIcon as CampaignDesignResourcesIcon,
     type CampaignDesignTheme as CampaignDesignTheme,
+    type CampaignDesignTrafficInsights as CampaignDesignTrafficInsights,
+    type CampaignDesignTrafficInsightsBreakdown as CampaignDesignTrafficInsightsBreakdown,
+    type CampaignDesignTrafficInsightsDateRange as CampaignDesignTrafficInsightsDateRange,
+    type CampaignDesignTrafficInsightsMetric as CampaignDesignTrafficInsightsMetric,
     type CampaignDesignWidget as CampaignDesignWidget,
     type CampaignDesignWidgetPageRules as CampaignDesignWidgetPageRules,
     type CampaignDesignWidgetTheme as CampaignDesignWidgetTheme,
