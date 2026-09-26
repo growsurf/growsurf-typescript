@@ -2061,7 +2061,7 @@ export interface ParticipantRequestPayoutDestinationConfirmationParams {
   /**
    * Body param: The payout provider the participant should confirm a destination for.
    */
-  provider: 'PAYPAL' | 'WISECOM';
+  provider: 'PAYPAL' | 'VENMO' | 'WISECOM';
 }
 
 export declare namespace ParticipantResource {
