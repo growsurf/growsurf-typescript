@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/growsurf/growsurf-typescript/compare/v1.10.0...v1.11.0) (2026-09-29)
+
+
+### Features
+
+* **api:** update campaign contracts ([1410ae6](https://github.com/growsurf/growsurf-typescript/commit/1410ae6b24299d79ca1d821fc877e253af81d566))
+
 ## [1.10.0](https://github.com/growsurf/growsurf-typescript/compare/v1.9.0...v1.10.0) (2026-09-23)
 
 
