@@ -145,4 +145,9 @@ export {
 } from './design';
 export { Emails, type CampaignEmails, type EmailUpdateParams } from './emails';
 export { Options, type CampaignOptions, type OptionUpdateParams } from './options';
-export { Installation, type CampaignInstallation, type InstallationUpdateParams } from './installation';
+export {
+  Installation,
+  type CampaignInstallation,
+  type CampaignInstallationInstructionSelections,
+  type InstallationUpdateParams,
+} from './installation';

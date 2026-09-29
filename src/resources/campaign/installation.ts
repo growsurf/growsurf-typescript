@@ -83,6 +83,19 @@ export interface CampaignInstallationMobileUpdate {
   androidAppStoreUrl?: string | null;
 }
 
+export interface CampaignInstallationInstructionSelections {
+  platform?: 'web' | 'ios' | 'android';
+  mobileAttributionProvider?: 'branch' | 'appsflyer' | 'adjust' | 'singular' | 'other';
+  stepProviders?: {
+    step2Signup?: 'restApi' | 'javascript';
+    step2Affiliate?: 'stripe' | 'chargebee' | 'recurly' | 'restApi';
+    step2Referral?:
+      'restApi' | 'zapier' | 'stripe' | 'chargebee' | 'recurly' | 'paypal' | 'hubspot' | 'salesforce';
+    step3Affiliate?: 'paypal' | 'wise';
+    step3Referral?: 'webhooks' | 'zapier' | 'paypal' | 'tangocard' | 'stripe' | 'chargebee' | 'recurly';
+  };
+}
+
 export interface CampaignInstallationBase<TMobile> {
   referralTrigger?: 'CUSTOM' | 'ON_SIGNUP';
   signupEvent?: 'FORM_DETECTION' | 'PROGRAMMATIC';
@@ -91,6 +104,7 @@ export interface CampaignInstallationBase<TMobile> {
   allowedUrls?: string[];
   signup?: CampaignInstallationSignup;
   mobile?: TMobile;
+  instructionSelections?: CampaignInstallationInstructionSelections;
   [key: string]: unknown;
 }
 
@@ -108,6 +122,7 @@ export declare namespace Installation {
     type CampaignInstallationMobile as CampaignInstallationMobile,
     type CampaignInstallationMobileUpdate as CampaignInstallationMobileUpdate,
     type CampaignInstallationSignup as CampaignInstallationSignup,
+    type CampaignInstallationInstructionSelections as CampaignInstallationInstructionSelections,
     type InstallationUpdateParams as InstallationUpdateParams,
   };
 }
