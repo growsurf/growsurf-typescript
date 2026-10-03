@@ -1968,6 +1968,8 @@ export interface ParticipantEmailParams {
    * `commissionAdjusted`, `payoutPending`, `payoutSentSuccess`, `progressUpdateMonthly`.
    * System/transactional types (login link, PayPal confirmation, tax) and the invite
    * email cannot be sent here.
+   * `welcomeNonReferred` can only be sent to advocates or approved, enrolled affiliates in a
+   * program that has not ended.
    */
   emailType?: string;
 
