@@ -3,3 +3,10 @@ onlyBuiltDependencies:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - growsurf-typescript
+# braces is used only by development tooling (Jest and tsc-multi), with
+# repository-controlled glob patterns. The SDK has no runtime dependencies.
+# No patched version exists as of 2026-10-03. Remove this exception when one ships.
+# https://github.com/advisories/GHSA-vfj7-8cjw-p6xm
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
