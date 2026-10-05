@@ -163,6 +163,7 @@ export declare namespace Emails {
     type CampaignEmailSettingsUpdate as CampaignEmailSettingsUpdate,
     type CampaignEmails as CampaignEmails,
     type CampaignEmailTemplate as CampaignEmailTemplate,
+    type CampaignFollowUpReminderEmailTemplate as CampaignFollowUpReminderEmailTemplate,
     type CampaignInviteEmailTemplate as CampaignInviteEmailTemplate,
     type EmailUpdateParams as EmailUpdateParams,
   };
