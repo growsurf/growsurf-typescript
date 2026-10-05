@@ -57,6 +57,11 @@ export interface CampaignEmailTemplate {
   isEnabled?: boolean;
 }
 
+export interface CampaignFollowUpReminderEmailTemplate extends CampaignEmailTemplate {
+  /** Days before the referrer reminder: integer 2–30, default 3. Existing reminder dates stay unchanged. */
+  delayDays?: number;
+}
+
 export interface CampaignInviteEmailTemplate extends CampaignEmailTemplate {
   useCompanyReplyTo?: boolean;
 }
@@ -108,6 +113,8 @@ export interface CampaignEmailsBase<TSettings> {
   welcomeNonReferred?: CampaignEmailTemplate;
   welcomeReferred?: CampaignEmailTemplate;
   offerClaimed?: CampaignEmailTemplate;
+  /** Optional reminder to the referrer about contacts who have not signed up. Disabled by default. */
+  followUpReminder?: CampaignFollowUpReminderEmailTemplate;
   referralLinkViewedFirstTime?: CampaignEmailTemplate;
   referralLinkUsed?: CampaignEmailTemplate;
   referredSignup?: CampaignEmailTemplate;
