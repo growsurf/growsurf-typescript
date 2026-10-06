@@ -84,6 +84,8 @@ export interface CampaignEmailContactSettings {
 }
 
 export interface CampaignEmailDesignSettings {
+  /** New programs use INLINE. Bodies require {{emailFooter}}; {{emailHeader}} is optional. Read-only. */
+  layoutMode?: 'INLINE';
   header?: string | null;
   footer?: string | null;
   unsubscribePromotional?: string;
@@ -106,7 +108,7 @@ export interface CampaignEmailSenderUpdate {
 export interface CampaignEmailSettingsUpdate {
   sender?: CampaignEmailSenderUpdate;
   contact?: CampaignEmailContactSettings;
-  design?: CampaignEmailDesignSettings;
+  design?: Omit<CampaignEmailDesignSettings, 'layoutMode'>;
 }
 
 export interface CampaignEmailsBase<TSettings> {
