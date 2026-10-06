@@ -299,12 +299,16 @@ export type CampaignDesignWidget = {
   offsetEdge?: number;
 
   /**
-   * When the card appears: right away, after `revealDelaySeconds`, or once the visitor scrolls
-   * halfway down the page. The button always appears right away.
+   * What the element waits for before it appears: the page loading (`IMMEDIATE`) or the visitor
+   * scrolling halfway down the page (`SCROLL`). `revealDelaySeconds` then counts from that
+   * moment. `DELAY` is accepted for older programs and behaves as `IMMEDIATE`.
    */
   reveal?: 'IMMEDIATE' | 'DELAY' | 'SCROLL';
 
-  /** Seconds to wait before showing the card, when `reveal` is `DELAY`. 0 to 120. */
+  /**
+   * Seconds to wait after the `reveal` trigger before showing the element, 0 to 120. `0` shows
+   * it the moment the trigger fires.
+   */
   revealDelaySeconds?: number;
 
   /**
