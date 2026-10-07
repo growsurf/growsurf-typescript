@@ -57,6 +57,11 @@ export interface CampaignEmailTemplate {
   isEnabled?: boolean;
 }
 
+export interface CampaignFollowUpReminderEmailTemplate extends CampaignEmailTemplate {
+  /** Days before the referrer reminder: integer 2–30, default 3. Existing reminder dates stay unchanged. */
+  delayDays?: number;
+}
+
 export interface CampaignInviteEmailTemplate extends CampaignEmailTemplate {
   useCompanyReplyTo?: boolean;
 }
@@ -79,6 +84,8 @@ export interface CampaignEmailContactSettings {
 }
 
 export interface CampaignEmailDesignSettings {
+  /** New programs use INLINE. Bodies require {{emailFooter}}; {{emailHeader}} is optional. Read-only. */
+  layoutMode?: 'INLINE';
   header?: string | null;
   footer?: string | null;
   unsubscribePromotional?: string;
@@ -101,13 +108,15 @@ export interface CampaignEmailSenderUpdate {
 export interface CampaignEmailSettingsUpdate {
   sender?: CampaignEmailSenderUpdate;
   contact?: CampaignEmailContactSettings;
-  design?: CampaignEmailDesignSettings;
+  design?: Omit<CampaignEmailDesignSettings, 'layoutMode'>;
 }
 
 export interface CampaignEmailsBase<TSettings> {
   welcomeNonReferred?: CampaignEmailTemplate;
   welcomeReferred?: CampaignEmailTemplate;
   offerClaimed?: CampaignEmailTemplate;
+  /** Optional reminder to the referrer about contacts who have not signed up. Disabled by default. */
+  followUpReminder?: CampaignFollowUpReminderEmailTemplate;
   referralLinkViewedFirstTime?: CampaignEmailTemplate;
   referralLinkUsed?: CampaignEmailTemplate;
   referredSignup?: CampaignEmailTemplate;
@@ -156,6 +165,7 @@ export declare namespace Emails {
     type CampaignEmailSettingsUpdate as CampaignEmailSettingsUpdate,
     type CampaignEmails as CampaignEmails,
     type CampaignEmailTemplate as CampaignEmailTemplate,
+    type CampaignFollowUpReminderEmailTemplate as CampaignFollowUpReminderEmailTemplate,
     type CampaignInviteEmailTemplate as CampaignInviteEmailTemplate,
     type EmailUpdateParams as EmailUpdateParams,
   };
