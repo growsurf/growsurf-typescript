@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.12.0](https://github.com/growsurf/growsurf-typescript/compare/v1.11.0...v1.12.0) (2026-10-07)
+
+
+### Features
+
+* add follow-up reminder email configuration ([b46c29c](https://github.com/growsurf/growsurf-typescript/commit/b46c29cb8607aa0f58efabd951a77de6a6431f0d))
+* model read-only inline email layout settings ([7fa1ebd](https://github.com/growsurf/growsurf-typescript/commit/7fa1ebd02d25ea0885f1bebee970fa37bba56819))
+
+
+### Bug Fixes
+
+* export follow-up reminder email template type ([052ef04](https://github.com/growsurf/growsurf-typescript/commit/052ef04b2721623613c8921c8b8ccb7739d3b855))
+
+
+### Chores
+
+* prepare SDK 1.12.0 ([22193e4](https://github.com/growsurf/growsurf-typescript/commit/22193e4eb5d1663e483b2692174de497fdc846b1))
+* release 1.12.0 ([e7fcea0](https://github.com/growsurf/growsurf-typescript/commit/e7fcea0b78ea7d70f8c344172d646cba892fa8d3))
+
+
+### Documentation
+
+* clarify welcome email recipient eligibility ([a6b0fdb](https://github.com/growsurf/growsurf-typescript/commit/a6b0fdb0be130521c3dfb847056127c94d5ad53e))
+* clarify widget reveal triggers and delay behavior ([2c3d34d](https://github.com/growsurf/growsurf-typescript/commit/2c3d34d35abcb32d43fa2ec49893ec47b94d854d))
+
 ## [1.11.0](https://github.com/growsurf/growsurf-typescript/compare/v1.10.0...v1.11.0) (2026-09-29)
 
 
