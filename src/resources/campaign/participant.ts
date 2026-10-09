@@ -403,7 +403,7 @@ export class ParticipantResource extends APIResource {
    * postal address, and an unsubscribe link are added automatically, and unsubscribed
    * participants are suppressed). Sending requires the team to be verified by GrowSurf.
    * Requires a **verified custom email domain** on the program (which can be completed
-   * in *Campaign Editor > 3. Emails > Email Settings*). Returns `400` until one is
+   * in *Program Editor > 3. Emails > Email Settings*). Returns `400` until one is
    * verified. The email is accepted for delivery.
    *
    * @example
@@ -558,6 +558,12 @@ export interface Create {
    */
   isAffiliate?: boolean;
 
+  /**
+   * The language of the participant's portal and program emails. Must be one of the
+   * program's languages. Applied only when this request creates the participant.
+   */
+  language?: Language;
+
   lastName?: string;
 
   /**
@@ -586,6 +592,13 @@ export interface Create {
 }
 
 export type FraudRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH';
+
+/**
+ * A language a program can run in. Participants see the portal and receive program
+ * emails in their language.
+ */
+export type Language =
+  'en' | 'es' | 'fr' | 'de' | 'it' | 'pt-BR' | 'nl' | 'pl' | 'sv' | 'tr' | 'ja' | 'ko' | 'zh-CN' | 'id';
 
 export interface Participant {
   id: string;
@@ -648,6 +661,13 @@ export interface Participant {
   isNew?: boolean;
 
   isWinner?: boolean;
+
+  /**
+   * The language of the participant's portal and program emails. The program's base
+   * language unless the participant (or you) picked another of the program's
+   * languages.
+   */
+  language?: Language;
 
   lastName?: string | null;
 
@@ -741,6 +761,11 @@ export namespace Participant {
     ipAddress?: string | null;
 
     isWinner?: boolean;
+
+    /**
+     * The language of the referrer's portal and program emails.
+     */
+    language?: ParticipantAPI.Language;
 
     lastName?: string | null;
 
@@ -1382,6 +1407,13 @@ export interface ParticipantUpdateParams {
   firstName?: string;
 
   /**
+   * Body param: The language of the participant's portal and program emails. Must be
+   * one of the program's languages (see `languages` in the program options). Send the
+   * base language or `null` to use the program's base language.
+   */
+  language?: Language | null;
+
+  /**
    * Body param
    */
   lastName?: string;
@@ -1449,6 +1481,12 @@ export interface ParticipantAddParams {
    * unchanged.
    */
   isAffiliate?: boolean;
+
+  /**
+   * The language of the participant's portal and program emails. Must be one of the
+   * program's languages. Applied only when this request creates the participant.
+   */
+  language?: Language;
 
   lastName?: string;
 
@@ -2070,6 +2108,7 @@ export declare namespace ParticipantResource {
   export {
     type Create as Create,
     type FraudRiskLevel as FraudRiskLevel,
+    type Language as Language,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
     type ReferralSource as ReferralSource,
