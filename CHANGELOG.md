@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.13.0](https://github.com/growsurf/growsurf-typescript/compare/v1.12.0...v1.13.0) (2026-10-09)
+
+
+### Features
+
+* add program and participant language support ([894b53e](https://github.com/growsurf/growsurf-typescript/commit/894b53e04c6a0565b998b43748280091a39b93ff))
+* add program languages and update SDK guidance and dependencies ([4e0b29b](https://github.com/growsurf/growsurf-typescript/commit/4e0b29b320601ae770871163e43fd8b99de608a4))
+
 ## [1.12.0](https://github.com/growsurf/growsurf-typescript/compare/v1.11.0...v1.12.0) (2026-10-07)
 
 
