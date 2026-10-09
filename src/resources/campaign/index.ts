@@ -50,6 +50,7 @@ export {
   ParticipantResource,
   type Create,
   type FraudRiskLevel,
+  type Language,
   type Participant,
   type ParticipantReward,
   type ReferralSource,

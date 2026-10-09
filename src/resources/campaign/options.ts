@@ -4,6 +4,7 @@ import { APIResource } from '../../core/resource';
 import { APIPromise } from '../../core/api-promise';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
+import * as ParticipantAPI from './participant';
 
 /**
  * Campaign options (`CampaignOptions`) configuration operations — the dashboard
@@ -14,8 +15,9 @@ export class Options extends APIResource {
    * Retrieves a program's options — the same surface as the dashboard Program
    * Editor's **Options** tab. Includes reward/fraud approval, anti-fraud lists +
    * toggles, referral cookie/credit windows, reCAPTCHA, affiliate enrollment +
-   * application review, payout threshold + tax settings (affiliate only), and
-   * notification-email settings. `fraud.recaptcha.secretKey` is never returned.
+   * application review, payout threshold + tax settings (affiliate only),
+   * notification-email settings, and the program's languages.
+   * `fraud.recaptcha.secretKey` is never returned.
    *
    * @example
    * ```ts
@@ -32,7 +34,9 @@ export class Options extends APIResource {
    * referral-only; `affiliateApplicationMode`/`affiliateReapplicationPolicy` and
    * `payoutThreshold`/`taxDocumentation` are affiliate-only, and affiliate programs
    * require `requireParticipantAuth: true`). `fraud.recaptcha.secretKey` is
-   * write-only. `referralCreditWindowDays: null` means "never expires".
+   * write-only. `referralCreditWindowDays: null` means "never expires". Turning on
+   * `languages.additionalLanguages` requires the Business plan or higher (`403`
+   * otherwise).
    *
    * @example
    * ```ts
@@ -47,8 +51,9 @@ export class Options extends APIResource {
 /**
  * A program's options (dashboard Program Editor **Options** tab): approval,
  * anti-fraud, attribution, referral windows, reCAPTCHA, affiliate enrollment +
- * application review, payout/tax, and notification-email settings. Known fields
- * are typed, and the object stays open so newer API fields remain usable.
+ * application review, payout/tax, notification-email settings, and program
+ * languages. Known fields are typed, and the object stays open so newer API fields
+ * remain usable.
  */
 export interface CampaignOptions {
   affiliateApplicationMode?: 'OPEN_ENROLLMENT' | 'MANUAL_REVIEW' | 'AUTO_APPROVE';
@@ -70,6 +75,11 @@ export interface CampaignOptions {
   fraud?: CampaignOptionsFraud;
   taxDocumentation?: CampaignOptionsTaxDocumentation;
   notificationEmails?: CampaignOptionsNotificationEmails;
+  /**
+   * The languages your program runs in. Turning on additional languages requires the
+   * Business plan or higher.
+   */
+  languages?: CampaignOptionsLanguages;
   [key: string]: unknown;
 }
 
@@ -126,6 +136,26 @@ export interface CampaignOptionsNotificationEmails {
   events?: CampaignOptionsNotificationEvents;
 }
 
+/**
+ * The languages your program runs in (Options > Languages in the dashboard).
+ * Participants see the program in their language, and their emails follow it.
+ */
+export interface CampaignOptionsLanguages {
+  /**
+   * The language you write the program in. Participants see it when their language
+   * isn't one of the program's languages, and for any text you haven't translated.
+   * Defaults to `en`.
+   */
+  baseLanguage?: ParticipantAPI.Language;
+  /**
+   * Other languages participants can see, besides `baseLanguage`. Send the full list;
+   * send `[]` to turn them all off. Turning languages on requires the Business plan
+   * or higher. Translations are managed in the dashboard and are kept when you remove
+   * a language.
+   */
+  additionalLanguages?: ParticipantAPI.Language[];
+}
+
 export interface CampaignOptionsRecaptchaUpdate extends CampaignOptionsRecaptcha {
   /** Write-only reCAPTCHA secret. */
   secretKey?: string | null;
@@ -148,6 +178,7 @@ export declare namespace Options {
     type CampaignOptions as CampaignOptions,
     type CampaignOptionsFraud as CampaignOptionsFraud,
     type CampaignOptionsFraudUpdate as CampaignOptionsFraudUpdate,
+    type CampaignOptionsLanguages as CampaignOptionsLanguages,
     type CampaignOptionsNotificationEmails as CampaignOptionsNotificationEmails,
     type CampaignOptionsNotificationEvents as CampaignOptionsNotificationEvents,
     type CampaignOptionsRecaptcha as CampaignOptionsRecaptcha,

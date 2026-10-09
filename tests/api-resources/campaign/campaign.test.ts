@@ -212,6 +212,7 @@ describe('resource campaign', () => {
       fingerprint: 'fingerprint',
       firstName: 'firstName',
       ipAddress: 'ipAddress',
+      language: 'es',
       lastName: 'lastName',
       metadata: { foo: 'bar' },
       mobileInstanceId: 'mobileInstanceId',

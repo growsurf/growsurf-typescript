@@ -48,6 +48,7 @@ import {
 import {
   Create,
   FraudRiskLevel,
+  Language,
   Participant,
   ParticipantAddParams,
   ParticipantCancelDelayedReferralParams,
@@ -1933,6 +1934,12 @@ export interface CampaignCreateMobileParticipantTokenParams {
    */
   isAffiliate?: boolean;
 
+  /**
+   * The language of the participant's portal and program emails. Must be one of the
+   * program's languages. Applied only when this request creates the participant.
+   */
+  language?: ParticipantAPI.Language;
+
   lastName?: string;
 
   /**
@@ -2336,6 +2343,7 @@ export declare namespace CampaignResource {
     ParticipantResource as ParticipantResource,
     type Create as Create,
     type FraudRiskLevel as FraudRiskLevel,
+    type Language as Language,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
     type ReferralSource as ReferralSource,

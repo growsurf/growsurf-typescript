@@ -3,7 +3,7 @@ import type {
   ParticipantCommissionList,
   ParticipantPayoutList,
 } from '../src/resources/campaign/campaign';
-import type { Participant } from '../src/resources/campaign/participant';
+import type { Participant, ParticipantUpdateParams } from '../src/resources/campaign/participant';
 
 type ShareURLIsOptional = {} extends Pick<Participant, 'shareUrl'> ? true : false;
 type MobileTokenParamsIncludeIsAffiliate =
@@ -20,6 +20,17 @@ describe('participant contract', () => {
     const mobileTokenParamsIncludeIsAffiliate: MobileTokenParamsIncludeIsAffiliate = true;
 
     expect(mobileTokenParamsIncludeIsAffiliate).toBe(true);
+  });
+
+  test('accepts a participant language and null to reset it to the base language', () => {
+    const participant: Pick<Participant, 'language'> = { language: 'pt-BR' };
+    const reset: ParticipantUpdateParams = { id: 'program-id', language: null };
+    // @ts-expect-error Participant languages use the documented language codes.
+    const invalid: ParticipantUpdateParams = { id: 'program-id', language: 'pt_BR' };
+
+    expect(participant.language).toBe('pt-BR');
+    expect(reset.language).toBeNull();
+    expect(invalid).toBeDefined();
   });
 
   test('accepts null commission and payout timestamps returned by the API', () => {

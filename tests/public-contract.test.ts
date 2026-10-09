@@ -69,6 +69,7 @@ test('types documented configuration fields while open sections stay forward com
   const options: OptionUpdateParams = {
     attributionModel: 'FIRST_CLICK',
     fraud: { recaptcha: { secretKey: null } },
+    languages: { baseLanguage: 'en', additionalLanguages: ['es', 'pt-BR', 'zh-CN'] },
     futureOption: true,
   };
   const emails: EmailUpdateParams = {
@@ -102,18 +103,22 @@ test('types documented configuration fields while open sections stay forward com
 
   // @ts-expect-error The public contract does not accept this attribution model.
   const invalidOptions: OptionUpdateParams = { attributionModel: 'LAST_TOUCH' };
+  // @ts-expect-error Program languages use the documented language codes.
+  const invalidLanguages: OptionUpdateParams = { languages: { additionalLanguages: ['pt_BR'] } };
   // @ts-expect-error `publicKey` is read-only and is not accepted by installation updates.
   const invalidInstallation: InstallationUpdateParams = { mobile: { publicKey: 'gspk_read_only' } };
   // @ts-expect-error `fromEmail` is read-only and must be configured in the dashboard.
   const invalidEmails: EmailUpdateParams = { settings: { sender: { fromEmail: 'rewards@piedpiper.com' } } };
 
   expect(options.attributionModel).toBe('FIRST_CLICK');
+  expect(options.languages?.additionalLanguages).toEqual(['es', 'pt-BR', 'zh-CN']);
   expect(emails.welcomeNonReferred?.subject).toBe('Welcome');
   expect(installation.mobile?.isEnabled).toBe(true);
   expect(design.referredExperience?.offerPopupPlacement).toBe('BOTTOM_RIGHT');
   expect(design.widget?.pageRules?.mode).toBe('ONLY');
   expect(design.widget?.markKey).toBeNull();
   expect(invalidOptions).toBeDefined();
+  expect(invalidLanguages).toBeDefined();
   expect(invalidInstallation).toBeDefined();
   expect(invalidEmails).toBeDefined();
 });
