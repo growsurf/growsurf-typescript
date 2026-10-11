@@ -149,9 +149,9 @@ export interface CampaignOptionsLanguages {
   baseLanguage?: ParticipantAPI.Language;
   /**
    * Other languages participants can see, besides `baseLanguage`. Send the full list;
-   * send `[]` to turn them all off. Turning languages on requires the Business plan
-   * or higher. Translations are managed in the dashboard and are kept when you remove
-   * a language.
+   * send `[]` to turn them all off. Turning languages on, and any change while they
+   * are on, requires the Business plan or higher. Translations are managed in the
+   * dashboard and are kept when you remove a language.
    */
   additionalLanguages?: ParticipantAPI.Language[];
 }
