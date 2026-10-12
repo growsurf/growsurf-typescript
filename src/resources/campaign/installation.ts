@@ -33,6 +33,10 @@ export class Installation extends APIResource {
    * enabling `mobile.isEnabled` creates one. Changing `shareUrl` re-resolves its
    * redirect destinations, which may take a moment to complete. URLs must include an
    * explicit `http://` or `https://` scheme.
+   * Changes to participant email content are checked before saving. Rejected content
+   * returns `400`; if the check is unavailable, `503` asks you to retry. Neither response
+   * saves the change. A concurrent edit can return `409`; reload the program before
+   * retrying.
    *
    * @example
    * ```ts
