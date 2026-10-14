@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.14.0](https://github.com/growsurf/growsurf-typescript/compare/v1.13.0...v1.14.0) (2026-10-14)
+
+
+### Features
+
+* add language picker flag option ([9ddc3e6](https://github.com/growsurf/growsurf-typescript/commit/9ddc3e6ec2a4a5bc3acd3e8f5f985b0afbdf5769))
+* add language picker flag option ([54e876c](https://github.com/growsurf/growsurf-typescript/commit/54e876ce8fe11f159c56165727a6c43688ec93ef))
+
+
+### Documentation
+
+* note Business plan covers any language change while languages are on ([a07d29d](https://github.com/growsurf/growsurf-typescript/commit/a07d29d5ee4abfd4550dc1ecb54a7001ed2927ea))
+* sync SDK comments with the REST API contract ([f8f0a22](https://github.com/growsurf/growsurf-typescript/commit/f8f0a22f19c6cfa413fe9826c4993690daafa7bf))
+
 ## [1.13.0](https://github.com/growsurf/growsurf-typescript/compare/v1.12.0...v1.13.0) (2026-10-09)
 
 
