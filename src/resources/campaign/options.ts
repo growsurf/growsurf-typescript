@@ -12,12 +12,12 @@ import * as ParticipantAPI from './participant';
  */
 export class Options extends APIResource {
   /**
-   * Retrieves a program's options — the same surface as the dashboard Program
-   * Editor's **Options** tab. Includes reward/fraud approval, anti-fraud lists +
-   * toggles, referral cookie/credit windows, reCAPTCHA, affiliate enrollment +
+   * Retrieves a program's options — the same surface as the dashboard Program Editor's
+   * **Options** tab. Includes the attribution model, reward/fraud approval, anti-fraud
+   * lists + toggles, referral cookie/credit windows, reCAPTCHA, affiliate enrollment +
    * application review, payout threshold + tax settings (affiliate only),
-   * notification-email settings, and the program's languages.
-   * `fraud.recaptcha.secretKey` is never returned.
+   * notification-email settings, and the program's languages. `fraud.recaptcha.secretKey`
+   * is never returned.
    *
    * @example
    * ```ts
@@ -37,6 +37,12 @@ export class Options extends APIResource {
    * write-only. `referralCreditWindowDays: null` means "never expires". Turning on
    * `languages.additionalLanguages` requires the Business plan or higher (`403`
    * otherwise).
+   * Changes to participant email content are checked before saving. Rejected content
+   * returns `400`; if the check is unavailable, `503` asks you to retry. Neither response
+   * saves the change. A concurrent edit can return `409`; reload the program before
+   * retrying.
+   * While any are on, every `languages` change, including turning them off, requires it
+   * too (`403` otherwise).
    *
    * @example
    * ```ts
@@ -149,11 +155,16 @@ export interface CampaignOptionsLanguages {
   baseLanguage?: ParticipantAPI.Language;
   /**
    * Other languages participants can see, besides `baseLanguage`. Send the full list;
-   * send `[]` to turn them all off. Turning languages on requires the Business plan
-   * or higher. Translations are managed in the dashboard and are kept when you remove
-   * a language.
+   * send `[]` to turn them all off. Turning languages on, and any change while they
+   * are on, requires the Business plan or higher. Translations are managed in the
+   * dashboard and are kept when you remove a language.
    */
   additionalLanguages?: ParticipantAPI.Language[];
+  /**
+   * Shows a flag next to each language name in the language picker participants use.
+   * New programs start with `false`.
+   */
+  showFlags?: boolean;
 }
 
 export interface CampaignOptionsRecaptchaUpdate extends CampaignOptionsRecaptcha {
