@@ -160,6 +160,11 @@ export interface CampaignOptionsLanguages {
    * dashboard and are kept when you remove a language.
    */
   additionalLanguages?: ParticipantAPI.Language[];
+  /**
+   * Shows a flag next to each language name in the language picker participants use.
+   * New programs start with `false`.
+   */
+  showFlags?: boolean;
 }
 
 export interface CampaignOptionsRecaptchaUpdate extends CampaignOptionsRecaptcha {
