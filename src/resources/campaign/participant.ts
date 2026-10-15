@@ -598,7 +598,45 @@ export type FraudRiskLevel = 'LOW' | 'MEDIUM' | 'HIGH';
  * emails in their language.
  */
 export type Language =
-  'en' | 'es' | 'fr' | 'de' | 'it' | 'pt-BR' | 'nl' | 'pl' | 'sv' | 'tr' | 'ja' | 'ko' | 'zh-CN' | 'id';
+  | 'en'
+  | 'es'
+  | 'fr'
+  | 'de'
+  | 'it'
+  | 'pt-BR'
+  | 'nl'
+  | 'pl'
+  | 'sv'
+  | 'tr'
+  | 'ja'
+  | 'ko'
+  | 'zh-CN'
+  | 'id'
+  | 'da'
+  | 'nb'
+  | 'nn'
+  | 'fi'
+  | 'is'
+  | 'cs'
+  | 'sk'
+  | 'hu'
+  | 'ro'
+  | 'hr'
+  | 'sl'
+  | 'et'
+  | 'lv'
+  | 'lt'
+  | 'el'
+  | 'bg'
+  | 'uk'
+  | 'ru'
+  | 'pt-PT'
+  | 'ca'
+  | 'vi'
+  | 'ms'
+  | 'fil'
+  | 'af'
+  | 'sw';
 
 export interface Participant {
   id: string;
