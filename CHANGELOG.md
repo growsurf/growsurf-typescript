@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.15.0](https://github.com/growsurf/growsurf-typescript/compare/v1.14.0...v1.15.0) (2026-10-15)
+
+
+### Features
+
+* support 25 additional program languages ([5c3d8f1](https://github.com/growsurf/growsurf-typescript/commit/5c3d8f108064c592c6f5421553de04e3fd63c356))
+* support 25 additional program languages ([f5c3b69](https://github.com/growsurf/growsurf-typescript/commit/f5c3b69ccad529fb93c42415ad8836cd4a46443f))
+
 ## [1.14.0](https://github.com/growsurf/growsurf-typescript/compare/v1.13.0...v1.14.0) (2026-10-14)
 
 
