@@ -328,6 +328,13 @@ export type CampaignDesignWidget = {
   isHiddenOnMobile?: boolean;
 
   /**
+   * What opens when someone clicks the card's button or the bubble. `WINDOW` opens the GrowSurf
+   * Window on top of your page. `PROGRAM_PAGE` opens your Program Page in a new tab, where
+   * participants may need to sign in.
+   */
+  clickAction?: 'WINDOW' | 'PROGRAM_PAGE';
+
+  /**
    * Which pages the widget appears on. This controls the widget only — referral tracking,
    * embedded elements, and opening the window from your own code keep working on every page
    * where GrowSurf is installed.
