@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://github.com/growsurf/growsurf-typescript/compare/v1.15.0...v1.16.0) (2026-10-18)
+
+
+### Features
+
+* add widget clickAction to campaign design; clarify participant deletion cleanup ([c635e90](https://github.com/growsurf/growsurf-typescript/commit/c635e907f6d6a4a38bac9b5b3cd2dbe9d807528b))
+* add widget clickAction to campaign design; clarify participant deletion cleanup ([939e12e](https://github.com/growsurf/growsurf-typescript/commit/939e12ebc402fd3710b6aa94282fc28b755d9e9e))
+
 ## [1.15.0](https://github.com/growsurf/growsurf-typescript/compare/v1.14.0...v1.15.0) (2026-10-15)
 
 
