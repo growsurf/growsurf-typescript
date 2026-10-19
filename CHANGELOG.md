@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.0](https://github.com/growsurf/growsurf-typescript/compare/v1.16.0...v1.17.0) (2026-10-19)
+
+
+### Features
+
+* support reward image icon keys ([b216774](https://github.com/growsurf/growsurf-typescript/commit/b2167748e32020314d67b45cdfb22b1c1517d887))
+* support reward image icon keys ([6ac36d9](https://github.com/growsurf/growsurf-typescript/commit/6ac36d9db4416eb9e9eafcd4b02638b86d5c263f))
+
 ## [1.16.0](https://github.com/growsurf/growsurf-typescript/compare/v1.15.0...v1.16.0) (2026-10-18)
 
 
