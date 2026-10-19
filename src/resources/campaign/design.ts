@@ -401,6 +401,12 @@ export type CampaignDesignResources = {
 
   /** Icon configuration for the destination. */
   icon?: CampaignDesignResourcesIcon;
+  /** The empty section's starter graphic, uploaded image, or hidden graphic. */
+  emptyStateGraphic?: {
+    type?: 'DEFAULT' | 'IMAGE' | 'NONE';
+    key?: 'SOFT_DISC' | 'DASHED_RING' | 'GHOST_ROWS' | 'CARD_STACK' | 'DOT_FIELD' | 'HALO';
+    imageUrl?: string | null;
+  };
 };
 
 /** A Traffic report date range. */
