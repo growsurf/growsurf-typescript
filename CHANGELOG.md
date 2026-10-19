@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.0](https://github.com/growsurf/growsurf-typescript/compare/v1.17.0...v1.18.0) (2026-10-19)
+
+
+### Features
+
+* support resource empty-state graphics ([ab409dd](https://github.com/growsurf/growsurf-typescript/commit/ab409ddc537d029a7160c5079e858db6b38fbd67))
+* support resource empty-state graphics ([7d7ea30](https://github.com/growsurf/growsurf-typescript/commit/7d7ea3009a76e2e0aac56168fc7447a2c728cc66))
+
 ## [1.17.0](https://github.com/growsurf/growsurf-typescript/compare/v1.16.0...v1.17.0) (2026-10-19)
 
 
