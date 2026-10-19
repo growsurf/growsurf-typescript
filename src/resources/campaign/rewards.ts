@@ -121,6 +121,35 @@ export interface Reward {
    */
   event?: 'LEAD' | 'CONVERSION';
 
+  /**
+   * The starter icon shown for the reward, or `null` when `imageUrl` is your own
+   * image.
+   */
+  imageIconKey?:
+    | 'GIFT_1'
+    | 'GIFT_2'
+    | 'GIFT_3'
+    | 'GIFT_4'
+    | 'GIFT_5'
+    | 'GIFT_6'
+    | 'GIFT_CARD'
+    | 'CASH'
+    | 'COIN'
+    | 'CARD'
+    | 'STAR_1'
+    | 'STAR_2'
+    | 'STAR_3'
+    | 'TROPHY'
+    | 'CROWN'
+    | 'SEAL'
+    | 'HEART_1'
+    | 'HEART_2'
+    | 'TAG'
+    | 'DIAMOND'
+    | 'CONFETTI'
+    | 'ROCKET'
+    | null;
+
   imageUrl?: string | null;
 
   /**
@@ -246,6 +275,37 @@ export interface RewardCreateParams {
    * uses `CONVERSION`.
    */
   event?: 'LEAD' | 'CONVERSION';
+
+  /**
+   * The starter icon shown for the reward, or `null` when `imageUrl` is your own
+   * image. Participant pages draw this icon in your program's accent color. Also set
+   * `imageUrl` to the icon's image so the iOS and Android SDKs can show it. Sending
+   * `imageUrl` without `imageIconKey` clears it.
+   */
+  imageIconKey?:
+    | 'GIFT_1'
+    | 'GIFT_2'
+    | 'GIFT_3'
+    | 'GIFT_4'
+    | 'GIFT_5'
+    | 'GIFT_6'
+    | 'GIFT_CARD'
+    | 'CASH'
+    | 'COIN'
+    | 'CARD'
+    | 'STAR_1'
+    | 'STAR_2'
+    | 'STAR_3'
+    | 'TROPHY'
+    | 'CROWN'
+    | 'SEAL'
+    | 'HEART_1'
+    | 'HEART_2'
+    | 'TAG'
+    | 'DIAMOND'
+    | 'CONFETTI'
+    | 'ROCKET'
+    | null;
 
   /**
    * An image URL for the reward.
@@ -377,6 +437,37 @@ export interface RewardUpdateParams {
    * keeps its current event.
    */
   event?: 'LEAD' | 'CONVERSION';
+
+  /**
+   * Body param: The starter icon shown for the reward, or `null` when `imageUrl` is
+   * your own image. Participant pages draw this icon in your program's accent color.
+   * Also set `imageUrl` to the icon's image so the iOS and Android SDKs can show it.
+   * Sending `imageUrl` without `imageIconKey` clears it.
+   */
+  imageIconKey?:
+    | 'GIFT_1'
+    | 'GIFT_2'
+    | 'GIFT_3'
+    | 'GIFT_4'
+    | 'GIFT_5'
+    | 'GIFT_6'
+    | 'GIFT_CARD'
+    | 'CASH'
+    | 'COIN'
+    | 'CARD'
+    | 'STAR_1'
+    | 'STAR_2'
+    | 'STAR_3'
+    | 'TROPHY'
+    | 'CROWN'
+    | 'SEAL'
+    | 'HEART_1'
+    | 'HEART_2'
+    | 'TAG'
+    | 'DIAMOND'
+    | 'CONFETTI'
+    | 'ROCKET'
+    | null;
 
   /**
    * Body param: An image URL for the reward.
