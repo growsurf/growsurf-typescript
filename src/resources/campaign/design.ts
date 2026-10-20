@@ -130,6 +130,9 @@ export type ParticipantLoginDesign = {
   cooldown?: string;
   serverError?: string;
   invalidLink?: string;
+  verificationHeading?: string;
+  verificationDescription?: string;
+  verificationSuccessBody?: string;
 };
 
 /** Validation and link-status messages for payout-destination confirmation. */
