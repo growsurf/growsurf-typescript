@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.19.0](https://github.com/growsurf/growsurf-typescript/compare/v1.18.0...v1.19.0) (2026-10-20)
+
+
+### Features
+
+* add identified-participant login verification copy to campaign design ([16d39d5](https://github.com/growsurf/growsurf-typescript/commit/16d39d5c58de06242cd265eaa6986583ab59c6a0))
+* add identified-participant login verification copy to campaign design ([d2576c1](https://github.com/growsurf/growsurf-typescript/commit/d2576c102d69d5d843118dadd2ee0364659550d1))
+
 ## [1.18.0](https://github.com/growsurf/growsurf-typescript/compare/v1.17.0...v1.18.0) (2026-10-19)
 
 
