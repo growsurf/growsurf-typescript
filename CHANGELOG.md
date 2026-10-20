@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.0](https://github.com/growsurf/growsurf-typescript/compare/v1.19.0...v1.20.0) (2026-10-20)
+
+
+### Features
+
+* add hosted offer page design and redirect fields ([7f983da](https://github.com/growsurf/growsurf-typescript/commit/7f983da74d4c9770f92edafc118ad4d77ea975ee))
+* add hosted offer page design and redirect fields ([e32ac07](https://github.com/growsurf/growsurf-typescript/commit/e32ac075a1ab7d835f148cc70f99e15ba42a9832))
+
 ## [1.19.0](https://github.com/growsurf/growsurf-typescript/compare/v1.18.0...v1.19.0) (2026-10-20)
 
 
