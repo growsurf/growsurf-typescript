@@ -105,6 +105,8 @@ export interface CampaignInstallationBase<TMobile> {
   signupEvent?: 'FORM_DETECTION' | 'PROGRAMMATIC';
   shareUrl?: string;
   useGrowSurfHostedLinks?: boolean;
+  /** Seconds the hosted offer page waits before redirecting. `null` turns the page off. */
+  offerPageRedirectSeconds?: 5 | 10 | 15 | null;
   allowedUrls?: string[];
   signup?: CampaignInstallationSignup;
   mobile?: TMobile;

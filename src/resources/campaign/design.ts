@@ -164,6 +164,19 @@ export type PayoutDestinationConfirmationDesign = {
   errorMessages?: PayoutDestinationConfirmationErrorMessages;
 };
 
+/** A How it works step on the hosted offer page. */
+export type CampaignDesignOfferPageStep = {
+  text?: string;
+  /** Step icon key, such as `SIGNUP`, `APPROVED`, or `REWARD`. */
+  iconKey: string;
+};
+
+/** A link on the hosted offer page. An empty `url` links to the Share URL. */
+export type CampaignDesignOfferPageLink = {
+  text?: string;
+  url?: string;
+};
+
 /** Copy and behavior shown to visitors who arrive through a referral link. */
 export type CampaignDesignReferredExperience = {
   isOfferPopupEnabled?: boolean;
@@ -184,6 +197,12 @@ export type CampaignDesignReferredExperience = {
   offerPopupEmailPlaceholder?: string | null;
   offerPopupPromoCodeCopyLabel?: string | null;
   offerPopupSubmitError?: string | null;
+  /** HTML shown beside the popup on its hosted offer page. */
+  offerPageDescription?: string;
+  /** Up to 5 How it works steps on the hosted offer page. */
+  offerPageSteps?: CampaignDesignOfferPageStep[];
+  /** Up to 3 links on the hosted offer page. */
+  offerPageLinks?: CampaignDesignOfferPageLink[];
   isBannerEnabled?: boolean;
   bannerText?: string | null;
   bannerPlacement?: 'TOP' | 'BOTTOM';
@@ -535,6 +554,8 @@ export declare namespace Design {
   export {
     type CampaignDesign as CampaignDesign,
     type CampaignDesignOfferPopupTheme as CampaignDesignOfferPopupTheme,
+    type CampaignDesignOfferPageLink as CampaignDesignOfferPageLink,
+    type CampaignDesignOfferPageStep as CampaignDesignOfferPageStep,
     type CampaignDesignOpenSection as CampaignDesignOpenSection,
     type CampaignDesignReferredExperience as CampaignDesignReferredExperience,
     type CampaignDesignResources as CampaignDesignResources,
