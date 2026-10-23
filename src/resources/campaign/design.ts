@@ -79,7 +79,7 @@ export class Design extends APIResource {
  * `null` fields are returned as `null`; omitted and `null` fields use localized defaults. `PATCH`
  * back only the sections or fields you want to change (arrays such as `signup.fields` replace
  * wholesale). `participantAvatarStyle` accepts `CHARACTERS`, `INITIALS`, `ANIMALS`, or `GRADIENT`;
- * new programs use `CHARACTERS`, while missing or unknown stored values return `INITIALS`. Known
+ * new programs use `INITIALS`, while missing or unknown stored values return `INITIALS`. Known
  * structured fields are typed. Sections whose nested fields are intentionally open in the REST
  * contract remain open here. `resources` controls the participant-facing Resources destination;
  * resource items and their order use the Program Resources operations.
