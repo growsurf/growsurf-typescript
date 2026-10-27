@@ -151,6 +151,7 @@ describe('resource participant', () => {
       metadata: { foo: 'bar' },
       mobileInstanceId: 'mobileInstanceId',
       referralStatus: 'CREDIT_PENDING',
+      referredAt: 0,
       referredBy: 'referredBy',
     });
   });

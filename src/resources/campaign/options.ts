@@ -35,14 +35,12 @@ export class Options extends APIResource {
    * `payoutThreshold`/`taxDocumentation` are affiliate-only, and affiliate programs
    * require `requireParticipantAuth: true`). `fraud.recaptcha.secretKey` is
    * write-only. `referralCreditWindowDays: null` means "never expires". Turning on
-   * `languages.additionalLanguages` requires the Business plan or higher (`403`
-   * otherwise).
+   * `languages.additionalLanguages` returns `403` if your account does not include
+   * additional languages. While any are on, every `languages` change, including
+   * turning them off, returns the same `403`.
    * Changes to participant email content are checked before saving. Rejected content
-   * returns `400`; if the check is unavailable, `503` asks you to retry. Neither response
-   * saves the change. A concurrent edit can return `409`; reload the program before
-   * retrying.
-   * While any are on, every `languages` change, including turning them off, requires it
-   * too (`403` otherwise).
+   * returns `400` and is not saved. A concurrent edit can return `409`; reload the
+   * program before retrying.
    *
    * @example
    * ```ts
@@ -82,8 +80,7 @@ export interface CampaignOptions {
   taxDocumentation?: CampaignOptionsTaxDocumentation;
   notificationEmails?: CampaignOptionsNotificationEmails;
   /**
-   * The languages your program runs in. Turning on additional languages requires the
-   * Business plan or higher.
+   * The languages your program runs in, and whether the language picker shows flags.
    */
   languages?: CampaignOptionsLanguages;
   [key: string]: unknown;
@@ -129,6 +126,17 @@ export interface CampaignOptionsNotificationEvents {
   CAMPAIGN_ENDED?: boolean;
   WEEKLY_PERFORMANCE_REPORT?: boolean;
   MONTHLY_PERFORMANCE_REPORT?: boolean;
+  /**
+   * Referral programs only. Send recipients an email on the first of each month when
+   * manual rewards are unsent or need approval. No email is sent when there is nothing
+   * to do.
+   */
+  MONTHLY_REWARD_REMINDER?: boolean;
+  /**
+   * Referral programs only. Send recipients an email each Monday when manual rewards
+   * are unsent or need approval. No email is sent when there is nothing to do.
+   */
+  WEEKLY_REWARD_REMINDER?: boolean;
   NEW_COMMISSION_ADDED?: boolean;
   COMMISSION_ADJUSTED?: boolean;
   NEW_PAYOUT_ISSUED?: boolean;
@@ -155,9 +163,8 @@ export interface CampaignOptionsLanguages {
   baseLanguage?: ParticipantAPI.Language;
   /**
    * Other languages participants can see, besides `baseLanguage`. Send the full list;
-   * send `[]` to turn them all off. Turning languages on, and any change while they
-   * are on, requires the Business plan or higher. Translations are managed in the
-   * dashboard and are kept when you remove a language.
+   * send `[]` to turn them all off. Translations are managed in the dashboard and are
+   * kept when you remove a language.
    */
   additionalLanguages?: ParticipantAPI.Language[];
   /**

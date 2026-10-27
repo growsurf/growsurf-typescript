@@ -176,9 +176,8 @@ export class CampaignResource extends APIResource {
    * dedicated config sub-resources, not here. The program cannot be deleted via
    * this endpoint.
    * Changes to participant email content are checked before saving. Rejected content
-   * returns `400`; if the check is unavailable, `503` asks you to retry. Neither response
-   * saves the change. A concurrent edit can return `409`; reload the program before
-   * retrying.
+   * returns `400` and is not saved. A concurrent edit can return `409`; reload the
+   * program before retrying.
    *
    * @example
    * ```ts
@@ -691,6 +690,11 @@ export namespace Campaign {
 }
 
 export interface CommissionStructure {
+  /**
+   * Fixed commission amount in the currency's smallest denomination, used when `type`
+   * is `FIXED`. The maximum is `100000000` (1,000,000.00) for USD, EUR, and GBP. `null`
+   * for percentage-based commissions.
+   */
   amount?: number | null;
 
   amountISO?: string | null;
@@ -1881,9 +1885,9 @@ export interface CampaignCreateParams {
    */
   type: 'REFERRAL' | 'AFFILIATE';
 
-  companyLogoImageUrl?: string;
+  companyLogoImageUrl?: string | null;
 
-  companyName?: string;
+  companyName?: string | null;
 
   /**
    * ISO 4217 currency code. Defaults to USD. Chosen when the program is created and
@@ -1907,8 +1911,13 @@ export interface CampaignCreateParams {
    * off with a placeholder name, so the program awards nothing until you set the
    * amount and turn one on. `TELEHEALTH` is for consumer telehealth and wellness
    * subscriptions; `HEALTHCARE_PROVIDERS` is for provider networks and
-   * clinician-facing products. `INSURANCE` replaces `ONLINE_INSURANCE`, which is still
-   * accepted. Omit it and every share button keeps its standard default. Set only when
+   * clinician-facing products. A `TELEHEALTH` program also starts with
+   * `useGrowSurfHostedLinks` on, so each referral link is a GrowSurf-hosted link; turn
+   * it off with `PATCH /campaign/{id}/installation`. It also starts with
+   * `offerPageRedirectSeconds` set to `10` and with starter offer-page content
+   * (`referredExperience.offerPageDescription` and `offerPageSteps`). Values you send
+   * in the create request are kept. `INSURANCE` replaces `ONLINE_INSURANCE`, which is
+   * still accepted. Omit it and every share button keeps its standard default. Set only when
    * the program is created; it is not accepted on update.
    */
   goal?:
@@ -1938,9 +1947,9 @@ export interface CampaignCreateParams {
 }
 
 export interface CampaignUpdateParams {
-  companyLogoImageUrl?: string;
+  companyLogoImageUrl?: string | null;
 
-  companyName?: string;
+  companyName?: string | null;
 
   name?: string;
 
@@ -1969,8 +1978,10 @@ export interface CampaignCreateMobileParticipantTokenParams {
   isAffiliate?: boolean;
 
   /**
-   * The language of the participant's portal and program emails. Must be one of the
-   * program's languages. Applied only when this request creates the participant.
+   * The language of the participant's portal and program emails. Stored when it is one
+   * of the program's languages. A regional tag maps to its language (for example,
+   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * language applies. Applied only when this request creates the participant.
    */
   language?: ParticipantAPI.Language;
 
@@ -1994,6 +2005,13 @@ export interface CampaignCreateMobileParticipantTokenParams {
    * `CREDIT_PENDING`, or `CREDIT_EXPIRED`), and left unset when no referrer resolves.
    */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
+
+  /**
+   * When the participant was referred, in Unix milliseconds. Used only with a valid
+   * `referredBy`. If you omit `referralStatus`, GrowSurf compares this time with the
+   * program's referral credit window to set it. Defaults to the time of the request.
+   */
+  referredAt?: number | null;
 
   /**
    * Referrer participant ID or email address.
