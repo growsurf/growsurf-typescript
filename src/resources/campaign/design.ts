@@ -230,7 +230,8 @@ export type CampaignDesignReferredExperience = {
   isHeadingClickableToSignupUrl?: boolean;
   /**
    * Whether referred visitors see `pageTitleReplacement` as the browser tab title.
-   * Programs that never set it read back `false`.
+   * New referral programs start with `true` and new affiliate programs with `false`.
+   * Older programs without this setting read back `false`.
    */
   isPageTitleReplacementActive?: boolean;
   pageTitleReplacement?: string | null;
