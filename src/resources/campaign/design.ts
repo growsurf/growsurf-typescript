@@ -18,7 +18,8 @@ export class Design extends APIResource {
    * sections. The available fields depend on the program type. `payoutDestinationConfirmation` is
    * omitted when no confirmation fields are stored. Stored `null` fields are returned as `null`;
    * omitted and `null` fields use localized defaults. `participantAvatarStyle` is `CHARACTERS`,
-   * `INITIALS`, `ANIMALS`, or `GRADIENT`; missing or unknown values mean `INITIALS`.
+   * `INITIALS`, `ANIMALS`, or `GRADIENT`; missing or unknown values mean `INITIALS`. `visualStyle`
+   * is `GLOW`, `CLEAN`, `FLAT`, or `ROUND`, and is omitted when the program has no saved Style.
    *
    * @example
    * ```ts
@@ -78,13 +79,17 @@ export class Design extends APIResource {
  * `null` fields are returned as `null`; omitted and `null` fields use localized defaults. `PATCH`
  * back only the sections or fields you want to change (arrays such as `signup.fields` replace
  * wholesale). `participantAvatarStyle` accepts `CHARACTERS`, `INITIALS`, `ANIMALS`, or `GRADIENT`;
- * new programs use `INITIALS`, while missing or unknown stored values return `INITIALS`. Known
- * structured fields are typed. Sections whose nested fields are intentionally open in the REST
- * contract remain open here. `resources` controls the participant-facing Resources destination;
+ * new programs use `INITIALS`, while missing or unknown stored values return `INITIALS`.
+ * `visualStyle` accepts `GLOW`, `CLEAN`, `FLAT`, or `ROUND` and sets corners, shadows, button
+ * shape and background on program pages and the GrowSurf Window; new referral programs start with
+ * `GLOW` and new affiliate programs with `CLEAN`, and it is omitted when the program has no saved
+ * Style. Known structured fields are typed. Sections whose nested fields are intentionally open
+ * in the REST contract remain open here. `resources` controls the participant-facing Resources destination;
  * resource items and their order use the Program Resources operations.
  */
 export type CampaignDesign = {
   participantAvatarStyle?: 'CHARACTERS' | 'INITIALS' | 'ANIMALS' | 'GRADIENT';
+  visualStyle?: 'GLOW' | 'CLEAN' | 'FLAT' | 'ROUND';
   window?: CampaignDesignOpenSection;
   header?: CampaignDesignOpenSection;
   stats?: CampaignDesignOpenSection;
