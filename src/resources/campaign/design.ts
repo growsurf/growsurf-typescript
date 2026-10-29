@@ -113,8 +113,9 @@ export type CampaignDesign = {
    * (the HTTP or HTTPS image used when `type` is `IMAGE`; send `null` to clear it). Tile
    * keys are `referrals`, `leads`, `invitesSent`, `expiredReferrals`, `clicks`,
    * `pendingRewards`, or `rewardsEarned`. `stats.rewardsEarned.displayMode` selects
-   * `COUNT` (approved reward count) or `AMOUNT` (total of the approved rewards' saved
-   * `metadata.rewardAmount` values, in the program currency). Telehealth programs default
+   * `COUNT` (approved reward count) or `AMOUNT` (total of the approved rewards’ saved recipient amounts, using
+   * `referredRewardAmount` for a friend when present and otherwise `rewardAmount`,
+   * with saved currency matching the program currency). Telehealth programs default
    * to `AMOUNT`; other referral programs default to `COUNT`. An explicit choice overrides
    * the default. If any approved reward lacks a valid saved amount or matching currency,
    * the participant sees the reward count. Changing a Campaign Reward's amount affects
