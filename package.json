@@ -70,6 +70,9 @@
       "js-yaml@4": "4.3.2",
       "minimatch@9": "9.0.9",
       "picomatch@2": "2.3.2"
+    },
+    "patchedDependencies": {
+      "deepmerge@4.3.1": "patches/deepmerge@4.3.1.patch"
     }
   },
   "resolutions": {

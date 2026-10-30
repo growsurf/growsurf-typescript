@@ -122,3 +122,6 @@ jobs:
 
           - name: Audit dependencies
             run: pnpm audit --audit-level high
+
+          - name: Check deepmerge protection
+            run: node scripts/check-deepmerge.cjs
