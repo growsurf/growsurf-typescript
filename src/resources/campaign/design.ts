@@ -82,8 +82,8 @@ export class Design extends APIResource {
  * wholesale). `participantAvatarStyle` accepts `CHARACTERS`, `INITIALS`, `ANIMALS`, or `GRADIENT`;
  * new programs use `INITIALS`, while missing or unknown stored values return `INITIALS`.
  * `visualStyle` accepts `GLOW`, `CLEAN`, `FLAT`, `ROUND`, `TINT`, or `GLASS` and sets corners,
- * shadows, button shape and background on program pages and the GrowSurf Window; new referral programs start with
- * `GLOW` and new affiliate programs with `CLEAN`, and it is omitted when the program has no saved
+ * shadows, button shape and background on program pages and the GrowSurf Window. New referral and
+ * affiliate programs start with `CLEAN`, and it is omitted when the program has no saved
  * Style. Known structured fields are typed. Sections whose nested fields are intentionally open
  * in the REST contract remain open here. `resources` controls the participant-facing Resources destination;
  * resource items and their order use the Program Resources operations.
