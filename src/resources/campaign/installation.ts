@@ -66,6 +66,54 @@ export interface CampaignInstallationSignup {
   redirectAfterSignup?: boolean;
   redirectUrl?: string | null;
   trackInputFields?: boolean;
+  /**
+   * Extra pages where GrowSurf watches signup form fields when `trackInputFields` is
+   * on. Each URL must include an `http(s)://` scheme and contain no `#!` or `??`.
+   * Duplicates are removed. Sending this array replaces the entire list.
+   */
+  additionalSignupUrls?: string[];
+  /**
+   * Forms GrowSurf listens to when `signupEvent` is `FORM_DETECTION`, as found by the
+   * dashboard form scan. A form counts only when `isSelected` is `true`; a selected
+   * form must have exactly one field whose `key` is `email`. A form sent back
+   * unchanged is not checked again. Sending this array replaces the entire list.
+   */
+  forms?: CampaignInstallationSignupForm[];
+}
+
+export interface CampaignInstallationSignupForm {
+  /** CSS selector for the form on the signup page. */
+  selector: string;
+  /** Whether GrowSurf adds participants when this form is submitted. */
+  isSelected: boolean;
+  /** The form's input fields and the participant value each one fills. */
+  fields: CampaignInstallationSignupFormField[];
+  /** The form's `id` attribute, if any. */
+  id?: string | null;
+  /** The form's `name` attribute, if any. */
+  name?: string | null;
+  /** The form's `class` attribute, if any. */
+  className?: string | null;
+}
+
+export interface CampaignInstallationSignupFormField {
+  /** CSS selector for the input inside the form. */
+  selector: string;
+  /**
+   * The participant value this input fills: `email`, `firstName`, `lastName`,
+   * `ignore`, or a metadata key. An empty string means no value is chosen yet.
+   */
+  key: string;
+  /** Whether GrowSurf reads this input when the form is submitted. */
+  include: boolean;
+  /** The input's `id` attribute, if any. */
+  id?: string | null;
+  /** The input's `name` attribute, if any. */
+  name?: string | null;
+  /** The input's `class` attribute, if any. */
+  className?: string | null;
+  /** The input's `type` attribute, if any. */
+  type?: string | null;
 }
 
 export interface CampaignInstallationMobile {
@@ -92,10 +140,38 @@ export interface CampaignInstallationInstructionSelections {
   stepProviders?: {
     step2Signup?: 'restApi' | 'javascript';
     step2Affiliate?: 'stripe' | 'chargebee' | 'recurly' | 'restApi';
+    /**
+     * `baskHealth`, `telegra`, `mdIntegrations`, `lithos`, and `carevalidate` are
+     * available only for programs with the `TELEHEALTH` goal.
+     */
     step2Referral?:
-      'restApi' | 'zapier' | 'stripe' | 'chargebee' | 'recurly' | 'paypal' | 'hubspot' | 'salesforce';
+      | 'restApi'
+      | 'zapier'
+      | 'stripe'
+      | 'chargebee'
+      | 'recurly'
+      | 'paypal'
+      | 'hubspot'
+      | 'salesforce'
+      | 'klaviyo'
+      | 'customerio'
+      | 'baskHealth'
+      | 'telegra'
+      | 'mdIntegrations'
+      | 'lithos'
+      | 'carevalidate';
     step3Affiliate?: 'paypal' | 'wise';
-    step3Referral?: 'webhooks' | 'zapier' | 'paypal' | 'tangocard' | 'stripe' | 'chargebee' | 'recurly';
+    /** `baskHealth` is available only for programs with the `TELEHEALTH` goal. */
+    step3Referral?:
+      | 'webhooks'
+      | 'zapier'
+      | 'paypal'
+      | 'tangocard'
+      | 'tremendous'
+      | 'stripe'
+      | 'chargebee'
+      | 'recurly'
+      | 'baskHealth';
   };
 }
 
@@ -127,6 +203,8 @@ export declare namespace Installation {
     type CampaignInstallationMobile as CampaignInstallationMobile,
     type CampaignInstallationMobileUpdate as CampaignInstallationMobileUpdate,
     type CampaignInstallationSignup as CampaignInstallationSignup,
+    type CampaignInstallationSignupForm as CampaignInstallationSignupForm,
+    type CampaignInstallationSignupFormField as CampaignInstallationSignupFormField,
     type CampaignInstallationInstructionSelections as CampaignInstallationInstructionSelections,
     type InstallationUpdateParams as InstallationUpdateParams,
   };

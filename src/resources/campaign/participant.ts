@@ -795,74 +795,13 @@ export namespace Participant {
     requiredActions?: Array<'PAYOUT_DESTINATION' | 'TAX_INFO'>;
   }
 
-  export interface Referrer {
-    id?: string;
-
-    createdAt?: number;
-
-    email?: string;
-
-    fingerprint?: string | null;
-
-    firstName?: string | null;
-
-    fraudReasonCode?: string;
-
-    fraudRiskLevel?: ParticipantAPI.FraudRiskLevel;
-
-    impressionCount?: number;
-
-    inviteCount?: number;
-
-    ipAddress?: string | null;
-
-    isWinner?: boolean;
-
-    /**
-     * The language of the referrer's portal and program emails.
-     */
-    language?: ParticipantAPI.Language;
-
-    lastName?: string | null;
-
-    /**
-     * The number of pending referrals the participant made that have not converted
-     * into successful referrals yet.
-     */
-    leadCount?: number;
-
-    /**
-     * Shallow custom metadata object.
-     */
-    metadata?: { [key: string]: unknown };
-
-    monthlyRank?: number;
-
-    monthlyReferralCount?: number;
-
-    monthlyReferrals?: Array<string>;
-
-    prevMonthlyRank?: number;
-
-    prevMonthlyReferralCount?: number;
-
-    rank?: number;
-
-    referralCount?: number;
-
-    referrals?: Array<string>;
-
-    referralSource?: ParticipantAPI.ReferralSource;
-
-    referralStatus?: ParticipantAPI.ReferralStatus;
-
-    shareCount?: { [key: string]: number };
-
-    shareUrl?: string;
-
-    uniqueImpressionCount?: number;
-
-    unsubscribed?: boolean;
+  /**
+   * The participant's referrer, returned within the `referrer` field of a
+   * `Participant`. It has the same fields as a `Participant`. Its own `referrer` is
+   * always `null`.
+   */
+  export interface Referrer extends Omit<ParticipantAPI.Participant, 'referrer'> {
+    referrer?: null;
   }
 }
 
@@ -1580,11 +1519,17 @@ export interface ParticipantAddParams {
   referredBy?: string;
 }
 
+/**
+ * A payout provider. Known providers are listed; any other string keeps responses
+ * usable when a new provider is added.
+ */
+export type PayoutProvider = 'PAYPAL' | 'VENMO' | 'WISECOM' | (string & {});
+
 export interface ParticipantGetPayoutDestinationResponse {
   /**
    * The provider that currently gets paid, or null until the participant confirms one.
    */
-  activeProvider: string | null;
+  activeProvider: PayoutProvider | null;
 
   /**
    * One entry per enabled payout provider describing the participant's destination for
@@ -1595,7 +1540,7 @@ export interface ParticipantGetPayoutDestinationResponse {
   /**
    * The payout providers enabled for this program.
    */
-  enabledProviders: Array<string>;
+  enabledProviders: Array<PayoutProvider>;
 }
 
 export namespace ParticipantGetPayoutDestinationResponse {
@@ -1623,10 +1568,10 @@ export namespace ParticipantGetPayoutDestinationResponse {
     /**
      * The payout provider this entry describes.
      */
-    provider: string;
+    provider: ParticipantAPI.PayoutProvider;
 
     /**
-     * The customer-facing provider name (e.g. "PayPal", "Wise").
+     * The customer-facing provider name (e.g. "PayPal", "Venmo", "Wise").
      */
     providerDisplayName: string;
 
@@ -1651,7 +1596,7 @@ export interface ParticipantRequestPayoutDestinationConfirmationResponse {
   provider: string;
 
   /**
-   * The customer-facing provider name (e.g. "PayPal", "Wise").
+   * The customer-facing provider name (e.g. "PayPal", "Venmo", "Wise").
    */
   providerDisplayName: string;
 
@@ -1754,8 +1699,7 @@ export interface ParticipantListReferralsParams {
   /**
    * Query param: Field used to sort referral results.
    */
-  sortBy?:
-    'updatedAt' | 'createdAt' | 'email' | 'firstName' | 'lastName' | 'referralStatus' | 'referralTriggeredAt';
+  sortBy?: 'updatedAt' | 'createdAt' | 'email' | 'referralTriggeredAt';
 }
 
 export interface ParticipantListRewardsParams {
@@ -2195,6 +2139,7 @@ export declare namespace ParticipantResource {
     type ParticipantActivationAnalytics as ParticipantActivationAnalytics,
     type ParticipantRetrieveAnalyticsResponse as ParticipantRetrieveAnalyticsResponse,
     type ParticipantListActivityLogsResponse as ParticipantListActivityLogsResponse,
+    type PayoutProvider as PayoutProvider,
     type ParticipantGetPayoutDestinationResponse as ParticipantGetPayoutDestinationResponse,
     type ParticipantRequestPayoutDestinationConfirmationResponse as ParticipantRequestPayoutDestinationConfirmationResponse,
     type ParticipantRetrieveParams as ParticipantRetrieveParams,

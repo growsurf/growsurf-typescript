@@ -11,6 +11,14 @@ import {
   Design as DesignAPIDesign,
   DesignUpdateParams,
 } from './design';
+import * as CustomDomainAPI from './custom-domain';
+import {
+  CampaignCustomDomain,
+  CampaignCustomDomainDNSRecord,
+  CustomDomain as CustomDomainAPICustomDomain,
+  CustomDomainSetParams,
+  DeleteCampaignCustomDomainResponse,
+} from './custom-domain';
 import * as EmailsAPI from './emails';
 import { CampaignEmails, EmailUpdateParams, Emails as EmailsAPIEmails } from './emails';
 import * as InstallationAPI from './installation';
@@ -129,6 +137,7 @@ export class CampaignResource extends APIResource {
   emails: EmailsAPI.Emails = new EmailsAPI.Emails(this._client);
   options: OptionsAPI.Options = new OptionsAPI.Options(this._client);
   installation: InstallationAPI.Installation = new InstallationAPI.Installation(this._client);
+  customDomain: CustomDomainAPI.CustomDomain = new CustomDomainAPI.CustomDomain(this._client);
 
   /**
    * Retrieves a program for the given program ID.
@@ -882,6 +891,18 @@ export namespace ReferralList {
     firstName?: string | null;
 
     lastName?: string | null;
+
+    /**
+     * When the referrer's credit for this referral expired, as a Unix timestamp in
+     * milliseconds. `null` when the credit has not expired.
+     */
+    referralCreditExpiredAt?: number | null;
+
+    /**
+     * When the referral was triggered, as a Unix timestamp in milliseconds. `null`
+     * until the referral is triggered, and for invites.
+     */
+    referralTriggeredAt?: number | null;
   }
 }
 
@@ -914,37 +935,37 @@ export interface ReferralFlowScreenshot {
    * Which side of the referral flow the image shows: `referrer` is the window a
    * participant sees, `referredFriend` is the experience a referred friend sees.
    */
-  view: 'referrer' | 'referredFriend';
+  view?: 'referrer' | 'referredFriend';
 
   /**
    * Human-readable name for the view.
    */
-  label: string;
+  label?: string;
 
   /**
    * Private link to the image. It expires at `expiresAt`.
    */
-  url: string;
+  url?: string;
 
   /**
    * When the `url` stops working, as an ISO 8601 timestamp.
    */
-  expiresAt: string;
+  expiresAt?: string;
 
   /**
    * Image width in pixels.
    */
-  width: number;
+  width?: number;
 
   /**
    * Image height in pixels.
    */
-  height: number;
+  height?: number;
 
   /**
    * MIME type of the image, for example `image/png`.
    */
-  contentType: string;
+  contentType?: string;
 }
 
 export interface ReferralFlowScreenshotsResponse {
@@ -2144,8 +2165,7 @@ export interface CampaignListReferralsParams {
   /**
    * Field used to sort referral results.
    */
-  sortBy?:
-    'updatedAt' | 'createdAt' | 'email' | 'firstName' | 'lastName' | 'referralStatus' | 'referralTriggeredAt';
+  sortBy?: 'updatedAt' | 'createdAt' | 'email' | 'referralTriggeredAt';
 }
 
 export interface CampaignRetrieveAnalyticsParams {
@@ -2350,6 +2370,7 @@ CampaignResource.Design = DesignAPIDesign;
 CampaignResource.Emails = EmailsAPIEmails;
 CampaignResource.Options = OptionsAPIOptions;
 CampaignResource.Installation = InstallationAPIInstallation;
+CampaignResource.CustomDomain = CustomDomainAPICustomDomain;
 
 export declare namespace CampaignResource {
   export {
@@ -2508,5 +2529,13 @@ export declare namespace CampaignResource {
     InstallationAPIInstallation as Installation,
     type CampaignInstallation as CampaignInstallation,
     type InstallationUpdateParams as InstallationUpdateParams,
+  };
+
+  export {
+    CustomDomainAPICustomDomain as CustomDomain,
+    type CampaignCustomDomain as CampaignCustomDomain,
+    type CampaignCustomDomainDNSRecord as CampaignCustomDomainDNSRecord,
+    type DeleteCampaignCustomDomainResponse as DeleteCampaignCustomDomainResponse,
+    type CustomDomainSetParams as CustomDomainSetParams,
   };
 }

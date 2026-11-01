@@ -94,6 +94,7 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantEmailResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRetrieveAnalyticsResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantListActivityLogsResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">PayoutProvider</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantGetPayoutDestinationResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRequestPayoutDestinationConfirmationResponse</a></code>
 
@@ -256,3 +257,18 @@ Methods:
 
 - <code title="get /campaign/{id}/installation">client.campaign.installation.<a href="./src/resources/campaign/installation.ts">retrieve</a>(id) -> CampaignInstallation</code>
 - <code title="patch /campaign/{id}/installation">client.campaign.installation.<a href="./src/resources/campaign/installation.ts">update</a>(id, { ...params }) -> CampaignInstallation</code>
+
+## CustomDomain
+
+Types:
+
+- <code><a href="./src/resources/campaign/custom-domain.ts">CampaignCustomDomain</a></code>
+- <code><a href="./src/resources/campaign/custom-domain.ts">CampaignCustomDomainDNSRecord</a></code>
+- <code><a href="./src/resources/campaign/custom-domain.ts">DeleteCampaignCustomDomainResponse</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/custom-domain">client.campaign.customDomain.<a href="./src/resources/campaign/custom-domain.ts">retrieve</a>(id) -> CampaignCustomDomain</code>
+- <code title="put /campaign/{id}/custom-domain">client.campaign.customDomain.<a href="./src/resources/campaign/custom-domain.ts">set</a>(id, { ...params }) -> CampaignCustomDomain</code>
+- <code title="post /campaign/{id}/custom-domain/verify">client.campaign.customDomain.<a href="./src/resources/campaign/custom-domain.ts">verify</a>(id) -> CampaignCustomDomain</code>
+- <code title="delete /campaign/{id}/custom-domain">client.campaign.customDomain.<a href="./src/resources/campaign/custom-domain.ts">delete</a>(id) -> DeleteCampaignCustomDomainResponse</code>

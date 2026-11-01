@@ -70,6 +70,7 @@ export {
   type ParticipantActivationAnalytics,
   type ParticipantRetrieveAnalyticsResponse,
   type ParticipantListActivityLogsResponse,
+  type PayoutProvider,
   type ParticipantGetPayoutDestinationResponse,
   type ParticipantRequestPayoutDestinationConfirmationResponse,
   type ParticipantRetrieveParams,
@@ -150,5 +151,14 @@ export {
   Installation,
   type CampaignInstallation,
   type CampaignInstallationInstructionSelections,
+  type CampaignInstallationSignupForm,
+  type CampaignInstallationSignupFormField,
   type InstallationUpdateParams,
 } from './installation';
+export {
+  CustomDomain,
+  type CampaignCustomDomain,
+  type CampaignCustomDomainDNSRecord,
+  type DeleteCampaignCustomDomainResponse,
+  type CustomDomainSetParams,
+} from './custom-domain';

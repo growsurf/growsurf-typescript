@@ -38,6 +38,10 @@ export class Design extends APIResource {
    * fields you send are changed; anything
    * you leave out is untouched (arrays such as `signup.fields` replace wholesale). Unknown
    * fields, fields not available for the program type, and invalid values return a `400`.
+   * Text fields use the same character limits as the dashboard Program Editor. Text the
+   * Program Editor requires, such as Window labels, button text, and status names, cannot
+   * be set to `null`, empty, or only spaces. A value that is already saved is accepted
+   * unchanged, even when it breaks a newer limit.
    * Landing-page custom code and JavaScript are not editable via the API.
    * Changes to participant email content are checked before saving. Rejected content
    * returns `400` and is not saved. A concurrent edit can return `409`; reload the

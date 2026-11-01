@@ -192,7 +192,7 @@ export interface Reward {
   referredValue?: RewardTaxValuation | null;
 
   /**
-   * The reward title (internal label).
+   * The reward title (internal label). Up to 100 characters.
    */
   title?: string | null;
 
@@ -259,11 +259,12 @@ export interface RewardCreateParams {
    * Legacy static coupon code shown to the referrer in the reward-won email and
    * webhook. Display text only (GrowSurf does not create or validate it); superseded
    * by a connected billing integration's issued coupon when one exists.
+   * Up to 100 characters.
    */
   couponCode?: string | null;
 
   /**
-   * The reward description shown to the referrer.
+   * The reward description shown to the referrer. Up to 255 characters.
    */
   description?: string;
 
@@ -337,6 +338,10 @@ export interface RewardCreateParams {
 
   /**
    * Custom key/value metadata (single-level; values are stored as strings).
+   * Each value must be a string, number, or boolean of up to 500 characters. Each key
+   * must have 1 to 40 characters once camelCased, and two keys that camelCase to the
+   * same key are rejected. Up to 50 keys. An entry that breaks these rules returns
+   * `400`.
    *
    * For `DOUBLE_SIDED` rewards in referral programs, `rewardAmount` is the referrer’s
    * amount and `referredRewardAmount` is the friend’s amount. If `referredRewardAmount` is absent,
@@ -351,12 +356,14 @@ export interface RewardCreateParams {
   /**
    * Text shown before a participant's referral count in milestone progress copy
    * (`MILESTONE` rewards).
+   * Up to 255 characters.
    */
   nextMilestonePrefix?: string | null;
 
   /**
    * Text shown after a participant's referral count in milestone progress copy
    * (`MILESTONE` rewards).
+   * Up to 255 characters.
    */
   nextMilestoneSuffix?: string | null;
 
@@ -377,11 +384,13 @@ export interface RewardCreateParams {
    * and webhook (double-sided rewards). Display text only (GrowSurf does not create or
    * validate it); superseded by a connected billing integration's issued coupon when
    * one exists.
+   * Up to 100 characters.
    */
   referralCouponCode?: string | null;
 
   /**
    * The reward description shown to the referred friend (double-sided rewards).
+   * Up to 255 characters.
    */
   referralDescription?: string | null;
 
@@ -398,7 +407,7 @@ export interface RewardCreateParams {
   referredValue?: RewardTaxValuation | null;
 
   /**
-   * The reward title (internal label).
+   * The reward title (internal label). Up to 100 characters.
    */
   title?: string;
 
@@ -429,11 +438,12 @@ export interface RewardUpdateParams {
    * Body param: Legacy static coupon code shown to the referrer in the reward-won
    * email and webhook. Display text only (GrowSurf does not create or validate it);
    * superseded by a connected billing integration's issued coupon when one exists.
+   * Up to 100 characters.
    */
   couponCode?: string | null;
 
   /**
-   * Body param: The reward description shown to the referrer.
+   * Body param: The reward description shown to the referrer. Up to 255 characters.
    */
   description?: string;
 
@@ -508,6 +518,10 @@ export interface RewardUpdateParams {
   /**
    * Body param: Custom key/value metadata (single-level; values are stored as
    * strings).
+   * Each value must be a string, number, or boolean of up to 500 characters. Each key
+   * must have 1 to 40 characters once camelCased, and two keys that camelCase to the
+   * same key are rejected. Up to 50 keys. An entry that breaks these rules returns
+   * `400`.
    *
    * For `DOUBLE_SIDED` rewards in referral programs, `rewardAmount` is the referrer’s
    * amount and `referredRewardAmount` is the friend’s amount. If `referredRewardAmount` is absent,
@@ -522,12 +536,14 @@ export interface RewardUpdateParams {
   /**
    * Body param: Text shown before a participant's referral count in milestone progress
    * copy (`MILESTONE` rewards).
+   * Up to 255 characters.
    */
   nextMilestonePrefix?: string | null;
 
   /**
    * Body param: Text shown after a participant's referral count in milestone progress
    * copy (`MILESTONE` rewards).
+   * Up to 255 characters.
    */
   nextMilestoneSuffix?: string | null;
 
@@ -548,12 +564,14 @@ export interface RewardUpdateParams {
    * reward-won email and webhook (double-sided rewards). Display text only (GrowSurf
    * does not create or validate it); superseded by a connected billing integration's
    * issued coupon when one exists.
+   * Up to 100 characters.
    */
   referralCouponCode?: string | null;
 
   /**
    * Body param: The reward description shown to the referred friend (double-sided
    * rewards).
+   * Up to 255 characters.
    */
   referralDescription?: string | null;
 
@@ -571,6 +589,7 @@ export interface RewardUpdateParams {
 
   /**
    * Body param: The reward title (internal label).
+   * Up to 100 characters.
    */
   title?: string;
 
