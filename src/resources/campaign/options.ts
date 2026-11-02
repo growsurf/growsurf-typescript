@@ -172,6 +172,14 @@ export interface CampaignOptionsLanguages {
    * New programs start with `false`.
    */
   showFlags?: boolean;
+
+  /**
+   * The flag shown next to each language name when `showFlags` is on, keyed by language code
+   * (for example `{ en: 'GB' }`). Only languages with more than one flag to choose from are
+   * listed. Values are ISO 3166 country codes; `ES-CT` is Catalonia. Send `null` for a language
+   * to go back to its default flag.
+   */
+  flagCountries?: { [language: string]: string | null };
 }
 
 export interface CampaignOptionsRecaptchaUpdate extends CampaignOptionsRecaptcha {
