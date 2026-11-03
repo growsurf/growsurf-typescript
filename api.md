@@ -1,13 +1,3 @@
-# Account
-
-Types:
-
-- <code><a href="./src/resources/account.ts">AccountCreateResponse</a></code>
-
-Methods:
-
-- <code title="post /accounts">client.account.<a href="./src/resources/account.ts">create</a>({ ...params }) -> AccountCreateResponse</code>
-
 # Team
 
 Types:

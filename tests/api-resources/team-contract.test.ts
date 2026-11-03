@@ -1,5 +1,4 @@
 import Growsurf from 'growsurf-typescript';
-import type { AccountCreateResponse } from 'growsurf-typescript/resources/account';
 import type { Team, TeamRotateApiKeyResponse } from 'growsurf-typescript/resources/team';
 
 describe('team contract', () => {
@@ -57,17 +56,5 @@ describe('team contract', () => {
     const teamHasEmail: 'email' extends keyof Team ? true : false = false;
     expect(teamHasInternalID).toBe(false);
     expect(teamHasEmail).toBe(false);
-  });
-
-  test('keeps onboarding under accounts with the safe response model', () => {
-    const response: AccountCreateResponse = {
-      email: 'richard@piedpiper.com',
-      apiKey: 'sk_api_initial',
-      verificationStatus: 'NOT_REQUESTED',
-    };
-
-    const responseHasInternalID: 'id' extends keyof AccountCreateResponse ? true : false = false;
-    expect(response.email).toBe('richard@piedpiper.com');
-    expect(responseHasInternalID).toBe(false);
   });
 });
