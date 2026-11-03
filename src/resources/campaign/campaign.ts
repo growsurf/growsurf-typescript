@@ -11,6 +11,14 @@ import {
   Design as DesignAPIDesign,
   DesignUpdateParams,
 } from './design';
+import * as CustomDomainAPI from './custom-domain';
+import {
+  CampaignCustomDomain,
+  CampaignCustomDomainDNSRecord,
+  CustomDomain as CustomDomainAPICustomDomain,
+  CustomDomainSetParams,
+  DeleteCampaignCustomDomainResponse,
+} from './custom-domain';
 import * as EmailsAPI from './emails';
 import { CampaignEmails, EmailUpdateParams, Emails as EmailsAPIEmails } from './emails';
 import * as InstallationAPI from './installation';
@@ -129,6 +137,7 @@ export class CampaignResource extends APIResource {
   emails: EmailsAPI.Emails = new EmailsAPI.Emails(this._client);
   options: OptionsAPI.Options = new OptionsAPI.Options(this._client);
   installation: InstallationAPI.Installation = new InstallationAPI.Installation(this._client);
+  customDomain: CustomDomainAPI.CustomDomain = new CustomDomainAPI.CustomDomain(this._client);
 
   /**
    * Retrieves a program for the given program ID.
@@ -176,9 +185,8 @@ export class CampaignResource extends APIResource {
    * dedicated config sub-resources, not here. The program cannot be deleted via
    * this endpoint.
    * Changes to participant email content are checked before saving. Rejected content
-   * returns `400`; if the check is unavailable, `503` asks you to retry. Neither response
-   * saves the change. A concurrent edit can return `409`; reload the program before
-   * retrying.
+   * returns `400` and is not saved. A concurrent edit can return `409`; reload the
+   * program before retrying.
    *
    * @example
    * ```ts
@@ -691,6 +699,11 @@ export namespace Campaign {
 }
 
 export interface CommissionStructure {
+  /**
+   * Fixed commission amount in the currency's smallest denomination, used when `type`
+   * is `FIXED`. The maximum is `100000000` (1,000,000.00) for USD, EUR, and GBP. `null`
+   * for percentage-based commissions.
+   */
   amount?: number | null;
 
   amountISO?: string | null;
@@ -878,6 +891,18 @@ export namespace ReferralList {
     firstName?: string | null;
 
     lastName?: string | null;
+
+    /**
+     * When the referrer's credit for this referral expired, as a Unix timestamp in
+     * milliseconds. `null` when the credit has not expired.
+     */
+    referralCreditExpiredAt?: number | null;
+
+    /**
+     * When the referral was triggered, as a Unix timestamp in milliseconds. `null`
+     * until the referral is triggered, and for invites.
+     */
+    referralTriggeredAt?: number | null;
   }
 }
 
@@ -910,37 +935,37 @@ export interface ReferralFlowScreenshot {
    * Which side of the referral flow the image shows: `referrer` is the window a
    * participant sees, `referredFriend` is the experience a referred friend sees.
    */
-  view: 'referrer' | 'referredFriend';
+  view?: 'referrer' | 'referredFriend';
 
   /**
    * Human-readable name for the view.
    */
-  label: string;
+  label?: string;
 
   /**
    * Private link to the image. It expires at `expiresAt`.
    */
-  url: string;
+  url?: string;
 
   /**
    * When the `url` stops working, as an ISO 8601 timestamp.
    */
-  expiresAt: string;
+  expiresAt?: string;
 
   /**
    * Image width in pixels.
    */
-  width: number;
+  width?: number;
 
   /**
    * Image height in pixels.
    */
-  height: number;
+  height?: number;
 
   /**
    * MIME type of the image, for example `image/png`.
    */
-  contentType: string;
+  contentType?: string;
 }
 
 export interface ReferralFlowScreenshotsResponse {
@@ -1881,9 +1906,9 @@ export interface CampaignCreateParams {
    */
   type: 'REFERRAL' | 'AFFILIATE';
 
-  companyLogoImageUrl?: string;
+  companyLogoImageUrl?: string | null;
 
-  companyName?: string;
+  companyName?: string | null;
 
   /**
    * ISO 4217 currency code. Defaults to USD. Chosen when the program is created and
@@ -1907,8 +1932,13 @@ export interface CampaignCreateParams {
    * off with a placeholder name, so the program awards nothing until you set the
    * amount and turn one on. `TELEHEALTH` is for consumer telehealth and wellness
    * subscriptions; `HEALTHCARE_PROVIDERS` is for provider networks and
-   * clinician-facing products. `INSURANCE` replaces `ONLINE_INSURANCE`, which is still
-   * accepted. Omit it and every share button keeps its standard default. Set only when
+   * clinician-facing products. A `TELEHEALTH` program also starts with
+   * `useGrowSurfHostedLinks` on, so each referral link is a GrowSurf-hosted link; turn
+   * it off with `PATCH /campaign/{id}/installation`. It also starts with
+   * `offerPageRedirectSeconds` set to `10` and with starter offer-page content
+   * (`referredExperience.offerPageDescription` and `offerPageSteps`). Values you send
+   * in the create request are kept. `INSURANCE` replaces `ONLINE_INSURANCE`, which is
+   * still accepted. Omit it and every share button keeps its standard default. Set only when
    * the program is created; it is not accepted on update.
    */
   goal?:
@@ -1938,9 +1968,9 @@ export interface CampaignCreateParams {
 }
 
 export interface CampaignUpdateParams {
-  companyLogoImageUrl?: string;
+  companyLogoImageUrl?: string | null;
 
-  companyName?: string;
+  companyName?: string | null;
 
   name?: string;
 
@@ -1969,8 +1999,10 @@ export interface CampaignCreateMobileParticipantTokenParams {
   isAffiliate?: boolean;
 
   /**
-   * The language of the participant's portal and program emails. Must be one of the
-   * program's languages. Applied only when this request creates the participant.
+   * The language of the participant's portal and program emails. Stored when it is one
+   * of the program's languages. A regional tag maps to its language (for example,
+   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * language applies. Applied only when this request creates the participant.
    */
   language?: ParticipantAPI.Language;
 
@@ -1994,6 +2026,13 @@ export interface CampaignCreateMobileParticipantTokenParams {
    * `CREDIT_PENDING`, or `CREDIT_EXPIRED`), and left unset when no referrer resolves.
    */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
+
+  /**
+   * When the participant was referred, in Unix milliseconds. Used only with a valid
+   * `referredBy`. If you omit `referralStatus`, GrowSurf compares this time with the
+   * program's referral credit window to set it. Defaults to the time of the request.
+   */
+  referredAt?: number | null;
 
   /**
    * Referrer participant ID or email address.
@@ -2126,8 +2165,7 @@ export interface CampaignListReferralsParams {
   /**
    * Field used to sort referral results.
    */
-  sortBy?:
-    'updatedAt' | 'createdAt' | 'email' | 'firstName' | 'lastName' | 'referralStatus' | 'referralTriggeredAt';
+  sortBy?: 'updatedAt' | 'createdAt' | 'email' | 'referralTriggeredAt';
 }
 
 export interface CampaignRetrieveAnalyticsParams {
@@ -2332,6 +2370,7 @@ CampaignResource.Design = DesignAPIDesign;
 CampaignResource.Emails = EmailsAPIEmails;
 CampaignResource.Options = OptionsAPIOptions;
 CampaignResource.Installation = InstallationAPIInstallation;
+CampaignResource.CustomDomain = CustomDomainAPICustomDomain;
 
 export declare namespace CampaignResource {
   export {
@@ -2490,5 +2529,13 @@ export declare namespace CampaignResource {
     InstallationAPIInstallation as Installation,
     type CampaignInstallation as CampaignInstallation,
     type InstallationUpdateParams as InstallationUpdateParams,
+  };
+
+  export {
+    CustomDomainAPICustomDomain as CustomDomain,
+    type CampaignCustomDomain as CampaignCustomDomain,
+    type CampaignCustomDomainDNSRecord as CampaignCustomDomainDNSRecord,
+    type DeleteCampaignCustomDomainResponse as DeleteCampaignCustomDomainResponse,
+    type CustomDomainSetParams as CustomDomainSetParams,
   };
 }

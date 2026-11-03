@@ -18,7 +18,9 @@ export class Design extends APIResource {
    * sections. The available fields depend on the program type. `payoutDestinationConfirmation` is
    * omitted when no confirmation fields are stored. Stored `null` fields are returned as `null`;
    * omitted and `null` fields use localized defaults. `participantAvatarStyle` is `CHARACTERS`,
-   * `INITIALS`, `ANIMALS`, or `GRADIENT`; missing or unknown values mean `INITIALS`.
+   * `INITIALS`, `ANIMALS`, or `GRADIENT`; missing or unknown values mean `INITIALS`. `visualStyle`
+   * is `GLOW`, `CLEAN`, `FLAT`, `ROUND`, `TINT`, or `GLASS`, and is omitted when the program has
+   * no saved Style.
    *
    * @example
    * ```ts
@@ -36,11 +38,14 @@ export class Design extends APIResource {
    * fields you send are changed; anything
    * you leave out is untouched (arrays such as `signup.fields` replace wholesale). Unknown
    * fields, fields not available for the program type, and invalid values return a `400`.
+   * Text fields use the same character limits as the dashboard Program Editor. Text the
+   * Program Editor requires, such as Window labels, button text, and status names, cannot
+   * be set to `null`, empty, or only spaces. A value that is already saved is accepted
+   * unchanged, even when it breaks a newer limit.
    * Landing-page custom code and JavaScript are not editable via the API.
    * Changes to participant email content are checked before saving. Rejected content
-   * returns `400`; if the check is unavailable, `503` asks you to retry. Neither response
-   * saves the change. A concurrent edit can return `409`; reload the program before
-   * retrying.
+   * returns `400` and is not saved. A concurrent edit can return `409`; reload the
+   * program before retrying.
    *
    * @example
    * ```ts
@@ -79,13 +84,17 @@ export class Design extends APIResource {
  * `null` fields are returned as `null`; omitted and `null` fields use localized defaults. `PATCH`
  * back only the sections or fields you want to change (arrays such as `signup.fields` replace
  * wholesale). `participantAvatarStyle` accepts `CHARACTERS`, `INITIALS`, `ANIMALS`, or `GRADIENT`;
- * new programs use `CHARACTERS`, while missing or unknown stored values return `INITIALS`. Known
- * structured fields are typed. Sections whose nested fields are intentionally open in the REST
- * contract remain open here. `resources` controls the participant-facing Resources destination;
+ * new programs use `INITIALS`, while missing or unknown stored values return `INITIALS`.
+ * `visualStyle` accepts `GLOW`, `CLEAN`, `FLAT`, `ROUND`, `TINT`, or `GLASS` and sets corners,
+ * shadows, button shape and background on program pages and the GrowSurf Window. New referral
+ * programs start with `GLOW`, new affiliate programs start with `CLEAN`, and it is omitted when
+ * the program has no saved Style. Known structured fields are typed. Sections whose nested fields are intentionally open
+ * in the REST contract remain open here. `resources` controls the participant-facing Resources destination;
  * resource items and their order use the Program Resources operations.
  */
 export type CampaignDesign = {
   participantAvatarStyle?: 'CHARACTERS' | 'INITIALS' | 'ANIMALS' | 'GRADIENT';
+  visualStyle?: 'GLOW' | 'CLEAN' | 'FLAT' | 'ROUND' | 'TINT' | 'GLASS';
   window?: CampaignDesignOpenSection;
   header?: CampaignDesignOpenSection;
   stats?: CampaignDesignOpenSection;
@@ -99,6 +108,23 @@ export type CampaignDesign = {
   referredExperience?: CampaignDesignReferredExperience;
   widget?: CampaignDesignWidget;
   trafficInsights?: CampaignDesignTrafficInsights;
+  /**
+   * Referral programs only. The row of summary tiles a participant sees (clicks, leads,
+   * referrals, invites sent, rewards earned, and more). Controls each tile's label,
+   * tooltip, and visibility, plus the section's title and icon. `stats.<tile>.icon` sets
+   * a tile's icon, in the `CampaignDesignSummaryIcon` shape: `type` (`DEFAULT`, `IMAGE`,
+   * or `NONE`), `key` (the starter icon used when `type` is `DEFAULT`), and `imageUrl`
+   * (the HTTP or HTTPS image used when `type` is `IMAGE`; send `null` to clear it). Tile
+   * keys are `referrals`, `leads`, `invitesSent`, `expiredReferrals`, `clicks`,
+   * `pendingRewards`, or `rewardsEarned`. `stats.rewardsEarned.displayMode` selects
+   * `COUNT` (approved reward count) or `AMOUNT` (total of the approved rewards’ saved recipient amounts, using
+   * `referredRewardAmount` for a friend when present and otherwise `rewardAmount`,
+   * with saved currency matching the program currency). Telehealth programs default
+   * to `AMOUNT`; other referral programs default to `COUNT`. An explicit choice overrides
+   * the default. If any approved reward lacks a valid saved amount or matching currency,
+   * the participant sees the reward count. Changing a Campaign Reward's amount affects
+   * future rewards only.
+   */
   referralSummary?: CampaignDesignOpenSection;
   affiliateSummary?: CampaignDesignOpenSection;
   commissions?: CampaignDesignOpenSection;
@@ -213,6 +239,12 @@ export type CampaignDesignReferredExperience = {
   headingPlacement?: 'PREPEND' | 'APPEND' | 'REPLACE';
   isHeadingStyled?: boolean;
   isHeadingClickableToSignupUrl?: boolean;
+  /**
+   * Whether referred visitors see `pageTitleReplacement` as the browser tab title.
+   * New referral programs start with `true` and new affiliate programs with `false`.
+   * Older programs without this setting read back `false`.
+   */
+  isPageTitleReplacementActive?: boolean;
   pageTitleReplacement?: string | null;
   referrerNameFormat?: 'FIRST' | 'FIRST_LAST_INITIAL' | 'FIRST_LAST';
   referrerNameFallback?: string | null;
@@ -302,11 +334,11 @@ export type CampaignDesignWidget = {
   /**
    * Your own uploaded image instead of a `markKey` drawing. `CUSTOM` uses `iconImageUrl`; `NONE`
    * shows no image. `DEFAULT` is the old GrowSurf image: a program already set to it keeps it and
-   * can read it back, but it cannot be set. Requires a paid plan.
+   * can read it back, but it cannot be set.
    */
   icon?: 'CUSTOM' | 'NONE' | 'DEFAULT';
 
-  /** Your own image, used when `icon` is `CUSTOM`. Maximum 500 characters. Requires a paid plan. */
+  /** Your own image, used when `icon` is `CUSTOM`. Maximum 500 characters. */
   iconImageUrl?: string | null;
 
   /** Which corner or edge of the page the widget sits against. */
@@ -395,7 +427,7 @@ export type CampaignDesignResourcesIcon = {
   type?: 'DEFAULT' | 'IMAGE' | 'NONE';
 
   /** LIST-mode icon image URL when `type` is `IMAGE`. Maximum 500 characters. */
-  imageUrl?: string;
+  imageUrl?: string | null;
 };
 
 /** Participant presentation settings for Resources. Resource items use Program Resources operations. */
@@ -404,22 +436,22 @@ export type CampaignDesignResources = {
   isPublicDisplayed?: boolean;
 
   /** Participant-visible section title. Maximum 100 characters. */
-  title?: string;
+  title?: string | null;
 
   /** LIST-mode row text. Maximum 100 characters. */
-  viewResourcesLinkText?: string;
+  viewResourcesLinkText?: string | null;
 
   /** LIST-mode detail Back text. Maximum 100 characters. */
-  backLinkText?: string;
+  backLinkText?: string | null;
 
   /** TEXT resource copy action. Maximum 100 characters. */
-  copyButtonText?: string;
+  copyButtonText?: string | null;
 
   /** Shown in place of the list when no resources are published. Maximum 500 characters. */
-  emptyState?: string;
+  emptyState?: string | null;
 
   /** TEXT resource copy confirmation. Maximum 100 characters. */
-  copiedText?: string;
+  copiedText?: string | null;
 
   /** Icon configuration for the destination. */
   icon?: CampaignDesignResourcesIcon;

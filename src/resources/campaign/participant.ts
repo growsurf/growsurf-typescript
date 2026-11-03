@@ -107,8 +107,11 @@ export class ParticipantResource extends APIResource {
 
   /**
    * Adds a new participant to the program. If the email already exists, the existing
-   * participant is returned unchanged. For affiliate programs, set `isAffiliate` to
-   * `true` to enroll a new participant as an approved affiliate or `false` to create a
+   * participant is returned unchanged. One exception: if that participant claimed an
+   * offer in the Claim Offer Popup and the signup is not complete yet, this call completes the
+   * signup with the original referrer and saves any non-blank `firstName`, `lastName`,
+   * and `metadata` you send. For affiliate programs, set `isAffiliate` to `true` to
+   * enroll a new participant as an approved affiliate or `false` to create a
    * non-affiliate. If you omit `isAffiliate`, a valid `referredBy` creates a referred
    * non-affiliate; without a valid referrer, the new participant is enrolled as an
    * approved affiliate. You can send a valid `referredBy` with `isAffiliate: true` to
@@ -558,8 +561,10 @@ export interface Create {
   isAffiliate?: boolean;
 
   /**
-   * The language of the participant's portal and program emails. Must be one of the
-   * program's languages. Applied only when this request creates the participant.
+   * The language of the participant's portal and program emails. Stored when it is one
+   * of the program's languages. A regional tag maps to its language (for example,
+   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * language applies. Applied only when this request creates the participant.
    */
   language?: Language;
 
@@ -583,6 +588,13 @@ export interface Create {
    * `CREDIT_PENDING`, or `CREDIT_EXPIRED`), and left unset when no referrer resolves.
    */
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
+
+  /**
+   * When the participant was referred, in Unix milliseconds. Used only with a valid
+   * `referredBy`. If you omit `referralStatus`, GrowSurf compares this time with the
+   * program's referral credit window to set it. Defaults to the time of the request.
+   */
+  referredAt?: number | null;
 
   /**
    * Referrer participant ID or email address.
@@ -743,6 +755,13 @@ export interface Participant {
 
   prevMonthlyReferralCount?: number;
 
+  /**
+   * When this referred signup counted as a lead for the referrer, in Unix milliseconds.
+   * Set only when the program's `referralTrigger` is `CUSTOM`. Lead-event Campaign
+   * Rewards and commissions use it.
+   */
+  referralLeadQualifiedAt?: number | null;
+
   referrals?: Array<string>;
 
   referralSource?: ReferralSource;
@@ -776,74 +795,13 @@ export namespace Participant {
     requiredActions?: Array<'PAYOUT_DESTINATION' | 'TAX_INFO'>;
   }
 
-  export interface Referrer {
-    id?: string;
-
-    createdAt?: number;
-
-    email?: string;
-
-    fingerprint?: string | null;
-
-    firstName?: string | null;
-
-    fraudReasonCode?: string;
-
-    fraudRiskLevel?: ParticipantAPI.FraudRiskLevel;
-
-    impressionCount?: number;
-
-    inviteCount?: number;
-
-    ipAddress?: string | null;
-
-    isWinner?: boolean;
-
-    /**
-     * The language of the referrer's portal and program emails.
-     */
-    language?: ParticipantAPI.Language;
-
-    lastName?: string | null;
-
-    /**
-     * The number of pending referrals the participant made that have not converted
-     * into successful referrals yet.
-     */
-    leadCount?: number;
-
-    /**
-     * Shallow custom metadata object.
-     */
-    metadata?: { [key: string]: unknown };
-
-    monthlyRank?: number;
-
-    monthlyReferralCount?: number;
-
-    monthlyReferrals?: Array<string>;
-
-    prevMonthlyRank?: number;
-
-    prevMonthlyReferralCount?: number;
-
-    rank?: number;
-
-    referralCount?: number;
-
-    referrals?: Array<string>;
-
-    referralSource?: ParticipantAPI.ReferralSource;
-
-    referralStatus?: ParticipantAPI.ReferralStatus;
-
-    shareCount?: { [key: string]: number };
-
-    shareUrl?: string;
-
-    uniqueImpressionCount?: number;
-
-    unsubscribed?: boolean;
+  /**
+   * The participant's referrer, returned within the `referrer` field of a
+   * `Participant`. It has the same fields as a `Participant`. Its own `referrer` is
+   * always `null`.
+   */
+  export interface Referrer extends Omit<ParticipantAPI.Participant, 'referrer'> {
+    referrer?: null;
   }
 }
 
@@ -1520,8 +1478,10 @@ export interface ParticipantAddParams {
   isAffiliate?: boolean;
 
   /**
-   * The language of the participant's portal and program emails. Must be one of the
-   * program's languages. Applied only when this request creates the participant.
+   * The language of the participant's portal and program emails. Stored when it is one
+   * of the program's languages. A regional tag maps to its language (for example,
+   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * language applies. Applied only when this request creates the participant.
    */
   language?: Language;
 
@@ -1547,16 +1507,29 @@ export interface ParticipantAddParams {
   referralStatus?: 'CREDIT_PENDING' | 'CREDIT_AWARDED';
 
   /**
+   * When the participant was referred, in Unix milliseconds. Used only with a valid
+   * `referredBy`. If you omit `referralStatus`, GrowSurf compares this time with the
+   * program's referral credit window to set it. Defaults to the time of the request.
+   */
+  referredAt?: number | null;
+
+  /**
    * Referrer participant ID or email address.
    */
   referredBy?: string;
 }
 
+/**
+ * A payout provider. Known providers are listed; any other string keeps responses
+ * usable when a new provider is added.
+ */
+export type PayoutProvider = 'PAYPAL' | 'VENMO' | 'WISECOM' | (string & {});
+
 export interface ParticipantGetPayoutDestinationResponse {
   /**
    * The provider that currently gets paid, or null until the participant confirms one.
    */
-  activeProvider: string | null;
+  activeProvider: PayoutProvider | null;
 
   /**
    * One entry per enabled payout provider describing the participant's destination for
@@ -1567,7 +1540,7 @@ export interface ParticipantGetPayoutDestinationResponse {
   /**
    * The payout providers enabled for this program.
    */
-  enabledProviders: Array<string>;
+  enabledProviders: Array<PayoutProvider>;
 }
 
 export namespace ParticipantGetPayoutDestinationResponse {
@@ -1595,10 +1568,10 @@ export namespace ParticipantGetPayoutDestinationResponse {
     /**
      * The payout provider this entry describes.
      */
-    provider: string;
+    provider: ParticipantAPI.PayoutProvider;
 
     /**
-     * The customer-facing provider name (e.g. "PayPal", "Wise").
+     * The customer-facing provider name (e.g. "PayPal", "Venmo", "Wise").
      */
     providerDisplayName: string;
 
@@ -1623,7 +1596,7 @@ export interface ParticipantRequestPayoutDestinationConfirmationResponse {
   provider: string;
 
   /**
-   * The customer-facing provider name (e.g. "PayPal", "Wise").
+   * The customer-facing provider name (e.g. "PayPal", "Venmo", "Wise").
    */
   providerDisplayName: string;
 
@@ -1726,8 +1699,7 @@ export interface ParticipantListReferralsParams {
   /**
    * Query param: Field used to sort referral results.
    */
-  sortBy?:
-    'updatedAt' | 'createdAt' | 'email' | 'firstName' | 'lastName' | 'referralStatus' | 'referralTriggeredAt';
+  sortBy?: 'updatedAt' | 'createdAt' | 'email' | 'referralTriggeredAt';
 }
 
 export interface ParticipantListRewardsParams {
@@ -2033,16 +2005,18 @@ export interface ParticipantEmailParams {
   body?: string;
 
   /**
-   * Body param: The program email template to send (template mode). Send the camelCase
-   * email-type key. The sendable types depend on the program type; the template's
-   * `isEnabled` setting only controls automatic sends. Referral programs: `welcomeNonReferred`,
+   * Body param: The program email template to trigger (template mode). Send the
+   * camelCase email-type key. The available types depend on the program type; the
+   * template's `isEnabled` setting controls automatic sends only. This endpoint can
+   * trigger any sendable template. System and transactional types (login link, payout
+   * destination confirmation, tax notifications), the invite email, and the follow-up
+   * reminder cannot be sent. Referral programs: `welcomeNonReferred`,
    * `referralLinkViewedFirstTime`, `referralLinkUsed`, `referredSignup`,
-   * `welcomeReferred`, `goalAchieved`, `campaignEndedWinners`, `campaignEndedNonWinners`,
-   * `progressUpdateMonthly`. Affiliate programs: `welcomeNonReferred`,
-   * `referralLinkViewedFirstTime`, `referredSignup`, `commissionGenerated`,
-   * `commissionAdjusted`, `payoutPending`, `payoutSentSuccess`, `progressUpdateMonthly`.
-   * System/transactional types (login link, PayPal confirmation, tax) and the invite
-   * email cannot be sent here.
+   * `welcomeReferred`, `offerClaimed`, `goalAchieved`, `campaignEndedWinners`,
+   * `campaignEndedNonWinners`, `progressUpdateMonthly`. Affiliate programs:
+   * `welcomeNonReferred`, `referralLinkViewedFirstTime`, `referredSignup`,
+   * `offerClaimed`, `commissionGenerated`, `commissionAdjusted`, `payoutPending`,
+   * `payoutSentSuccess`, `progressUpdateMonthly`.
    * `welcomeNonReferred` can only be sent to advocates or approved, enrolled affiliates in a
    * program that has not ended.
    */
@@ -2165,6 +2139,7 @@ export declare namespace ParticipantResource {
     type ParticipantActivationAnalytics as ParticipantActivationAnalytics,
     type ParticipantRetrieveAnalyticsResponse as ParticipantRetrieveAnalyticsResponse,
     type ParticipantListActivityLogsResponse as ParticipantListActivityLogsResponse,
+    type PayoutProvider as PayoutProvider,
     type ParticipantGetPayoutDestinationResponse as ParticipantGetPayoutDestinationResponse,
     type ParticipantRequestPayoutDestinationConfirmationResponse as ParticipantRequestPayoutDestinationConfirmationResponse,
     type ParticipantRetrieveParams as ParticipantRetrieveParams,
