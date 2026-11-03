@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.21.0](https://github.com/growsurf/growsurf-typescript/compare/v1.20.0...v1.21.0) (2026-11-03)
+
+
+### Features
+
+* add Tint and Glass program styles ([bd02e4d](https://github.com/growsurf/growsurf-typescript/commit/bd02e4d02e90f74cfeee8b9171c94c026e4a1453))
+* **api:** add languages.flagCountries to Campaign Options ([a988486](https://github.com/growsurf/growsurf-typescript/commit/a988486c4214e5293e0bc0b593c9dad6e52d2f2a))
+* **api:** sync REST v2 contract changes ([6a0ec3f](https://github.com/growsurf/growsurf-typescript/commit/6a0ec3fe07563c7aacba62e064368813cc17a230))
+* expose documented error-body fields and sync campaign and participant models ([8957769](https://github.com/growsurf/growsurf-typescript/commit/89577690b3e0798f6d5c1794f292e7f54779b461))
+* expose program visual style in campaign design ([5073013](https://github.com/growsurf/growsurf-typescript/commit/50730137765d81e3d8f11a322bc5eb5b7c1d9720))
+
+
+### Bug Fixes
+
+* protect deepmerge development dependency ([aa9adab](https://github.com/growsurf/growsurf-typescript/commit/aa9adabdcc842e9136d98aaf542f645862fc50c9))
+
+
+### Documentation
+
+* clarify Add Participant claim-offer wording and page title defaults ([c5805c3](https://github.com/growsurf/growsurf-typescript/commit/c5805c35aa29fc0449e810bc38782c4a80926112))
+* clarify referral reward metadata amounts ([4a7c824](https://github.com/growsurf/growsurf-typescript/commit/4a7c824d5a128ed49949833d06e07baf284c0091))
+* correct default program style ([55150f4](https://github.com/growsurf/growsurf-typescript/commit/55150f45c044f57eb2167c9f321be8960a3bdfb7))
+
 ## [1.20.0](https://github.com/growsurf/growsurf-typescript/compare/v1.19.0...v1.20.0) (2026-10-20)
 
 
