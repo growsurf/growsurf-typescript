@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.22.0](https://github.com/growsurf/growsurf-typescript/compare/v1.21.0...v1.22.0) (2026-11-03)
+
+
+### Features
+
+* remove account create method (endpoint retired) ([b6ea8bd](https://github.com/growsurf/growsurf-typescript/commit/b6ea8bdbc68e7d7687d7afa30aa8d66cb92ff536))
+* remove account create method (endpoint retired) ([e0e4f7a](https://github.com/growsurf/growsurf-typescript/commit/e0e4f7a15e440d85824616e229ed92760f19d47c))
+
 ## [1.21.0](https://github.com/growsurf/growsurf-typescript/compare/v1.20.0...v1.21.0) (2026-11-03)
 
 
