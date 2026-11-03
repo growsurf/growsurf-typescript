@@ -17,7 +17,6 @@ import * as Errors from './core/error';
 import * as Uploads from './core/uploads';
 import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
-import { AccountCreateParams, AccountCreateResponse, AccountResource } from './resources/account';
 import {
   Team,
   TeamResendOwnerVerificationEmailResponse,
@@ -804,23 +803,15 @@ export class Growsurf {
 
   static toFile = Uploads.toFile;
 
-  account: API.AccountResource = new API.AccountResource(this);
   team: API.TeamResource = new API.TeamResource(this);
   campaign: API.CampaignResource = new API.CampaignResource(this);
 }
 
-Growsurf.AccountResource = AccountResource;
 Growsurf.TeamResource = TeamResource;
 Growsurf.CampaignResource = CampaignResource;
 
 export declare namespace Growsurf {
   export type RequestOptions = Opts.RequestOptions;
-
-  export {
-    AccountResource as AccountResource,
-    type AccountCreateResponse as AccountCreateResponse,
-    type AccountCreateParams as AccountCreateParams,
-  };
 
   export {
     TeamResource as TeamResource,

@@ -1,6 +1,5 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-export { AccountResource, type AccountCreateResponse, type AccountCreateParams } from './account';
 export {
   TeamResource,
   type Team,
