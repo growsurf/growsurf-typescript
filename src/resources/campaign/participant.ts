@@ -563,7 +563,7 @@ export interface Create {
   /**
    * The language of the participant's portal and program emails. Stored when it is one
    * of the program's languages. A regional tag maps to its language (for example,
-   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * `fr-BE` is stored as `fr`). Any other value is ignored and the program's base
    * language applies. Applied only when this request creates the participant.
    */
   language?: Language;
@@ -647,7 +647,9 @@ export type Language =
   | 'ms'
   | 'fil'
   | 'af'
-  | 'sw';
+  | 'sw'
+  | 'zh-TW'
+  | 'es-419';
 
 export interface Participant {
   id: string;
@@ -816,8 +818,14 @@ export interface ParticipantReward {
 
   approvedAt?: number | null;
 
-  /** Delivered gift-card value in major units, or `null` when no trusted amount is available. */
+  /**
+   * What the reward is worth in major units of `currencyISO`, from the provider's saved record or the
+   * amount saved when it was earned. `null` for a percent-off coupon or when no amount is available.
+   */
   amount?: number | null;
+
+  /** Where `amount` or `percentOff` comes from, or `null` when both are `null`. */
+  amountSource?: ParticipantRewardAmountSource | null;
 
   commissionStructure?: CampaignAPI.CommissionStructure | null;
 
@@ -832,12 +840,28 @@ export interface ParticipantReward {
 
   isReferrer?: boolean;
 
+  /** Discount of a percent-off coupon (`20` = 20% off), or `null` for every other reward. */
+  percentOff?: number | null;
+
   referredId?: string;
 
   referrerId?: string;
 
   unread?: boolean;
 }
+
+/** Where a participant reward's `amount` or `percentOff` comes from. `METADATA` = saved when earned. */
+export type ParticipantRewardAmountSource =
+  | 'STRIPE'
+  | 'CHARGEBEE'
+  | 'RECURLY'
+  | 'CHARGIFY'
+  | 'PAYPAL'
+  | 'VENMO'
+  | 'TANGO_CARD'
+  | 'TREMENDOUS'
+  | 'XTRM'
+  | 'METADATA';
 
 export type ReferralSource = 'DIRECT' | 'PARTICIPANT' | 'DELETED_PARTICIPANT' | 'IMPORT' | 'MANUAL';
 
@@ -1480,7 +1504,7 @@ export interface ParticipantAddParams {
   /**
    * The language of the participant's portal and program emails. Stored when it is one
    * of the program's languages. A regional tag maps to its language (for example,
-   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * `fr-BE` is stored as `fr`). Any other value is ignored and the program's base
    * language applies. Applied only when this request creates the participant.
    */
   language?: Language;
@@ -2122,6 +2146,7 @@ export declare namespace ParticipantResource {
     type Language as Language,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
+    type ParticipantRewardAmountSource as ParticipantRewardAmountSource,
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
     type PendingAnalyticsErasure as PendingAnalyticsErasure,

@@ -71,6 +71,7 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">Language</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">Participant</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantReward</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantRewardAmountSource</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ReferralSource</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ReferralStatus</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantDeleteResponse</a></code>

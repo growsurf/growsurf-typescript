@@ -75,6 +75,7 @@ import {
   ParticipantResource,
   ParticipantRetrieveParams,
   ParticipantReward,
+  ParticipantRewardAmountSource,
   ParticipantSendInvitesParams,
   ParticipantSendInvitesResponse,
   ParticipantTriggerReferralParams,
@@ -2001,7 +2002,7 @@ export interface CampaignCreateMobileParticipantTokenParams {
   /**
    * The language of the participant's portal and program emails. Stored when it is one
    * of the program's languages. A regional tag maps to its language (for example,
-   * `es-MX` is stored as `es`). Any other value is ignored and the program's base
+   * `fr-BE` is stored as `fr`). Any other value is ignored and the program's base
    * language applies. Applied only when this request creates the participant.
    */
   language?: ParticipantAPI.Language;
@@ -2419,6 +2420,7 @@ export declare namespace CampaignResource {
     type Language as Language,
     type Participant as Participant,
     type ParticipantReward as ParticipantReward,
+    type ParticipantRewardAmountSource as ParticipantRewardAmountSource,
     type ReferralSource as ReferralSource,
     type ReferralStatus as ReferralStatus,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
