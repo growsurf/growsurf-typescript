@@ -53,6 +53,7 @@ export {
   type Language,
   type Participant,
   type ParticipantReward,
+  type ParticipantRewardAmountSource,
   type ReferralSource,
   type ReferralStatus,
   type PendingAnalyticsErasure,
