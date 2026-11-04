@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.0](https://github.com/growsurf/growsurf-typescript/compare/v1.22.0...v1.23.0) (2026-11-04)
+
+
+### Features
+
+* add reward amountSource and percentOff, and zh-TW and es-419 languages ([4690197](https://github.com/growsurf/growsurf-typescript/commit/46901976894f0c47c362f501376d93e3dec198a4))
+* add reward amountSource and percentOff, and zh-TW and es-419 languages ([bc5d35d](https://github.com/growsurf/growsurf-typescript/commit/bc5d35d6c9fc630bfce79785c33c924eb09d251c))
+
 ## [1.22.0](https://github.com/growsurf/growsurf-typescript/compare/v1.21.0...v1.22.0) (2026-11-03)
 
 
