@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.24.0](https://github.com/growsurf/growsurf-typescript/compare/v1.23.0...v1.24.0) (2026-11-08)
+
+
+### Features
+
+* type web referral tracking guide selection ([49932fa](https://github.com/growsurf/growsurf-typescript/commit/49932fadebd6917dafa79c57e6b799bb6a66a6dd))
+
+
+### Bug Fixes
+
+* **deps:** scope patched minimatch overrides ([7dc9531](https://github.com/growsurf/growsurf-typescript/commit/7dc9531cd275431c3d395ce38d696d40af6b0ab3))
+
 ## [1.23.0](https://github.com/growsurf/growsurf-typescript/compare/v1.22.0...v1.23.0) (2026-11-04)
 
 
