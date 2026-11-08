@@ -135,6 +135,8 @@ export interface CampaignInstallationMobileUpdate {
 }
 
 export interface CampaignInstallationInstructionSelections {
+  /** Web referral tracking guide shown in step 1 (referral programs only). */
+  webTracking?: 'hosted' | 'website';
   platform?: 'web' | 'ios' | 'android';
   mobileAttributionProvider?: 'branch' | 'appsflyer' | 'adjust' | 'singular' | 'other';
   stepProviders?: {
