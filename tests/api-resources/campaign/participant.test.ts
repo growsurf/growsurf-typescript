@@ -337,7 +337,6 @@ describe('resource participant', () => {
       id: 'id',
       emailAddresses: ['erlich@aviato.com'],
       messageText: '{{referrerFirstName}} invited you with {{referrerShareUrl}}.',
-      subjectText: 'Join me on Pied Piper',
     });
     const rawResponse = await responsePromise.asResponse();
     expect(rawResponse).toBeInstanceOf(Response);
@@ -354,7 +353,6 @@ describe('resource participant', () => {
       id: 'id',
       emailAddresses: ['erlich@aviato.com'],
       messageText: '{{referrerFirstName}} invited you with {{referrerShareUrl}}.',
-      subjectText: 'Join me on Pied Piper',
     });
   });
 

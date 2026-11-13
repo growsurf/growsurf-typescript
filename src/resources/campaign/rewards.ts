@@ -554,7 +554,7 @@ export interface RewardUpdateParams {
 
   /**
    * Body param: Custom key/value metadata (single-level; values are stored as
-   * strings).
+   * strings). Sending `metadata` replaces the stored object.
    * Each value must be a string, number, or boolean of up to 500 characters. Each key
    * must have 1 to 40 characters once camelCased, and two keys that camelCase to the
    * same key are rejected. Up to 50 keys. An entry that breaks these rules returns

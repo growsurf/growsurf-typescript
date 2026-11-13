@@ -62,7 +62,7 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Removes participant access immediately by GrowSurf participant ID or email address. Related record cleanup completes automatically. Do not repeat a successful deletion to finish cleanup.
+   * Removes participant access immediately by GrowSurf participant ID or email address. Related record cleanup completes automatically. Do not repeat a successful deletion to finish cleanup. A `202` response includes pending analytics erasure details.
    *
    * @example
    * ```ts
@@ -88,7 +88,7 @@ export class ParticipantResource extends APIResource {
    * are allowed). Up to `200` entries per request — chunk larger lists across
    * multiple calls. The response reports a per-row `status` for every submitted
    * entry, so a `200` can include rows that were `NOT_FOUND` or failed. Deletion is
-   * permanent. Successful rows lose participant access immediately; related record cleanup completes automatically, subject to required financial record retention.
+   * permanent. Successful rows lose participant access immediately; related record cleanup completes automatically, subject to required financial record retention. A `202` response also includes `analyticsErasure` when analytics erasure is pending.
    *
    * @example
    * ```ts
@@ -343,7 +343,7 @@ export class ParticipantResource extends APIResource {
   /**
    * Sends email invites on behalf of a participant to a list of email addresses.
    * Sending invites via the API requires a **verified custom email domain** on the
-   * program; the request fails until one is verified.
+   * program. Until one is verified, it returns `success: false`.
    *
    * @example
    * ```ts
@@ -355,7 +355,6 @@ export class ParticipantResource extends APIResource {
    *       emailAddresses: ['erlich@aviato.com'],
    *       messageText:
    *         '{{referrerFirstName}} invited you with {{referrerShareUrl}}.',
-   *       subjectText: 'Join me on Pied Piper',
    *     },
    *   );
    * ```
@@ -954,9 +953,10 @@ export namespace ParticipantBulkDeleteResponse {
     status: 'DELETED' | 'NOT_FOUND' | 'DUPLICATE' | 'ERROR';
 
     /**
-     * The resolved participant's email address. Present on `DELETED` rows.
+     * The resolved participant's email address. Present on `DELETED` rows. `null`
+     * when the participant has no stored email.
      */
-    email?: string;
+    email?: string | null;
 
     /**
      * Human-readable detail for `NOT_FOUND`, `DUPLICATE`, and `ERROR` rows.
@@ -2001,8 +2001,8 @@ export interface ParticipantRefundTransactionParams {
   id: string;
 
   /**
-   * Body param: REFUND covers full refunds, partial refunds, and refund
-   * cancellations; CHARGEBACK is always a full reversal.
+   * Body param: Defaults to REFUND, which covers full refunds, partial refunds, and
+   * refund cancellations; CHARGEBACK is always a full reversal.
    */
   amendmentType?: 'REFUND' | 'CHARGEBACK';
 
@@ -2016,7 +2016,8 @@ export interface ParticipantRefundTransactionParams {
   /**
    * Body param: Cumulative amount refunded so far, in the currency's minor unit. Omit
    * for a full refund. For a partial refund send the running total, not the
-   * per-refund delta.
+   * per-refund delta. Required when `refundStatus` is `canceled`: send the
+   * total that stays refunded after the cancellation (`0` when none remain).
    */
   amountRefunded?: number;
 
@@ -2076,8 +2077,7 @@ export interface ParticipantRefundTransactionParams {
   refundId?: string;
 
   /**
-   * Body param: Refund status. Send "canceled" with a lowered amountRefunded to
-   * restore a previously reduced commission.
+   * Body param: Refund status. Send "canceled" with the original refundId to cancel that refund.
    */
   refundStatus?: string;
 
@@ -2094,7 +2094,7 @@ export interface ParticipantSendInvitesParams {
   id: string;
 
   /**
-   * Body param
+   * Body param: Email addresses to invite. Send at least one.
    */
   emailAddresses: Array<string>;
 
@@ -2102,11 +2102,6 @@ export interface ParticipantSendInvitesParams {
    * Body param
    */
   messageText: string;
-
-  /**
-   * Body param
-   */
-  subjectText: string;
 }
 
 export interface ParticipantTriggerReferralParams {
@@ -2120,7 +2115,7 @@ export interface ParticipantTriggerReferralParams {
    * Useful for honoring a refund window before crediting a referrer. Omit this field
    * to award credit immediately. The credit is awarded automatically once the delay
    * elapses, and can be cancelled before then with the Cancel delayed referral
-   * trigger request.
+   * trigger request. From `0` to `90`; `0` awards credit immediately.
    */
   delayInDays?: number;
 }
@@ -2139,7 +2134,9 @@ export interface ParticipantEmailParams {
   id: string;
 
   /**
-   * Body param: HTML body for a free-form email. You can personalize it with dynamic text,
+   * Body param: HTML body for a free-form email. When `settings.design.layoutMode` is
+   * `INLINE`, include `{{emailFooter}}` in the body; `{{emailHeader}}` is optional.
+   * You can personalize it with dynamic text,
    * inserting `{{...}}` tokens like `{{firstName}}` or `{{shareUrl}}`. See
    * [Guide to using dynamic text in GrowSurf emails](https://support.growsurf.com/article/213-guide-to-using-dynamic-text-in-growsurf-emails).
    */
@@ -2252,6 +2249,9 @@ export interface ParticipantRequestPayoutDestinationConfirmationParams {
 
   /**
    * Body param: The payout provider the participant should confirm a destination for.
+   * `VENMO` uses a confirmed email and is available only when connected PayPal Payouts
+   * and payout-email confirmation are enabled in a USD program. Venmo recipients must
+   * be in the United States.
    */
   provider: 'PAYPAL' | 'VENMO' | 'WISECOM';
 }

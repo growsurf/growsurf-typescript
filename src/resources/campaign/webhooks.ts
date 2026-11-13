@@ -195,6 +195,9 @@ export interface WebhookCreateParams {
    */
   events?: Array<WebhookEvent>;
 
+  /**
+   * Whether the webhook should start enabled. Defaults to `true`.
+   */
   isEnabled?: boolean;
 
   /**
@@ -211,12 +214,14 @@ export interface WebhookUpdateParams {
   id: string;
 
   /**
-   * Body param
+   * Body param: Replacement event subscription list for this webhook. Events must be
+   * ones the program type offers; an event this webhook already has on is also
+   * accepted.
    */
   events?: Array<WebhookEvent>;
 
   /**
-   * Body param
+   * Body param: Whether the webhook is enabled.
    */
   isEnabled?: boolean;
 
