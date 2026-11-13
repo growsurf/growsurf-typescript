@@ -37,6 +37,20 @@ import {
   CommissionDeleteResponse,
 } from './commission';
 import * as ParticipantAPI from './participant';
+import * as GroupsAPI from './groups';
+import {
+  DeleteRewardGroupResponse,
+  Groups as GroupsAPIGroups,
+  RewardGroup,
+  RewardGroupCreateParams,
+  RewardGroupDeleteParams,
+  RewardGroupListResponse,
+  RewardGroupRetrieveParams,
+  RewardGroupRule,
+  RewardGroupRuleType,
+  RewardGroupSource,
+  RewardGroupUpdateParams,
+} from './groups';
 import * as ProgramResourcesAPI from './program-resources';
 import {
   DeleteProgramResourceResponse,
@@ -98,6 +112,7 @@ import * as RewardsAPI from './rewards';
 import {
   CampaignRewardListResponse,
   DeleteRewardResponse,
+  RewardListParams,
   RewardCreateParams,
   RewardTaxValuation,
   RewardUpdateParams,
@@ -131,6 +146,7 @@ export class CampaignResource extends APIResource {
   reward: RewardAPI.Reward = new RewardAPI.Reward(this._client);
   commission: CommissionAPI.Commission = new CommissionAPI.Commission(this._client);
   rewards: RewardsAPI.Rewards = new RewardsAPI.Rewards(this._client);
+  groups: GroupsAPI.Groups = new GroupsAPI.Groups(this._client);
   resources: ProgramResourcesAPI.ProgramResources = new ProgramResourcesAPI.ProgramResources(this._client);
   integrations: IntegrationsAPI.Integrations = new IntegrationsAPI.Integrations(this._client);
   webhooks: WebhooksAPI.Webhooks = new WebhooksAPI.Webhooks(this._client);
@@ -456,6 +472,7 @@ export class CampaignResource extends APIResource {
 
   /**
    * Retrieves a paged list of participants in a program.
+   * Pass `groupId` to return only that group's members.
    *
    * @example
    * ```ts
@@ -2091,6 +2108,12 @@ export interface CampaignListLeaderboardParams {
 
 export interface CampaignListParticipantsParams {
   /**
+   * Return only this group's members (`grp_…`). Works alone or with `metadata`. Default has no ID,
+   * so it cannot be named here. An ID that is not a group in this program returns `404`.
+   */
+  groupId?: string;
+
+  /**
    * Number of results to return. Maximum 100.
    */
   limit?: number;
@@ -2364,6 +2387,7 @@ CampaignResource.ParticipantResource = ParticipantResource;
 CampaignResource.Reward = RewardAPIReward;
 CampaignResource.Commission = CommissionAPICommission;
 CampaignResource.Rewards = RewardsAPIRewards;
+CampaignResource.Groups = GroupsAPIGroups;
 CampaignResource.ProgramResources = ProgramResourcesAPIProgramResources;
 CampaignResource.Integrations = IntegrationsAPIIntegrations;
 CampaignResource.Webhooks = WebhooksAPIWebhooks;
@@ -2468,8 +2492,23 @@ export declare namespace CampaignResource {
     type RewardTaxValuation as RewardTaxValuation,
     type CampaignRewardListResponse as CampaignRewardListResponse,
     type DeleteRewardResponse as DeleteRewardResponse,
+    type RewardListParams as RewardListParams,
     type RewardCreateParams as RewardCreateParams,
     type RewardUpdateParams as RewardUpdateParams,
+  };
+
+  export {
+    GroupsAPIGroups as Groups,
+    type RewardGroup as RewardGroup,
+    type RewardGroupRule as RewardGroupRule,
+    type RewardGroupRuleType as RewardGroupRuleType,
+    type RewardGroupSource as RewardGroupSource,
+    type RewardGroupListResponse as RewardGroupListResponse,
+    type RewardGroupCreateParams as RewardGroupCreateParams,
+    type RewardGroupRetrieveParams as RewardGroupRetrieveParams,
+    type RewardGroupUpdateParams as RewardGroupUpdateParams,
+    type RewardGroupDeleteParams as RewardGroupDeleteParams,
+    type DeleteRewardGroupResponse as DeleteRewardGroupResponse,
   };
 
   export {

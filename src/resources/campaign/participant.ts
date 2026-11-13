@@ -3,6 +3,7 @@
 import { APIResource } from '../../core/resource';
 import * as ParticipantAPI from './participant';
 import * as CampaignAPI from './campaign';
+import * as RewardGroupsAPI from './groups';
 import { APIPromise } from '../../core/api-promise';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
@@ -103,6 +104,32 @@ export class ParticipantResource extends APIResource {
     options?: RequestOptions,
   ): APIPromise<ParticipantBulkDeleteResponse> {
     return this._client.post(path`/campaign/${id}/participants/bulk-delete`, { body, ...options });
+  }
+
+  /**
+   * Moves a list of participants to a group, or to Default with `groupId: null`. Each entry in
+   * `participants` is a GrowSurf participant ID or an email address (mixed lists are allowed). Up to
+   * `200` entries per request. The response reports a per-row `status` for every submitted entry, so
+   * a `200` can include rows that were `NOT_FOUND`. All found participants move together: if the move
+   * fails, no one moves. A move is a manual placement, so the group's email and domain rules do not
+   * override it later, and it removes the participant from any other group's `PARTICIPANT` rules. A
+   * move applies to new referrals only. Rewards already earned keep their amounts. An ID that is not
+   * a group in this program returns `400`.
+   *
+   * @example
+   * ```ts
+   * const response = await client.campaign.participant.bulkMove('id', {
+   *   participants: ['gavin@hooli.com', 'f8g9nl'],
+   *   groupId: 'grp_k7m2qp',
+   * });
+   * ```
+   */
+  bulkMove(
+    id: string,
+    body: ParticipantBulkMoveParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantBulkMoveResponse> {
+    return this._client.post(path`/campaign/${id}/participants/bulk-move`, { body, ...options });
   }
 
   /**
@@ -697,6 +724,12 @@ export interface Participant {
 
   fraudRiskLevel?: FraudRiskLevel;
 
+  /** The participant's group (`grp_…`), or `null` for Default. Their new referrals earn this group's rewards. */
+  groupId?: string | null;
+
+  /** How the participant got into their group. `null` when no group placement was ever made. */
+  groupSource?: RewardGroupsAPI.RewardGroupSource | null;
+
   impressionCount?: number;
 
   inviteCount?: number;
@@ -833,6 +866,12 @@ export interface ParticipantReward {
   currencyISO?: string | null;
 
   fulfilledAt?: number | null;
+
+  /**
+   * The group whose reward this is (`grp_…`), saved when it was earned. `null` for Default and for
+   * rewards earned before groups existed.
+   */
+  groupId?: string | null;
 
   isAvailable?: boolean;
 
@@ -1426,6 +1465,14 @@ export interface ParticipantUpdateParams {
   firstName?: string;
 
   /**
+   * Body param: Moves the participant to this group (`grp_…`), or to Default with `null`. This is a
+   * manual placement, so the groups' email and domain rules do not override it later. The move
+   * applies to new referrals only; rewards already earned keep their amounts. An ID that is not a
+   * group in this program returns `400`.
+   */
+  groupId?: string | null;
+
+  /**
    * Body param: The language of the participant's portal and program emails. Must be
    * one of the program's languages (see `languages` in the program options). Send the
    * base language or `null` to use the program's base language.
@@ -1484,6 +1531,68 @@ export interface ParticipantBulkDeleteParams {
   participants: Array<string>;
 }
 
+export interface ParticipantBulkMoveParams {
+  /** GrowSurf participant IDs and/or email addresses to move. Mixed entries are allowed. 1 to 200 entries. */
+  participants: Array<string>;
+
+  /** The group to move them to (`grp_…`), or `null` for Default. */
+  groupId: string | null;
+}
+
+export interface ParticipantBulkMoveResponse {
+  /** One entry per submitted identifier, in the same order as the request. */
+  results: Array<ParticipantBulkMoveResponse.Result>;
+
+  /** Counts of submitted, moved, not-found, duplicate, and failed entries. */
+  summary: ParticipantBulkMoveResponse.Summary;
+}
+
+export namespace ParticipantBulkMoveResponse {
+  export interface Result {
+    /** The submitted participant ID or email address, echoed back as received. */
+    identifier: string;
+
+    /** Zero-based position of this entry in the submitted `participants` array. */
+    index: number;
+
+    /**
+     * Per-row outcome. `MOVED` — the participant was resolved and is now in the target group.
+     * `NOT_FOUND` — no participant matches the ID or email. `DUPLICATE` — the entry resolves to the
+     * same participant as an earlier entry in the same request. `ERROR` — the lookup failed for this row.
+     */
+    status: 'MOVED' | 'NOT_FOUND' | 'DUPLICATE' | 'ERROR';
+
+    /** The resolved participant's email address. Present on `MOVED` rows. */
+    email?: string | null;
+
+    /** Human-readable detail for `NOT_FOUND`, `DUPLICATE`, and `ERROR` rows. */
+    message?: string;
+
+    /** The resolved GrowSurf participant ID. Present when the entry resolved to a participant. */
+    participantId?: string;
+  }
+
+  export interface Summary {
+    /** Entries that resolved to the same participant as an earlier entry. */
+    duplicateCount: number;
+
+    /** Entries that failed to look up. */
+    errorCount: number;
+
+    /** The target group, or `null` for Default. */
+    groupId: string | null;
+
+    /** Entries that resolved to a participant and were moved. */
+    movedCount: number;
+
+    /** Entries that did not match any participant. */
+    notFoundCount: number;
+
+    /** Number of entries submitted in this request. */
+    total: number;
+  }
+}
+
 export interface ParticipantAddParams {
   email: string;
 
@@ -1492,6 +1601,14 @@ export interface ParticipantAddParams {
   firstName?: string;
 
   ipAddress?: string;
+
+  /**
+   * Places the new participant in this group (`grp_…`), or in Default with `null`. This is a manual
+   * placement, so the groups' email and domain rules do not apply to them. Applied only when this
+   * request creates the participant; to move an existing participant, use Update participant. An ID
+   * that is not a group in this program returns `400` and adds no one.
+   */
+  groupId?: string | null;
 
   /**
    * Affiliate programs only. Controls affiliate enrollment for a new participant.
@@ -2152,6 +2269,7 @@ export declare namespace ParticipantResource {
     type PendingAnalyticsErasure as PendingAnalyticsErasure,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
     type ParticipantBulkDeleteResponse as ParticipantBulkDeleteResponse,
+    type ParticipantBulkMoveResponse as ParticipantBulkMoveResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,
     type ParticipantRecordTransactionResponse as ParticipantRecordTransactionResponse,
     type ParticipantRefundTransactionResponse as ParticipantRefundTransactionResponse,
@@ -2171,6 +2289,7 @@ export declare namespace ParticipantResource {
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
     type ParticipantBulkDeleteParams as ParticipantBulkDeleteParams,
+    type ParticipantBulkMoveParams as ParticipantBulkMoveParams,
     type ParticipantAddParams as ParticipantAddParams,
     type ParticipantListCommissionsParams as ParticipantListCommissionsParams,
     type ParticipantListPayoutsParams as ParticipantListPayoutsParams,

@@ -12,17 +12,23 @@ import { path } from '../../internal/utils/path';
 export class Rewards extends APIResource {
   /**
    * Retrieves configured Campaign Rewards, including switched-off rewards and rewards
-   * whose group is not selected. Deleted rewards are excluded. The campaign response's
+   * whose reward type is not selected. Deleted rewards are excluded. The campaign response's
    * embedded `rewards` array includes only enabled, visible rewards. A reward can be earned only
-   * when it also appears in the campaign response's embedded `rewards` array.
+   * when it also appears in the campaign response's embedded `rewards` array. The list includes
+   * every group's rewards. Each reward's `groupId` names its group (`null` is Default). Pass
+   * `groupId` to return one group's rewards.
    *
    * @example
    * ```ts
    * const rewards = await client.campaign.rewards.list('id');
    * ```
    */
-  list(id: string, options?: RequestOptions): APIPromise<CampaignRewardListResponse> {
-    return this._client.get(path`/campaign/${id}/reward-configs`, options);
+  list(
+    id: string,
+    query: RewardListParams | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<CampaignRewardListResponse> {
+    return this._client.get(path`/campaign/${id}/reward-configs`, { query, ...options });
   }
 
   /**
@@ -119,6 +125,12 @@ export interface Reward {
    * `CONVERSION`.
    */
   event?: 'LEAD' | 'CONVERSION';
+
+  /**
+   * The group this reward belongs to (`grp_…`), or `null` for Default. A participant
+   * earns only their own group's rewards.
+   */
+  groupId?: string | null;
 
   /**
    * The starter icon shown for the reward, or `null` when `imageUrl` is your own
@@ -239,6 +251,15 @@ export interface DeleteRewardResponse {
   success: boolean;
 }
 
+export interface RewardListParams {
+  /**
+   * Return only this group's rewards (`grp_…`). To get Default's rewards, omit `groupId`
+   * and keep the rewards whose `groupId` is `null`. An ID that is not a group in this program
+   * returns `404`.
+   */
+  groupId?: string;
+}
+
 export interface RewardCreateParams {
   /**
    * The reward type. Immutable after creation.
@@ -275,6 +296,14 @@ export interface RewardCreateParams {
    * uses `CONVERSION`.
    */
   event?: 'LEAD' | 'CONVERSION';
+
+  /**
+   * The group this reward belongs to (`grp_…`), or `null` for Default. A participant
+   * earns only their own group's rewards. `LEADERBOARD` rewards apply to the whole
+   * program and cannot be in a group. An ID that is not a group in this program
+   * returns `400`.
+   */
+  groupId?: string | null;
 
   /**
    * The starter icon shown for the reward, or `null` when `imageUrl` is your own
@@ -456,6 +485,14 @@ export interface RewardUpdateParams {
   event?: 'LEAD' | 'CONVERSION';
 
   /**
+   * The group this reward belongs to (`grp_…`), or `null` for Default. A participant
+   * earns only their own group's rewards. `LEADERBOARD` rewards apply to the whole
+   * program and cannot be in a group. An ID that is not a group in this program
+   * returns `400`.
+   */
+  groupId?: string | null;
+
+  /**
    * Body param: The starter icon shown for the reward, or `null` when `imageUrl` is
    * your own image. Participant pages draw this icon in your program's accent color.
    * Also set `imageUrl` to the icon's image so the iOS and Android SDKs can show it.
@@ -613,6 +650,7 @@ export declare namespace Rewards {
     type RewardTaxValuation as RewardTaxValuation,
     type CampaignRewardListResponse as CampaignRewardListResponse,
     type DeleteRewardResponse as DeleteRewardResponse,
+    type RewardListParams as RewardListParams,
     type RewardCreateParams as RewardCreateParams,
     type RewardUpdateParams as RewardUpdateParams,
     type RewardDeleteParams as RewardDeleteParams,
