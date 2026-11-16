@@ -162,7 +162,7 @@ export interface WebhookTestResponse {
   success: boolean;
 
   /**
-   * The mock event payload that was sent.
+   * The mock event payload that was sent. `id` is the event ID.
    */
   payload?: { [key: string]: unknown };
 
