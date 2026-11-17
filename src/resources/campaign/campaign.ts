@@ -1675,6 +1675,11 @@ export namespace CampaignRetrieveAnalyticsResponse {
      * Affiliate only. Payout counts and amounts by status.
      */
     export interface PayoutStatus {
+      /**
+       * Queued or issued Wise payouts that are paused until a refund is confirmed.
+       */
+      attention?: StatusCounts.PayoutStatusMetric;
+
       failed?: StatusCounts.PayoutStatusMetric;
 
       issued?: StatusCounts.PayoutStatusMetric;

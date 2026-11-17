@@ -1077,6 +1077,11 @@ export interface ParticipantSendInvitesResponse {
   messageType: string;
 
   success: boolean;
+
+  /**
+   * Human-readable detail for the result. Empty when there is nothing to add.
+   */
+  message?: string;
 }
 
 export interface ParticipantTriggerReferralResponse {
