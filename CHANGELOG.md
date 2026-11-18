@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.25.0](https://github.com/growsurf/growsurf-typescript/compare/v1.24.0...v1.25.0) (2026-11-18)
+
+
+### Features
+
+* add reward groups and participant bulk move ([3f3cc0e](https://github.com/growsurf/growsurf-typescript/commit/3f3cc0e7924d29887905919d742891f9f816c08e))
+* **api:** add payout attention and invite message; align group wording ([b642027](https://github.com/growsurf/growsurf-typescript/commit/b642027436717d3bb1a6c2df68495144372dab2a))
+* **api:** sync REST v2 docs and types ([d63d434](https://github.com/growsurf/growsurf-typescript/commit/d63d434c3d8bb733886b25d07af6ad5313572197))
+
+
+### Bug Fixes
+
+* **api:** keep rewards.list(id, options) working alongside the groupId filter ([a155880](https://github.com/growsurf/growsurf-typescript/commit/a155880a197c241ba66906515a1489770ed8ee04))
+
+
+### Chores
+
+* accept dev-only picomatch advisory until 2026-12-18 ([ea70247](https://github.com/growsurf/growsurf-typescript/commit/ea70247cf012246d62bdc05e2780f7e3daee263a))
+
+
+### Documentation
+
+* align group creation and webhook event contracts ([7726075](https://github.com/growsurf/growsurf-typescript/commit/77260753687373550a2479b66ab8c458bd048c03))
+
 ## [1.24.0](https://github.com/growsurf/growsurf-typescript/compare/v1.23.0...v1.24.0) (2026-11-08)
 
 
