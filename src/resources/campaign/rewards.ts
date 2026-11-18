@@ -25,9 +25,21 @@ export class Rewards extends APIResource {
    */
   list(
     id: string,
-    query: RewardListParams | null | undefined = {},
+    query?: RewardListParams | null,
+    options?: RequestOptions,
+  ): APIPromise<CampaignRewardListResponse>;
+  /** @deprecated Pass request options as the third argument: `list(id, {}, options)`. */
+  list(id: string, options?: RequestOptions): APIPromise<CampaignRewardListResponse>;
+  list(
+    id: string,
+    queryOrOptions: RewardListParams | RequestOptions | null | undefined = {},
     options?: RequestOptions,
   ): APIPromise<CampaignRewardListResponse> {
+    // Before groupId, the second argument was RequestOptions. Keep that call shape working.
+    if (options === undefined && isLegacyRequestOptions(queryOrOptions)) {
+      return this._client.get(path`/campaign/${id}/reward-configs`, queryOrOptions);
+    }
+    const query = (queryOrOptions ?? {}) as RewardListParams;
     return this._client.get(path`/campaign/${id}/reward-configs`, { query, ...options });
   }
 
@@ -240,6 +252,22 @@ export interface CampaignRewardListResponse {
    * The program's configured rewards.
    */
   rewards: Array<Reward>;
+}
+
+const LEGACY_REQUEST_OPTION_KEYS = [
+  'headers',
+  'maxRetries',
+  'timeout',
+  'fetchOptions',
+  'signal',
+  'idempotencyKey',
+  'query',
+  'defaultBaseURL',
+];
+
+function isLegacyRequestOptions(value: unknown): value is RequestOptions {
+  if (!value || typeof value !== 'object' || 'groupId' in value) return false;
+  return Object.keys(value).some((key) => LEGACY_REQUEST_OPTION_KEYS.includes(key));
 }
 
 export interface DeleteRewardResponse {
