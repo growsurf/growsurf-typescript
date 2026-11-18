@@ -7,6 +7,10 @@ minimumReleaseAgeExclude:
 # repository-controlled glob patterns. The SDK has no runtime dependencies.
 # No patched version exists as of 2026-10-03. Remove this exception when one ships.
 # https://github.com/advisories/GHSA-vfj7-8cjw-p6xm
+# picomatch (GHSA-fc5q-39xc-vjpf, <=4.0.7) is reached only through development
+# tooling (@types/jest, typescript-eslint) with repository-controlled patterns.
+# Kevin accepted it on 2026-11-18 until 2026-12-18; remove it by then or when a patch ships.
 auditConfig:
   ignoreGhsas:
     - GHSA-vfj7-8cjw-p6xm
+    - GHSA-fc5q-39xc-vjpf
