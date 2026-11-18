@@ -180,6 +180,28 @@ export interface CampaignOptionsLanguages {
    * to go back to its default flag.
    */
   flagCountries?: { [language: string]: string | null };
+
+  /**
+   * Read-only. When `baseLanguage` is not `en`, how much of the program's text in the Program
+   * Editor is not in the base language yet. GrowSurf translates its own default text for you.
+   * Text you wrote stays as you wrote it until you translate it from Options > Languages in the
+   * dashboard. `null` when `baseLanguage` is `en`, or when your account does not include
+   * additional languages. It is ignored in updates.
+   */
+  readonly baseLanguageTranslation?: CampaignOptionsBaseLanguageTranslation | null;
+}
+
+export interface CampaignOptionsBaseLanguageTranslation {
+  /**
+   * How many texts have no current translation in the base language. This includes default text
+   * GrowSurf is still translating, so it can stay high for a few minutes after you change
+   * `baseLanguage`.
+   */
+  untranslated: number;
+  /**
+   * How many texts the Program Editor holds for this program.
+   */
+  total: number;
 }
 
 export interface CampaignOptionsRecaptchaUpdate extends CampaignOptionsRecaptcha {
@@ -202,6 +224,7 @@ export interface OptionUpdateParams extends CampaignOptions {
 export declare namespace Options {
   export {
     type CampaignOptions as CampaignOptions,
+    type CampaignOptionsBaseLanguageTranslation as CampaignOptionsBaseLanguageTranslation,
     type CampaignOptionsFraud as CampaignOptionsFraud,
     type CampaignOptionsFraudUpdate as CampaignOptionsFraudUpdate,
     type CampaignOptionsLanguages as CampaignOptionsLanguages,

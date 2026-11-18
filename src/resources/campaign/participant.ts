@@ -3,6 +3,7 @@
 import { APIResource } from '../../core/resource';
 import * as ParticipantAPI from './participant';
 import * as CampaignAPI from './campaign';
+import * as RewardGroupsAPI from './groups';
 import { APIPromise } from '../../core/api-promise';
 import { RequestOptions } from '../../internal/request-options';
 import { path } from '../../internal/utils/path';
@@ -61,7 +62,7 @@ export class ParticipantResource extends APIResource {
   }
 
   /**
-   * Removes participant access immediately by GrowSurf participant ID or email address. Related record cleanup completes automatically. Do not repeat a successful deletion to finish cleanup.
+   * Removes participant access immediately by GrowSurf participant ID or email address. Related record cleanup completes automatically. Do not repeat a successful deletion to finish cleanup. A `202` response includes pending analytics erasure details.
    *
    * @example
    * ```ts
@@ -87,7 +88,7 @@ export class ParticipantResource extends APIResource {
    * are allowed). Up to `200` entries per request — chunk larger lists across
    * multiple calls. The response reports a per-row `status` for every submitted
    * entry, so a `200` can include rows that were `NOT_FOUND` or failed. Deletion is
-   * permanent. Successful rows lose participant access immediately; related record cleanup completes automatically, subject to required financial record retention.
+   * permanent. Successful rows lose participant access immediately; related record cleanup completes automatically, subject to required financial record retention. A `202` response also includes `analyticsErasure` when analytics erasure is pending.
    *
    * @example
    * ```ts
@@ -103,6 +104,32 @@ export class ParticipantResource extends APIResource {
     options?: RequestOptions,
   ): APIPromise<ParticipantBulkDeleteResponse> {
     return this._client.post(path`/campaign/${id}/participants/bulk-delete`, { body, ...options });
+  }
+
+  /**
+   * Moves a list of participants to a group, or to Default with `groupId: null`. Each entry in
+   * `participants` is a GrowSurf participant ID or an email address (mixed lists are allowed). Up to
+   * `200` entries per request. The response reports a per-row `status` for every submitted entry, so
+   * a `200` can include rows that were `NOT_FOUND`. All found participants move together: if the move
+   * fails, no one moves. A move is a manual placement, so the group's email and domain rules do not
+   * override it later, and it removes the participant from any other group's `PARTICIPANT` rules. A
+   * move applies to new referrals only. Rewards already earned keep their amounts. An ID that is not
+   * a group in this program returns `400`.
+   *
+   * @example
+   * ```ts
+   * const response = await client.campaign.participant.bulkMove('id', {
+   *   participants: ['gavin@hooli.com', 'f8g9nl'],
+   *   groupId: 'grp_k7m2qp',
+   * });
+   * ```
+   */
+  bulkMove(
+    id: string,
+    body: ParticipantBulkMoveParams,
+    options?: RequestOptions,
+  ): APIPromise<ParticipantBulkMoveResponse> {
+    return this._client.post(path`/campaign/${id}/participants/bulk-move`, { body, ...options });
   }
 
   /**
@@ -316,7 +343,7 @@ export class ParticipantResource extends APIResource {
   /**
    * Sends email invites on behalf of a participant to a list of email addresses.
    * Sending invites via the API requires a **verified custom email domain** on the
-   * program; the request fails until one is verified.
+   * program. Until one is verified, it returns `success: false`.
    *
    * @example
    * ```ts
@@ -328,7 +355,6 @@ export class ParticipantResource extends APIResource {
    *       emailAddresses: ['erlich@aviato.com'],
    *       messageText:
    *         '{{referrerFirstName}} invited you with {{referrerShareUrl}}.',
-   *       subjectText: 'Join me on Pied Piper',
    *     },
    *   );
    * ```
@@ -697,6 +723,12 @@ export interface Participant {
 
   fraudRiskLevel?: FraudRiskLevel;
 
+  /** The participant's group (`grp_…`), or `null` for Default. Their new referrals earn this group's rewards. */
+  groupId?: string | null;
+
+  /** How the participant got into their group. `null` when no group placement was ever made. */
+  groupSource?: RewardGroupsAPI.RewardGroupSource | null;
+
   impressionCount?: number;
 
   inviteCount?: number;
@@ -834,6 +866,12 @@ export interface ParticipantReward {
 
   fulfilledAt?: number | null;
 
+  /**
+   * The group whose reward this is (`grp_…`), saved when it was earned. `null` for Default and for
+   * rewards earned before groups existed.
+   */
+  groupId?: string | null;
+
   isAvailable?: boolean;
 
   isFulfilled?: boolean;
@@ -915,9 +953,10 @@ export namespace ParticipantBulkDeleteResponse {
     status: 'DELETED' | 'NOT_FOUND' | 'DUPLICATE' | 'ERROR';
 
     /**
-     * The resolved participant's email address. Present on `DELETED` rows.
+     * The resolved participant's email address. Present on `DELETED` rows. `null`
+     * when the participant has no stored email.
      */
-    email?: string;
+    email?: string | null;
 
     /**
      * Human-readable detail for `NOT_FOUND`, `DUPLICATE`, and `ERROR` rows.
@@ -1038,6 +1077,11 @@ export interface ParticipantSendInvitesResponse {
   messageType: string;
 
   success: boolean;
+
+  /**
+   * Human-readable detail for the result. Empty when there is nothing to add.
+   */
+  message?: string;
 }
 
 export interface ParticipantTriggerReferralResponse {
@@ -1426,6 +1470,14 @@ export interface ParticipantUpdateParams {
   firstName?: string;
 
   /**
+   * Body param: Moves the participant to this group (`grp_…`), or to Default with `null`. This is a
+   * manual placement, so the groups' email and domain rules do not override it later. The move
+   * applies to new referrals only; rewards already earned keep their amounts. An ID that is not a
+   * group in this program returns `400`.
+   */
+  groupId?: string | null;
+
+  /**
    * Body param: The language of the participant's portal and program emails. Must be
    * one of the program's languages (see `languages` in the program options). Send the
    * base language or `null` to use the program's base language.
@@ -1484,6 +1536,68 @@ export interface ParticipantBulkDeleteParams {
   participants: Array<string>;
 }
 
+export interface ParticipantBulkMoveParams {
+  /** GrowSurf participant IDs and/or email addresses to move. Mixed entries are allowed. 1 to 200 entries. */
+  participants: Array<string>;
+
+  /** The group to move them to (`grp_…`), or `null` for Default. */
+  groupId: string | null;
+}
+
+export interface ParticipantBulkMoveResponse {
+  /** One entry per submitted identifier, in the same order as the request. */
+  results: Array<ParticipantBulkMoveResponse.Result>;
+
+  /** Counts of submitted, moved, not-found, duplicate, and failed entries. */
+  summary: ParticipantBulkMoveResponse.Summary;
+}
+
+export namespace ParticipantBulkMoveResponse {
+  export interface Result {
+    /** The submitted participant ID or email address, echoed back as received. */
+    identifier: string;
+
+    /** Zero-based position of this entry in the submitted `participants` array. */
+    index: number;
+
+    /**
+     * Per-row outcome. `MOVED` — the participant was resolved and is now in the target group.
+     * `NOT_FOUND` — no participant matches the ID or email. `DUPLICATE` — the entry resolves to the
+     * same participant as an earlier entry in the same request. `ERROR` — the lookup failed for this row.
+     */
+    status: 'MOVED' | 'NOT_FOUND' | 'DUPLICATE' | 'ERROR';
+
+    /** The resolved participant's email address. Present on `MOVED` rows. */
+    email?: string | null;
+
+    /** Human-readable detail for `NOT_FOUND`, `DUPLICATE`, and `ERROR` rows. */
+    message?: string;
+
+    /** The resolved GrowSurf participant ID. Present when the entry resolved to a participant. */
+    participantId?: string;
+  }
+
+  export interface Summary {
+    /** Entries that resolved to the same participant as an earlier entry. */
+    duplicateCount: number;
+
+    /** Entries that failed to look up. */
+    errorCount: number;
+
+    /** The target group, or `null` for Default. */
+    groupId: string | null;
+
+    /** Entries that resolved to a participant and were moved. */
+    movedCount: number;
+
+    /** Entries that did not match any participant. */
+    notFoundCount: number;
+
+    /** Number of entries submitted in this request. */
+    total: number;
+  }
+}
+
 export interface ParticipantAddParams {
   email: string;
 
@@ -1492,6 +1606,14 @@ export interface ParticipantAddParams {
   firstName?: string;
 
   ipAddress?: string;
+
+  /**
+   * Places the new participant in this group (`grp_…`), or in Default with `null`. This is a manual
+   * placement, so the groups' email and domain rules do not apply to them. Applied only when this
+   * request creates the participant; to move an existing participant, use Update participant. An ID
+   * that is not a group in this program returns `400` and adds no one.
+   */
+  groupId?: string | null;
 
   /**
    * Affiliate programs only. Controls affiliate enrollment for a new participant.
@@ -1884,8 +2006,8 @@ export interface ParticipantRefundTransactionParams {
   id: string;
 
   /**
-   * Body param: REFUND covers full refunds, partial refunds, and refund
-   * cancellations; CHARGEBACK is always a full reversal.
+   * Body param: Defaults to REFUND, which covers full refunds, partial refunds, and
+   * refund cancellations; CHARGEBACK is always a full reversal.
    */
   amendmentType?: 'REFUND' | 'CHARGEBACK';
 
@@ -1899,7 +2021,8 @@ export interface ParticipantRefundTransactionParams {
   /**
    * Body param: Cumulative amount refunded so far, in the currency's minor unit. Omit
    * for a full refund. For a partial refund send the running total, not the
-   * per-refund delta.
+   * per-refund delta. Required when `refundStatus` is `canceled`: send the
+   * total that stays refunded after the cancellation (`0` when none remain).
    */
   amountRefunded?: number;
 
@@ -1959,8 +2082,7 @@ export interface ParticipantRefundTransactionParams {
   refundId?: string;
 
   /**
-   * Body param: Refund status. Send "canceled" with a lowered amountRefunded to
-   * restore a previously reduced commission.
+   * Body param: Refund status. Send "canceled" with the original refundId to cancel that refund.
    */
   refundStatus?: string;
 
@@ -1977,7 +2099,7 @@ export interface ParticipantSendInvitesParams {
   id: string;
 
   /**
-   * Body param
+   * Body param: Email addresses to invite. Send at least one.
    */
   emailAddresses: Array<string>;
 
@@ -1985,11 +2107,6 @@ export interface ParticipantSendInvitesParams {
    * Body param
    */
   messageText: string;
-
-  /**
-   * Body param
-   */
-  subjectText: string;
 }
 
 export interface ParticipantTriggerReferralParams {
@@ -2003,7 +2120,7 @@ export interface ParticipantTriggerReferralParams {
    * Useful for honoring a refund window before crediting a referrer. Omit this field
    * to award credit immediately. The credit is awarded automatically once the delay
    * elapses, and can be cancelled before then with the Cancel delayed referral
-   * trigger request.
+   * trigger request. From `0` to `90`; `0` awards credit immediately.
    */
   delayInDays?: number;
 }
@@ -2022,7 +2139,9 @@ export interface ParticipantEmailParams {
   id: string;
 
   /**
-   * Body param: HTML body for a free-form email. You can personalize it with dynamic text,
+   * Body param: HTML body for a free-form email. When `settings.design.layoutMode` is
+   * `INLINE`, include `{{emailFooter}}` in the body; `{{emailHeader}}` is optional.
+   * You can personalize it with dynamic text,
    * inserting `{{...}}` tokens like `{{firstName}}` or `{{shareUrl}}`. See
    * [Guide to using dynamic text in GrowSurf emails](https://support.growsurf.com/article/213-guide-to-using-dynamic-text-in-growsurf-emails).
    */
@@ -2135,6 +2254,9 @@ export interface ParticipantRequestPayoutDestinationConfirmationParams {
 
   /**
    * Body param: The payout provider the participant should confirm a destination for.
+   * `VENMO` uses a confirmed email and is available only when connected PayPal Payouts
+   * and payout-email confirmation are enabled in a USD program. Venmo recipients must
+   * be in the United States.
    */
   provider: 'PAYPAL' | 'VENMO' | 'WISECOM';
 }
@@ -2152,6 +2274,7 @@ export declare namespace ParticipantResource {
     type PendingAnalyticsErasure as PendingAnalyticsErasure,
     type ParticipantDeleteResponse as ParticipantDeleteResponse,
     type ParticipantBulkDeleteResponse as ParticipantBulkDeleteResponse,
+    type ParticipantBulkMoveResponse as ParticipantBulkMoveResponse,
     type ParticipantListRewardsResponse as ParticipantListRewardsResponse,
     type ParticipantRecordTransactionResponse as ParticipantRecordTransactionResponse,
     type ParticipantRefundTransactionResponse as ParticipantRefundTransactionResponse,
@@ -2171,6 +2294,7 @@ export declare namespace ParticipantResource {
     type ParticipantUpdateParams as ParticipantUpdateParams,
     type ParticipantDeleteParams as ParticipantDeleteParams,
     type ParticipantBulkDeleteParams as ParticipantBulkDeleteParams,
+    type ParticipantBulkMoveParams as ParticipantBulkMoveParams,
     type ParticipantAddParams as ParticipantAddParams,
     type ParticipantListCommissionsParams as ParticipantListCommissionsParams,
     type ParticipantListPayoutsParams as ParticipantListPayoutsParams,

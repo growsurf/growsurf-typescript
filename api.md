@@ -76,6 +76,7 @@ Types:
 - <code><a href="./src/resources/campaign/participant.ts">ReferralStatus</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantDeleteResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantBulkDeleteResponse</a></code>
+- <code><a href="./src/resources/campaign/participant.ts">ParticipantBulkMoveResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantListRewardsResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRecordTransactionResponse</a></code>
 - <code><a href="./src/resources/campaign/participant.ts">ParticipantRefundTransactionResponse</a></code>
@@ -95,6 +96,7 @@ Methods:
 - <code title="post /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">update</a>(participantIDOrEmail, { ...params }) -> Participant</code>
 - <code title="delete /campaign/{id}/participant/{participantIdOrEmail}">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">delete</a>(participantIDOrEmail, { ...params }) -> ParticipantDeleteResponse</code>
 - <code title="post /campaign/{id}/participants/bulk-delete">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">bulkDelete</a>(id, { ...params }) -> ParticipantBulkDeleteResponse</code>
+- <code title="post /campaign/{id}/participants/bulk-move">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">bulkMove</a>(id, { ...params }) -> ParticipantBulkMoveResponse</code>
 - <code title="post /campaign/{id}/participant">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">add</a>(id, { ...params }) -> Participant</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/commissions">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listCommissions</a>(participantIDOrEmail, { ...params }) -> ParticipantCommissionList</code>
 - <code title="get /campaign/{id}/participant/{participantIdOrEmail}/payouts">client.campaign.participant.<a href="./src/resources/campaign/participant.ts">listPayouts</a>(participantIDOrEmail, { ...params }) -> ParticipantPayoutList</code>
@@ -148,10 +150,29 @@ Types:
 
 Methods:
 
-- <code title="get /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">list</a>(id) -> CampaignRewardListResponse</code>
+- <code title="get /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">list</a>(id, { ...params }) -> CampaignRewardListResponse</code>
 - <code title="post /campaign/{id}/reward-configs">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">create</a>(id, { ...params }) -> Reward</code>
 - <code title="patch /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">update</a>(campaignRewardID, { ...params }) -> Reward</code>
 - <code title="delete /campaign/{id}/reward-configs/{campaignRewardId}">client.campaign.rewards.<a href="./src/resources/campaign/rewards.ts">delete</a>(campaignRewardID, { ...params }) -> DeleteRewardResponse</code>
+
+## Groups
+
+Types:
+
+- <code><a href="./src/resources/campaign/groups.ts">RewardGroup</a></code>
+- <code><a href="./src/resources/campaign/groups.ts">RewardGroupRule</a></code>
+- <code><a href="./src/resources/campaign/groups.ts">RewardGroupRuleType</a></code>
+- <code><a href="./src/resources/campaign/groups.ts">RewardGroupSource</a></code>
+- <code><a href="./src/resources/campaign/groups.ts">RewardGroupListResponse</a></code>
+- <code><a href="./src/resources/campaign/groups.ts">DeleteRewardGroupResponse</a></code>
+
+Methods:
+
+- <code title="get /campaign/{id}/groups">client.campaign.groups.<a href="./src/resources/campaign/groups.ts">list</a>(id) -> RewardGroupListResponse</code>
+- <code title="post /campaign/{id}/groups">client.campaign.groups.<a href="./src/resources/campaign/groups.ts">create</a>(id, { ...params }) -> RewardGroup</code>
+- <code title="get /campaign/{id}/groups/{groupId}">client.campaign.groups.<a href="./src/resources/campaign/groups.ts">retrieve</a>(groupID, { ...params }) -> RewardGroup</code>
+- <code title="patch /campaign/{id}/groups/{groupId}">client.campaign.groups.<a href="./src/resources/campaign/groups.ts">update</a>(groupID, { ...params }) -> RewardGroup</code>
+- <code title="delete /campaign/{id}/groups/{groupId}">client.campaign.groups.<a href="./src/resources/campaign/groups.ts">delete</a>(groupID, { ...params }) -> DeleteRewardGroupResponse</code>
 
 ## Program Resources
 

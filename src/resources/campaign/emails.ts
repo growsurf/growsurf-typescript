@@ -70,17 +70,17 @@ export interface CampaignInviteEmailTemplate extends CampaignEmailTemplate {
 }
 
 export interface CampaignEmailSenderSettings {
-  fromName?: string;
+  fromName?: string | null;
   replyToEmail?: string;
   /** Read-only. Configure a custom from address in the dashboard. */
   fromEmail?: string;
 }
 
 export interface CampaignEmailContactSettings {
-  companyName?: string;
-  addressLine1?: string;
+  companyName?: string | null;
+  addressLine1?: string | null;
   addressLine2?: string | null;
-  city?: string;
+  city?: string | null;
   state?: string | null;
   postalCode?: string | null;
   country?: string | null;
@@ -108,9 +108,19 @@ export interface CampaignEmailSenderUpdate {
   replyToEmail?: string;
 }
 
+export interface CampaignEmailContactUpdate {
+  companyName?: string;
+  addressLine1?: string;
+  addressLine2?: string | null;
+  city?: string;
+  state?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+}
+
 export interface CampaignEmailSettingsUpdate {
   sender?: CampaignEmailSenderUpdate;
-  contact?: CampaignEmailContactSettings;
+  contact?: CampaignEmailContactUpdate;
   design?: Omit<CampaignEmailDesignSettings, 'layoutMode'>;
 }
 
@@ -161,6 +171,7 @@ export type EmailUpdateParams = CampaignEmailsBase<CampaignEmailSettingsUpdate>;
 export declare namespace Emails {
   export {
     type CampaignEmailContactSettings as CampaignEmailContactSettings,
+    type CampaignEmailContactUpdate as CampaignEmailContactUpdate,
     type CampaignEmailDesignSettings as CampaignEmailDesignSettings,
     type CampaignEmailSenderSettings as CampaignEmailSenderSettings,
     type CampaignEmailSenderUpdate as CampaignEmailSenderUpdate,

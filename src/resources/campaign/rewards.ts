@@ -12,17 +12,35 @@ import { path } from '../../internal/utils/path';
 export class Rewards extends APIResource {
   /**
    * Retrieves configured Campaign Rewards, including switched-off rewards and rewards
-   * whose group is not selected. Deleted rewards are excluded. The campaign response's
+   * whose reward type is not selected. Deleted rewards are excluded. The campaign response's
    * embedded `rewards` array includes only enabled, visible rewards. A reward can be earned only
-   * when it also appears in the campaign response's embedded `rewards` array.
+   * when it also appears in the campaign response's embedded `rewards` array. The list includes
+   * every group's rewards. Each reward's `groupId` names its group (`null` is Default). Pass
+   * `groupId` to return one group's rewards.
    *
    * @example
    * ```ts
    * const rewards = await client.campaign.rewards.list('id');
    * ```
    */
-  list(id: string, options?: RequestOptions): APIPromise<CampaignRewardListResponse> {
-    return this._client.get(path`/campaign/${id}/reward-configs`, options);
+  list(
+    id: string,
+    query?: RewardListParams | null,
+    options?: RequestOptions,
+  ): APIPromise<CampaignRewardListResponse>;
+  /** @deprecated Pass request options as the third argument: `list(id, {}, options)`. */
+  list(id: string, options?: RequestOptions): APIPromise<CampaignRewardListResponse>;
+  list(
+    id: string,
+    queryOrOptions: RewardListParams | RequestOptions | null | undefined = {},
+    options?: RequestOptions,
+  ): APIPromise<CampaignRewardListResponse> {
+    // Before groupId, the second argument was RequestOptions. Keep that call shape working.
+    if (options === undefined && isLegacyRequestOptions(queryOrOptions)) {
+      return this._client.get(path`/campaign/${id}/reward-configs`, queryOrOptions);
+    }
+    const query = (queryOrOptions ?? {}) as RewardListParams;
+    return this._client.get(path`/campaign/${id}/reward-configs`, { query, ...options });
   }
 
   /**
@@ -119,6 +137,12 @@ export interface Reward {
    * `CONVERSION`.
    */
   event?: 'LEAD' | 'CONVERSION';
+
+  /**
+   * The group this reward belongs to (`grp_…`), or `null` for Default. A participant
+   * earns only their own group's rewards.
+   */
+  groupId?: string | null;
 
   /**
    * The starter icon shown for the reward, or `null` when `imageUrl` is your own
@@ -230,6 +254,22 @@ export interface CampaignRewardListResponse {
   rewards: Array<Reward>;
 }
 
+const LEGACY_REQUEST_OPTION_KEYS = [
+  'headers',
+  'maxRetries',
+  'timeout',
+  'fetchOptions',
+  'signal',
+  'idempotencyKey',
+  'query',
+  'defaultBaseURL',
+];
+
+function isLegacyRequestOptions(value: unknown): value is RequestOptions {
+  if (!value || typeof value !== 'object' || 'groupId' in value) return false;
+  return Object.keys(value).some((key) => LEGACY_REQUEST_OPTION_KEYS.includes(key));
+}
+
 export interface DeleteRewardResponse {
   /**
    * The deleted reward ID.
@@ -237,6 +277,15 @@ export interface DeleteRewardResponse {
   id: string;
 
   success: boolean;
+}
+
+export interface RewardListParams {
+  /**
+   * Return only this group's rewards (`grp_…`). To get Default's rewards, omit `groupId`
+   * and keep the rewards whose `groupId` is `null`. An ID that is not a group in this program
+   * returns `404`.
+   */
+  groupId?: string;
 }
 
 export interface RewardCreateParams {
@@ -275,6 +324,14 @@ export interface RewardCreateParams {
    * uses `CONVERSION`.
    */
   event?: 'LEAD' | 'CONVERSION';
+
+  /**
+   * The group this reward belongs to (`grp_…`), or `null` for Default. A participant
+   * earns only their own group's rewards. `LEADERBOARD` rewards apply to the whole
+   * program and cannot be in a group. An ID that is not a group in this program
+   * returns `400`.
+   */
+  groupId?: string | null;
 
   /**
    * The starter icon shown for the reward, or `null` when `imageUrl` is your own
@@ -456,6 +513,14 @@ export interface RewardUpdateParams {
   event?: 'LEAD' | 'CONVERSION';
 
   /**
+   * The group this reward belongs to (`grp_…`), or `null` for Default. A participant
+   * earns only their own group's rewards. `LEADERBOARD` rewards apply to the whole
+   * program and cannot be in a group. An ID that is not a group in this program
+   * returns `400`.
+   */
+  groupId?: string | null;
+
+  /**
    * Body param: The starter icon shown for the reward, or `null` when `imageUrl` is
    * your own image. Participant pages draw this icon in your program's accent color.
    * Also set `imageUrl` to the icon's image so the iOS and Android SDKs can show it.
@@ -517,7 +582,7 @@ export interface RewardUpdateParams {
 
   /**
    * Body param: Custom key/value metadata (single-level; values are stored as
-   * strings).
+   * strings). Sending `metadata` replaces the stored object.
    * Each value must be a string, number, or boolean of up to 500 characters. Each key
    * must have 1 to 40 characters once camelCased, and two keys that camelCase to the
    * same key are rejected. Up to 50 keys. An entry that breaks these rules returns
@@ -613,6 +678,7 @@ export declare namespace Rewards {
     type RewardTaxValuation as RewardTaxValuation,
     type CampaignRewardListResponse as CampaignRewardListResponse,
     type DeleteRewardResponse as DeleteRewardResponse,
+    type RewardListParams as RewardListParams,
     type RewardCreateParams as RewardCreateParams,
     type RewardUpdateParams as RewardUpdateParams,
     type RewardDeleteParams as RewardDeleteParams,
