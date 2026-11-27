@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.25.1](https://github.com/growsurf/growsurf-typescript/compare/v1.25.0...v1.25.1) (2026-11-27)
+
+
+### Documentation
+
+* describe TELEHEALTH goal privacy defaults and share disclosure ([ec611fe](https://github.com/growsurf/growsurf-typescript/commit/ec611fe146b40dbecdf21887626d474854f342b4))
+* document paused-email 400, welcomeNonReferred limits, and repeat isNew ([2079b66](https://github.com/growsurf/growsurf-typescript/commit/2079b660683ed7ccef95a9f629ce008ff5273c88))
+* SDK docstring updates ([a1998de](https://github.com/growsurf/growsurf-typescript/commit/a1998de7cc5b2fb1df793d78f7498d85e6376581))
+
 ## [1.25.0](https://github.com/growsurf/growsurf-typescript/compare/v1.24.0...v1.25.0) (2026-11-18)
 
 
