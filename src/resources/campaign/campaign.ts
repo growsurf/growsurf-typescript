@@ -936,7 +936,8 @@ export interface CampaignCreateMobileParticipantTokenResponse {
 
   /**
    * Whether this request created a new participant. Returns false when the
-   * participant already existed.
+   * participant already existed. A repeat call can return true while the first
+   * signup is still finishing.
    */
   isNew: boolean;
 
@@ -1963,6 +1964,14 @@ export interface CampaignCreateParams {
    * in the create request are kept. `INSURANCE` replaces `ONLINE_INSURANCE`, which is
    * still accepted. Omit it and every share button keeps its standard default. Set only when
    * the program is created; it is not accepted on update.
+   *
+   * New `TELEHEALTH` referral programs hide referrer names and photos in friend-facing
+   * elements and hide the individual Referral Status list and leaderboard. Email reveal
+   * is off, full email masking is on, and signup and conversion alerts to referrers
+   * start off. Reward emails stay available. If a visible reward pays the referrer, the
+   * default share messages and email subject also say the participant may earn a reward.
+   * Change these settings afterward through the Design and Emails endpoints; existing
+   * and cloned programs keep their saved settings.
    */
   goal?:
     | 'CUSTOMERS'
